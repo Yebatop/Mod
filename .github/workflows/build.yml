@@ -1,10 +1,19 @@
 name: Сборка мода
 
+# Только push. Триггер pull_request здесь был лишним: он давал второй прогон того
+# же коммита, оба лезли выгружать артефакт с одним именем, и GitHub отвечал на
+# финализацию одного из них «403 Forbidden: Error from intermediary». Проверки
+# push-прогона и так привязываются к открытому PR, так что ничего не теряем.
 on:
   push:
     branches: ["**"]
-  pull_request:
   workflow_dispatch:
+
+# Пока идёт сборка, свежий пуш отменяет предыдущую: держать очередь из устаревших
+# прогонов смысла нет, интересен всегда только верхний коммит.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
