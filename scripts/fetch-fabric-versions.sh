@@ -1,33 +1,43 @@
 #!/usr/bin/env bash
 # Подставляет в gradle.properties актуальные версии Fabric для нужной версии игры.
-# Использование:  ./scripts/fetch-fabric-versions.sh [версия_игры]
+# Нужен только curl: jq намеренно не используется, его нет ни на раннере CI,
+# ни у половины пользователей.
+#
+#   ./scripts/fetch-fabric-versions.sh [версия_игры]
 set -euo pipefail
 
-MC="${1:-$(grep -Po '^minecraft_version=\K.*' gradle.properties)}"
+MC="${1:-$(grep -E '^minecraft_version=' gradle.properties | cut -d= -f2)}"
 META="https://meta.fabricmc.net/v2/versions"
-API="https://api.modrinth.com/v2/project/fabric-api/version"
+
+command -v curl >/dev/null || { echo "нужен curl" >&2; exit 1; }
 
 echo "Версия игры: $MC"
 
-need() { command -v "$1" >/dev/null || { echo "нужен $1" >&2; exit 1; }; }
-need curl; need jq
+# Первое значение "version" в JSON-массиве — самое свежее.
+first_version() {
+    grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' \
+        | head -1 | sed 's/.*"\([^"]*\)"$/\1/'
+}
 
-YARN=$(curl -fsSL "$META/yarn/$MC"   | jq -r '.[0].version')
-LOADER=$(curl -fsSL "$META/loader"   | jq -r '[.[] | select(.stable)][0].version')
-FAPI=$(curl -fsSL "$API?game_versions=%5B%22$MC%22%5D&loaders=%5B%22fabric%22%5D" \
-        | jq -r '.[0].version_number')
+YARN=$(curl -fsSL "$META/yarn/$MC" | first_version)
+LOADER=$(curl -fsSL "$META/loader" | first_version)
 
-echo "yarn:         $YARN"
-echo "loader:       $LOADER"
-echo "fabric-api:   $FAPI"
+[ -n "$YARN" ]   || { echo "не удалось узнать версию yarn для $MC" >&2; exit 1; }
+[ -n "$LOADER" ] || { echo "не удалось узнать версию loader" >&2; exit 1; }
+
+echo "yarn:   $YARN"
+echo "loader: $LOADER"
 echo
-echo "Версию Loom сверьте на https://fabricmc.net/develop/ — она не лежит в meta API."
+echo "Версии Loom и Fabric API берутся из gradle.properties как есть:"
+echo "  loom:       $(grep -E '^loom_version=' gradle.properties | cut -d= -f2)"
+echo "  fabric-api: $(grep -E '^fabric_api_version=' gradle.properties | cut -d= -f2)"
+echo "Свериться можно на https://fabricmc.net/develop/"
 
 sed -i.bak \
-  -e "s|^minecraft_version=.*|minecraft_version=$MC|" \
-  -e "s|^yarn_mappings=.*|yarn_mappings=$YARN|" \
-  -e "s|^loader_version=.*|loader_version=$LOADER|" \
-  -e "s|^fabric_api_version=.*|fabric_api_version=$FAPI|" \
-  gradle.properties
+    -e "s|^minecraft_version=.*|minecraft_version=$MC|" \
+    -e "s|^yarn_mappings=.*|yarn_mappings=$YARN|" \
+    gradle.properties
+rm -f gradle.properties.bak
 
-echo "gradle.properties обновлён (бэкап в gradle.properties.bak)"
+echo
+echo "gradle.properties обновлён."

@@ -1,0 +1,64 @@
+name: Сборка мода
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Версия yarn известна только maven.fabricmc.net, поэтому подставляем её
+      # на раннере: у него нет ограничений сети, из-за которых её не узнать локально.
+      - name: Подставить версии Fabric
+        run: ./scripts/fetch-fabric-versions.sh
+
+      - name: Тесты
+        run: ./gradlew test --no-daemon
+
+      - name: Сборка
+        run: ./gradlew build --no-daemon
+
+      - name: Отчёт о версиях
+        if: always()
+        run: |
+          {
+            echo "### Версии, с которыми собиралось"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            grep -E '^(minecraft_version|yarn_mappings|loader_version|loom_version|fabric_api_version)=' \
+              gradle.properties | sed 's/^/| /; s/=/ | /; s/$/ |/'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Выложить jar
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: holyhelper
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+      - name: Выложить отчёты тестов
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/reports/tests/
+          if-no-files-found: ignore

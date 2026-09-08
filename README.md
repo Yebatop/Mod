@@ -37,17 +37,32 @@
 Оверлея пока нет намеренно: в свежих версиях Fabric API отрисовка HUD переехала
 на новый реестр, и писать это вслепую, до первой удачной сборки, смысла нет.
 
-## Сборка
+## Установка
+
+Мод собирается на GitHub при каждом пуше, поэтому собирать самому не нужно.
+
+1. Откройте вкладку **Actions** в репозитории, выберите верхний зелёный прогон
+   ветки и скачайте артефакт **holyhelper** — внутри `holyhelper-0.1.0.jar`.
+2. Поставьте **Fabric Loader** для Minecraft 1.21.11, если его ещё нет.
+3. Скачайте **Fabric API** для 1.21.11 с
+   [Modrinth](https://modrinth.com/mod/fabric-api) — без него мод не запустится.
+4. Положите оба файла в папку `mods`.
+   В PrismLauncher: правой кнопкой по сборке → **Edit** → **Mods** → **Add file**.
+5. Зайдите на `mc.holyworld.ru` и напишите `/holyhelper`.
+
+## Сборка вручную
+
+Если хочется собрать у себя — нужны Java 21 и интернет до `maven.fabricmc.net`:
 
 ```bash
-./scripts/fetch-fabric-versions.sh   # подставит актуальные версии Fabric
-./gradlew build                      # соберёт мод в build/libs
+./scripts/fetch-fabric-versions.sh   # подставит актуальный yarn
+./gradlew build                      # мод появится в build/libs
 ./gradlew runClient                  # запустит клиент с модом
 ```
 
-Версии Fabric в `gradle.properties` — заготовка. Скрипт спрашивает
-`meta.fabricmc.net` и переписывает их настоящими; версию Loom сверьте
-на [fabricmc.net/develop](https://fabricmc.net/develop/).
+Версия yarn в `gradle.properties` может быть устаревшей: маппинги публикуются
+только на `maven.fabricmc.net`, и скрипт нужен именно для неё. Остальные версии
+проставлены и проверены.
 
 ## Проверка
 
