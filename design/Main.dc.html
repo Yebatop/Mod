@@ -20,6 +20,38 @@
     .u-cell { flex: 0 0 auto; font-size: 13px; color: #cdd3dc; text-align: right; }
     .u-pill { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 3px; }
     .u-track { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.07); overflow: hidden; }
+  
+    @keyframes hhRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes hhFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes hhGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes hhDraw { to { stroke-dashoffset: 0; } }
+    @keyframes hhHalo { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+    .hero-card { animation: hhRise 0.62s cubic-bezier(0.2, 0.72, 0.2, 1) both; }
+    .hero-card:nth-child(1) { animation-delay: 0.14s; }
+    .hero-card:nth-child(2) { animation-delay: 0.22s; }
+    .hero-card:nth-child(3) { animation-delay: 0.30s; }
+    .u-track > div { transform-origin: left; animation: hhGrow 1s cubic-bezier(0.2, 0.72, 0.2, 1) 0.55s both; }
+    .u-row { animation: hhRise 0.5s cubic-bezier(0.2, 0.72, 0.2, 1) both; }
+    .u-row:nth-child(2) { animation-delay: 0.34s; }
+    .u-row:nth-child(3) { animation-delay: 0.38s; }
+    .u-row:nth-child(4) { animation-delay: 0.41s; }
+    .u-row:nth-child(5) { animation-delay: 0.45s; }
+    .u-row:nth-child(6) { animation-delay: 0.48s; }
+    .u-row:nth-child(7) { animation-delay: 0.52s; }
+    .u-row:nth-child(8) { animation-delay: 0.55s; }
+    .u-row:nth-child(9) { animation-delay: 0.59s; }
+    .u-row:nth-child(10) { animation-delay: 0.62s; }
+    .u-row:nth-child(11) { animation-delay: 0.66s; }
+    .u-row:nth-child(12) { animation-delay: 0.69s; }
+    .u-row:nth-child(13) { animation-delay: 0.73s; }
+    .u-row:nth-child(14) { animation-delay: 0.76s; }
+    .u-row:nth-child(15) { animation-delay: 0.80s; }
+    .u-row:nth-child(16) { animation-delay: 0.83s; }
+    @keyframes hhRingA { from { stroke-dashoffset: 113.1; } to { stroke-dashoffset: 41.8; } }
+    @keyframes hhRingB { from { stroke-dashoffset: 113.1; } to { stroke-dashoffset: 71.3; } }
+    .ring-a { animation: hhRingA 1.25s cubic-bezier(0.2, 0.72, 0.2, 1) 0.25s both; }
+    .ring-b { animation: hhRingB 1.25s cubic-bezier(0.2, 0.72, 0.2, 1) 0.35s both; }
   </style>
 </helmet>
 <div style="--accent: {{accent}}; --row-pad: {{rowPad}}; position: relative; width: 1360px; height: 940px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1;">
@@ -44,7 +76,7 @@
         <div style="display: flex; align-items: center; gap: 13px; padding: 11px 16px 11px 12px; border-radius: 8px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);">
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
             <circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,0.09)" stroke-width="3.5"/>
-            <circle cx="22" cy="22" r="18" stroke="{{accent}}" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="41.8" transform="rotate(-90 22 22)"/>
+            <circle cx="22" cy="22" r="18" stroke="{{accent}}" stroke-width="3.5" stroke-linecap="round" class="ring-a" stroke-dasharray="113.1" stroke-dashoffset="41.8" transform="rotate(-90 22 22)"/>
           </svg>
           <div>
             <div class="u-lab">Обычные · 6 ч</div>
@@ -54,7 +86,7 @@
         <div style="display: flex; align-items: center; gap: 13px; padding: 11px 16px 11px 12px; border-radius: 8px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);">
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
             <circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,0.09)" stroke-width="3.5"/>
-            <circle cx="22" cy="22" r="18" stroke="#46d3d9" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="71.3" transform="rotate(-90 22 22)"/>
+            <circle cx="22" cy="22" r="18" stroke="#46d3d9" stroke-width="3.5" stroke-linecap="round" class="ring-b" stroke-dasharray="113.1" stroke-dashoffset="71.3" transform="rotate(-90 22 22)"/>
           </svg>
           <div>
             <div class="u-lab">Особые · 8 ч</div>
@@ -69,7 +101,7 @@
         <div class="u-lab" style="color: var(--accent);">Нести<br>сейчас</div>
       </div>
       <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
-        <div style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 8px; background: linear-gradient(135deg, rgba(242,180,92,0.13), rgba(242,180,92,0.02) 62%); border: 1px solid rgba(242,180,92,0.24);">
+        <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 8px; background: linear-gradient(135deg, rgba(242,180,92,0.13), rgba(242,180,92,0.02) 62%); border: 1px solid rgba(242,180,92,0.24);">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div class="u-slot"><div style="width: 13px; height: 13px; background: #7a4a3c;"></div></div>
             <div style="flex-grow: 1;">
@@ -82,7 +114,7 @@
             </div>
           </div>
         </div>
-        <div style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 8px; background: linear-gradient(135deg, rgba(70,211,217,0.12), rgba(70,211,217,0.02) 62%); border: 1px solid rgba(70,211,217,0.22);">
+        <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 8px; background: linear-gradient(135deg, rgba(70,211,217,0.12), rgba(70,211,217,0.02) 62%); border: 1px solid rgba(70,211,217,0.22);">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div class="u-slot"><div style="width: 13px; height: 13px; background: #8c6aa0;"></div></div>
             <div style="flex-grow: 1;">
@@ -95,7 +127,7 @@
             </div>
           </div>
         </div>
-        <div style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 8px; background: linear-gradient(135deg, rgba(70,211,217,0.12), rgba(70,211,217,0.02) 62%); border: 1px solid rgba(70,211,217,0.22);">
+        <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 8px; background: linear-gradient(135deg, rgba(70,211,217,0.12), rgba(70,211,217,0.02) 62%); border: 1px solid rgba(70,211,217,0.22);">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div class="u-slot"><div style="width: 13px; height: 13px; background: #cfe6e6;"></div></div>
             <div style="flex-grow: 1;">

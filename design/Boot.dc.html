@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@400..700&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
+    a { color: #f2b45c; } a:hover { color: #ffd08a; }
+    .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .u-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
+    .u-lab { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #5d6472; }
+    @keyframes hhRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    @keyframes hhFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes hhGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes hhDraw { to { stroke-dashoffset: 0; } }
+    @keyframes hhHalo { 0%, 100% { opacity: 0.22; transform: scale(1); } 50% { opacity: 0.42; transform: scale(1.07); } }
+    @keyframes hhDrift { 0% { transform: translateY(0); opacity: 0.16; } 50% { transform: translateY(-16px); opacity: 0.34; } 100% { transform: translateY(0); opacity: 0.16; } }
+    @keyframes hhSweep { 0% { transform: translateX(-100%); } 55%, 100% { transform: translateX(320%); } }
+    .r { animation: hhRise 0.72s cubic-bezier(0.2, 0.72, 0.2, 1) both; }
+    .row { display: flex; align-items: center; gap: 13px; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.05); animation: hhRise 0.6s cubic-bezier(0.2, 0.72, 0.2, 1) both; }
+    .mote { position: absolute; width: 5px; height: 5px; background: #f2b45c; animation: hhDrift 7s ease-in-out infinite; }
+  </style>
+</helmet>
+<div style="position: relative; width: 1280px; height: 720px; box-sizing: border-box; overflow: hidden; background: #07080b; color: #e9ecf1; --accent: {{accent}};">
+
+  <div style="position: absolute; inset: 0; background: radial-gradient(760px 520px at 50% 42%, rgba(242,180,92,0.14), transparent 66%), radial-gradient(620px 420px at 84% 88%, rgba(70,211,217,0.07), transparent 62%), linear-gradient(180deg, #0c0e14 0%, #07080b 62%);"></div>
+  <div style="position: absolute; inset: 0; background: radial-gradient(128% 96% at 50% 46%, transparent 40%, rgba(0,0,0,0.62) 100%);"></div>
+  <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none;"><filter id="grainBoot"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainBoot)"/></svg>
+
+  <div class="mote" style="left: 214px; top: 178px; animation-delay: 0s;"></div>
+  <div class="mote" style="left: 1042px; top: 236px; animation-delay: 1.4s;"></div>
+  <div class="mote" style="left: 306px; top: 546px; animation-delay: 2.6s; background: #46d3d9;"></div>
+  <div class="mote" style="left: 962px; top: 578px; animation-delay: 3.8s;"></div>
+  <div class="mote" style="left: 150px; top: 396px; animation-delay: 5.1s; background: #46d3d9;"></div>
+
+  <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 592px;">
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 34px;">
+      <div style="position: relative; width: 96px; height: 96px; display: flex; align-items: center; justify-content: center;">
+        <div style="position: absolute; inset: -14px; border-radius: 50%; background: var(--accent); filter: blur(26px); animation: hhHalo 3.6s ease-in-out infinite;"></div>
+        <svg width="88" height="88" viewBox="0 0 88 88" fill="none" style="position: relative; animation: hhFade 1s ease-out both;">
+          <path d="M44 12 70 26v28L44 68 18 54V26L44 12Z" fill="rgba(242,180,92,0.08)" stroke="{{accent}}" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="260" stroke-dashoffset="260" style="animation: hhDraw 1.15s cubic-bezier(0.4,0,0.2,1) 0.1s forwards;"/>
+          <path d="M18 26 44 40l26-14M44 40v28" stroke="{{accent}}" stroke-width="1.6" stroke-linejoin="round" opacity="0.42" stroke-dasharray="120" stroke-dashoffset="120" style="animation: hhDraw 0.9s ease-out 0.7s forwards;"/>
+          <polyline points="27,52 38,44 49,49 62,33" stroke="#46d3d9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" style="animation: hhDraw 0.8s cubic-bezier(0.3,0,0.2,1) 1.05s forwards;"/>
+          <circle cx="62" cy="33" r="4" fill="#46d3d9" opacity="0" style="animation: hhFade 0.4s ease-out 1.75s forwards;"/>
+        </svg>
+      </div>
+      <div class="r" style="animation-delay: 0.9s; margin-top: 16px; font-family: 'Unbounded', system-ui, sans-serif; font-size: 38px; font-weight: 800; letter-spacing: -0.035em; line-height: 1;">
+        Holy<span style="color: var(--accent);">Helper</span>
+      </div>
+      <div class="r" style="animation-delay: 1.05s; margin-top: 11px; font-size: 13px; color: #6f7889; letter-spacing: 0.01em;">экономический помощник Прайм Анархии</div>
+    </div>
+
+    <div class="r" style="animation-delay: 1.15s; padding: 6px 26px 20px; border-radius: 14px; background: rgba(255,255,255,0.024); border: 1px solid rgba(255,255,255,0.065); box-shadow: 0 28px 70px rgba(0,0,0,0.6);">
+
+      <div class="row" style="animation-delay: 1.30s;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="8.6" stroke="rgba(95,209,139,0.36)" stroke-width="1.5"/>
+          <path d="M6.2 10.3 8.7 12.8 13.9 7.4" stroke="#5fd18b" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="16" stroke-dashoffset="16" style="animation: hhDraw 0.36s ease-out 1.5s forwards;"/>
+        </svg>
+        <span style="flex-grow: 1; font-size: 13.5px; color: #cdd3dc;">Сервер</span>
+        <span class="u-num" style="font-size: 13px; color: #eef1f5;">Прайм Анархия #12</span>
+      </div>
+
+      <div class="row" style="animation-delay: 1.50s;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="8.6" stroke="rgba(95,209,139,0.36)" stroke-width="1.5"/>
+          <path d="M6.2 10.3 8.7 12.8 13.9 7.4" stroke="#5fd18b" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="16" stroke-dashoffset="16" style="animation: hhDraw 0.36s ease-out 1.7s forwards;"/>
+        </svg>
+        <span style="flex-grow: 1; font-size: 13.5px; color: #cdd3dc;">LiteAPI · feature-control</span>
+        <span class="u-num" style="font-size: 13px; color: #5fd18b;">блокировок нет</span>
+      </div>
+
+      <div class="row" style="animation-delay: 1.70s;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="8.6" stroke="rgba(95,209,139,0.36)" stroke-width="1.5"/>
+          <path d="M6.2 10.3 8.7 12.8 13.9 7.4" stroke="#5fd18b" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="16" stroke-dashoffset="16" style="animation: hhDraw 0.36s ease-out 1.9s forwards;"/>
+        </svg>
+        <span style="flex-grow: 1; font-size: 13.5px; color: #cdd3dc;">База цен</span>
+        <span class="u-num" style="font-size: 13px; color: #eef1f5;">14 268 записей</span>
+      </div>
+
+      <div class="row" style="animation-delay: 1.90s; border-bottom: none;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="8.6" stroke="rgba(242,180,92,0.34)" stroke-width="1.5"/>
+          <path d="M10 5.8V10l2.9 1.8" stroke="{{accent}}" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="12" stroke-dashoffset="12" style="animation: hhDraw 0.36s ease-out 2.1s forwards;"/>
+        </svg>
+        <span style="flex-grow: 1; font-size: 13.5px; color: #cdd3dc;">Скупец · обычные торги</span>
+        <span class="u-num" style="font-size: 13px; color: var(--accent);">обновятся через 2:14:07</span>
+      </div>
+
+      <div style="position: relative; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.07); overflow: hidden; margin-top: 18px;">
+        <div style="height: 100%; transform-origin: left; background: linear-gradient(90deg, rgba(242,180,92,0.35), var(--accent) 70%, #46d3d9); animation: hhGrow 2.1s cubic-bezier(0.3, 0.6, 0.2, 1) 1.25s both;"></div>
+        <div style="position: absolute; inset: 0; width: 28%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.42), transparent); animation: hhSweep 2.6s ease-in-out 1.4s infinite;"></div>
+      </div>
+
+    </div>
+
+    <div class="r" style="animation-delay: 2.15s; display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 24px;">
+      <span style="display: flex; align-items: center; gap: 9px;">
+        <span class="u-px" style="font-size: 15px; padding: 4px 10px; border-radius: 4px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); color: #cdd3dc;">G</span>
+        <span style="font-size: 12.5px; color: #6f7889;">планировщик</span>
+      </span>
+      <span style="width: 1px; height: 16px; background: rgba(255,255,255,0.09);"></span>
+      <span style="display: flex; align-items: center; gap: 9px;">
+        <span class="u-px" style="font-size: 15px; padding: 4px 10px; border-radius: 4px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); color: #cdd3dc;">H</span>
+        <span style="font-size: 12.5px; color: #6f7889;">цены</span>
+      </span>
+      <span style="width: 1px; height: 16px; background: rgba(255,255,255,0.09);"></span>
+      <span style="display: flex; align-items: center; gap: 9px;">
+        <span class="u-px" style="font-size: 15px; padding: 4px 10px; border-radius: 4px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); color: #cdd3dc;">N</span>
+        <span style="font-size: 12.5px; color: #6f7889;">заметки</span>
+      </span>
+    </div>
+
+  </div>
+
+  <div class="r" style="animation-delay: 2.35s; position: absolute; left: 34px; bottom: 30px; display: flex; align-items: center; gap: 12px;">
+    <span class="u-lab">версия</span>
+    <span class="u-num" style="font-size: 12px; color: #8b93a1;">0.1.0</span>
+    <span style="width: 1px; height: 13px; background: rgba(255,255,255,0.09);"></span>
+    <span style="font-size: 12px; color: #5d6472;">только читает и считает · ничего не кликает за вас</span>
+  </div>
+
+  <div class="r" style="animation-delay: 2.35s; position: absolute; right: 34px; bottom: 30px; display: flex; align-items: center; gap: 9px;">
+    <span style="width: 7px; height: 7px; border-radius: 50%; background: #5fd18b; box-shadow: 0 0 11px rgba(95,209,139,0.85);"></span>
+    <span style="font-size: 12px; color: #8b93a1;">готов к работе</span>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#f2b45c","options":["#f2b45c","#46d3d9","#5fd18b","#a98cf0"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#f2b45c' };
+  }
+}
+</script>
+</body>
+</html>

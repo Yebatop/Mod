@@ -19,6 +19,28 @@
     .u-tile { flex-grow: 1; padding: 13px 16px; border-radius: 8px; background: rgba(255,255,255,0.028); border: 1px solid rgba(255,255,255,0.065); }
     .u-lot { display: flex; align-items: center; gap: 18px; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,0.045); }
     .u-seg { font-size: 12px; padding: 7px 15px; border-radius: 6px; color: #7b8496; }
+  
+    @keyframes hhRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes hhFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes hhGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes hhDraw { to { stroke-dashoffset: 0; } }
+    @keyframes hhHalo { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+    .ah-line { stroke-dasharray: 2400; stroke-dashoffset: 2400; animation: hhDraw 1.7s cubic-bezier(0.25, 0.6, 0.2, 1) 0.35s forwards; }
+    .ah-area { animation: hhFade 1.2s ease-out 1.05s both; }
+    .u-tile { animation: hhRise 0.6s cubic-bezier(0.2, 0.72, 0.2, 1) both; }
+    .u-tile:nth-child(1) { animation-delay: 0.46s; }
+    .u-tile:nth-child(2) { animation-delay: 0.53s; }
+    .u-tile:nth-child(3) { animation-delay: 0.60s; }
+    .u-tile:nth-child(4) { animation-delay: 0.67s; }
+    .u-tile:nth-child(5) { animation-delay: 0.74s; }
+    .u-lot { animation: hhRise 0.5s cubic-bezier(0.2, 0.72, 0.2, 1) both; }
+    .u-lot:nth-child(2) { animation-delay: 0.80s; }
+    .u-lot:nth-child(3) { animation-delay: 0.85s; }
+    .u-lot:nth-child(4) { animation-delay: 0.90s; }
+    .u-lot:nth-child(5) { animation-delay: 0.95s; }
+    .u-lot:nth-child(6) { animation-delay: 1.00s; }
+    .u-lot:nth-child(7) { animation-delay: 1.05s; }
   </style>
 </helmet>
 <div style="position: relative; width: 1360px; height: 880px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1; --accent: {{accent}};">
@@ -87,9 +109,9 @@
         <line x1="0" y1="168" x2="1290" y2="168" stroke="rgba(255,255,255,0.055)" stroke-width="1"/>
         <line x1="0" y1="226" x2="1290" y2="226" stroke="rgba(255,255,255,0.055)" stroke-width="1"/>
 
-        <path d="M30 186 L125 172 L219 196 L314 150 L409 164 L503 118 L598 134 L693 92 L787 108 L882 76 L977 96 L1071 68 L1166 84 L1260 52 L1260 240 L30 240 Z" fill="url(#ahFill)"/>
-        <polyline points="30,186 125,172 219,196 314,150 409,164 503,118 598,134 693,92 787,108 882,76 977,96 1071,68 1166,84 1260,52" stroke="{{accent}}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.32" filter="url(#ahGlow)"/>
-        <polyline points="30,186 125,172 219,196 314,150 409,164 503,118 598,134 693,92 787,108 882,76 977,96 1071,68 1166,84 1260,52" stroke="{{accent}}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path class="ah-area" d="M30 186 L125 172 L219 196 L314 150 L409 164 L503 118 L598 134 L693 92 L787 108 L882 76 L977 96 L1071 68 L1166 84 L1260 52 L1260 240 L30 240 Z" fill="url(#ahFill)"/>
+        <polyline class="ah-line" points="30,186 125,172 219,196 314,150 409,164 503,118 598,134 693,92 787,108 882,76 977,96 1071,68 1166,84 1260,52" stroke="{{accent}}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.32" filter="url(#ahGlow)"/>
+        <polyline class="ah-line" points="30,186 125,172 219,196 314,150 409,164 503,118 598,134 693,92 787,108 882,76 977,96 1071,68 1166,84 1260,52" stroke="{{accent}}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
 
         <line x1="0" y1="128" x2="1290" y2="128" stroke="rgba(233,236,241,0.40)" stroke-width="1.5" stroke-dasharray="7 7"/>
 

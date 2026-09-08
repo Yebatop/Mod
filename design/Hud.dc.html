@@ -14,6 +14,20 @@
     .hh-panel { border-radius: 6px; border: 1px solid rgba(255,255,255,0.10); box-shadow: 0 6px 22px rgba(0,0,0,0.38); backdrop-filter: blur(7px); }
     .hh-cap { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.06em; color: rgba(232,234,237,0.62); }
     .hh-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+  
+    @keyframes hhRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes hhFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes hhGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes hhDraw { to { stroke-dashoffset: 0; } }
+    @keyframes hhHalo { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+    .hh-panel { animation: hhRise 0.66s cubic-bezier(0.2, 0.72, 0.2, 1) both; }
+    .hh-panel:nth-child(1) { animation-delay: 0.06s; }
+    .hh-panel:nth-child(2) { animation-delay: 0.16s; }
+    .hh-panel:nth-child(3) { animation-delay: 0.26s; }
+    .hh-panel:nth-child(4) { animation-delay: 0.36s; }
+    .hh-bar { transform-origin: left; animation: hhGrow 1.05s cubic-bezier(0.2, 0.72, 0.2, 1) 0.5s both; }
+
   </style>
 </helmet>
 <div style="--panel-bg: {{panelBg}}; --accent: {{accent}}; position: relative; width: 1280px; height: 720px; overflow: hidden; background: #12161f; color: #e8eaed;">
@@ -69,14 +83,14 @@
             <span style="font-size: 12px; color: rgba(232,234,237,0.78);">Обычные торги · 6 ч</span>
             <span class="hh-num" style="font-size: 14px; font-weight: 500; color: var(--accent);">2:14:07</span>
           </div>
-          <div style="height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12); overflow: hidden;"><div style="width: 63%; height: 100%; background: var(--accent);"></div></div>
+          <div style="height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12); overflow: hidden;"><div class="hh-bar" style="width: 63%; height: 100%; background: var(--accent);"></div></div>
         </div>
         <div style="display: flex; flex-direction: column; gap: 5px;">
           <div style="display: flex; align-items: baseline; justify-content: space-between;">
             <span style="font-size: 12px; color: rgba(232,234,237,0.78);">Особые торги · 8 ч</span>
             <span class="hh-num" style="font-size: 14px; font-weight: 500; color: #3fbfc4;">5:02:41</span>
           </div>
-          <div style="height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12); overflow: hidden;"><div style="width: 37%; height: 100%; background: #3fbfc4;"></div></div>
+          <div style="height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12); overflow: hidden;"><div class="hh-bar" style="width: 37%; height: 100%; background: #3fbfc4;"></div></div>
         </div>
       </div>
     </div>
@@ -90,7 +104,7 @@
         <span class="hh-num" style="font-size: 15px; font-weight: 500;">40 000</span>
         <span class="hh-num" style="font-size: 12px; color: rgba(232,234,237,0.44);">из 60 000</span>
       </div>
-      <div style="height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12); overflow: hidden; margin-bottom: 10px;"><div style="width: 67%; height: 100%; background: #57c07d;"></div></div>
+      <div style="height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12); overflow: hidden; margin-bottom: 10px;"><div class="hh-bar" style="width: 67%; height: 100%; background: #57c07d;"></div></div>
       <div style="display: flex; align-items: center; justify-content: space-between;">
         <span style="font-size: 11px; color: rgba(232,234,237,0.44);">Показатель ежедневности</span>
         <div style="display: flex; gap: 3px;">
@@ -154,7 +168,7 @@
 
   <div style="position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 5px;">
     <div style="display: flex; align-items: center; gap: 7px;">
-      <div style="width: 182px; height: 6px; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.12);"><div style="width: 62%; height: 100%; background: #6ede4a;"></div></div>
+      <div style="width: 182px; height: 6px; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.12);"><div class="hh-bar" style="width: 62%; height: 100%; background: #6ede4a;"></div></div>
       <span class="hh-num" style="font-size: 12px; color: #6ede4a;">37</span>
     </div>
     <div style="display: flex; gap: 2px; padding: 3px; background: rgba(0,0,0,0.46); border: 2px solid rgba(255,255,255,0.14);">
