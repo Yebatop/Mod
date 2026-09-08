@@ -13,6 +13,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.time.Duration;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,9 @@ public final class HudOverlay {
 
     /** Имя функции в реестре LiteAPI: попав в блок-лист, панель обязана исчезнуть целиком. */
     public static final String FEATURE = "hud-overlay";
+
+    /** За какое окно считаем медиану курса. Сутки сглаживают ночные перекосы. */
+    private static final Duration RATE_WINDOW = Duration.ofHours(24);
 
     private static final int PADDING = 4;
     private static final int LINE = 10;
@@ -92,6 +96,18 @@ public final class HudOverlay {
             lines.add(Text.literal("Монеток " + board.coins()
                     + (board.tokens() > 0 ? "  Жетонов " + board.tokens() : "")));
         }
+
+        mod.rates().latest().ifPresent(trade -> {
+            StringBuilder text = new StringBuilder("Курс " + Math.round(trade.rate()));
+            // Отклонение от медианы важнее самого курса: оно и говорит, стоит ли
+            // сейчас меняться. Мелкие колебания не показываем — это шум.
+            mod.rates().deviationPercent(RATE_WINDOW).ifPresent(deviation -> {
+                if (Math.abs(deviation) >= 3) {
+                    text.append(String.format(Locale.ROOT, "  %+.0f%%", deviation));
+                }
+            });
+            lines.add(Text.literal(text.toString()));
+        });
 
         RotationTimer timer = mod.rotation();
         timer.remaining(false).ifPresent(left ->

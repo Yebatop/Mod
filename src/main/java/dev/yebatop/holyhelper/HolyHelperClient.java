@@ -10,6 +10,8 @@ import dev.yebatop.holyhelper.hud.HudOverlay;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.liteapi.LiteApiChannel;
 import dev.yebatop.holyhelper.liteapi.LiteApiPayload;
+import dev.yebatop.holyhelper.rest.CoinRateTracker;
+import dev.yebatop.holyhelper.rest.HolyApiClient;
 import dev.yebatop.holyhelper.scan.BuyerScanner;
 import dev.yebatop.holyhelper.scan.MarketScanner;
 import dev.yebatop.holyhelper.store.PriceStore;
@@ -51,9 +53,12 @@ public final class HolyHelperClient implements ClientModInitializer {
     private MarketScanner market;
     private RotationTimer rotation;
     private PriceStore prices;
+    private HolyApiClient api;
+    private CoinRateTracker rates;
 
     private int tickCounter;
     private int announceAtTick;
+    private long nextRatePollAt;
 
     public static HolyHelperClient instance() {
         return instance;
@@ -73,6 +78,8 @@ public final class HolyHelperClient implements ClientModInitializer {
         prices.load();
         market = new MarketScanner(patterns, prices);
         rotation = new RotationTimer();
+        api = new HolyApiClient();
+        rates = new CoinRateTracker();
 
         // Канал LiteAPI объявляется в обе стороны: без C2S нечем отправить,
         // без S2C Fabric не отдаст нам входящий пакет.
@@ -111,6 +118,7 @@ public final class HolyHelperClient implements ClientModInitializer {
 
     private void onDisconnect() {
         prices.save();
+        nextRatePollAt = 0;
         channel.reset();
         featureGate.reset();
         rotation.reset();
@@ -137,6 +145,8 @@ public final class HolyHelperClient implements ClientModInitializer {
             prices.save();
         }
 
+        pollRate();
+
         // Окно Скупца читаем дважды в секунду, пока оно открыто. Ждать команды нельзя:
         // с открытым окном чат не открыть, и набрать её игроку негде.
         if (tickCounter % 10 == 0) {
@@ -156,6 +166,31 @@ public final class HolyHelperClient implements ClientModInitializer {
             announceAtTick = 0;
             announce(client);
         }
+    }
+
+    /**
+     * Опрашивает историю курса. Пауза берётся у клиента: при неудачах он её растит,
+     * и мод не долбится в упавший сервис.
+     * <p>
+     * Ответ приходит в фоновом потоке, поэтому здесь только запуск — трекер
+     * потокобезопасен, а игровой поток ничего не ждёт.
+     */
+    private void pollRate() {
+        if (!featureGate.isAllowed("exchange-rate")) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (now < nextRatePollAt) {
+            return;
+        }
+        nextRatePollAt = now + api.interval().toMillis();
+
+        api.get("/v2/prime/coins/trades?limit=100").thenAccept(body -> {
+            int added = rates.merge(body);
+            if (added > 0) {
+                LOG.info("Курс: {} новых сделок, всего {}", added, rates.size());
+            }
+        });
     }
 
     private void scheduleAnnounce() {
@@ -217,5 +252,13 @@ public final class HolyHelperClient implements ClientModInitializer {
 
     public PriceStore prices() {
         return prices;
+    }
+
+    public HolyApiClient api() {
+        return api;
+    }
+
+    public CoinRateTracker rates() {
+        return rates;
     }
 }

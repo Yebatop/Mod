@@ -9,6 +9,7 @@ import dev.yebatop.holyhelper.scan.BuyerParser;
 import dev.yebatop.holyhelper.scan.BuyerScanner;
 import dev.yebatop.holyhelper.scan.MarketParser;
 import dev.yebatop.holyhelper.scan.MarketScanner;
+import dev.yebatop.holyhelper.rest.CoinRateTracker;
 import dev.yebatop.holyhelper.store.PriceStore;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -19,6 +20,7 @@ import net.minecraft.util.Formatting;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /** Клиентская команда {@code /holyhelper}. На сервер ничего не уходит. */
@@ -26,6 +28,9 @@ public final class HolyHelperCommand {
 
     /** За какое время наблюдения Маркета ещё что-то значат. */
     private static final Duration MARKET_MEMORY = Duration.ofHours(12);
+
+    /** Окно медианы курса: сутки сглаживают ночные перекосы. */
+    private static final Duration RATE_WINDOW = Duration.ofHours(24);
 
     private HolyHelperCommand() {
     }
@@ -40,7 +45,9 @@ public final class HolyHelperCommand {
                 .then(ClientCommandManager.literal("buy")
                         .executes(context -> buy(context.getSource())))
                 .then(ClientCommandManager.literal("ah")
-                        .executes(context -> market(context.getSource()))));
+                        .executes(context -> market(context.getSource())))
+                .then(ClientCommandManager.literal("rate")
+                        .executes(context -> rate(context.getSource()))));
     }
 
     private static int status(FabricClientCommandSource source) {
@@ -280,6 +287,45 @@ public final class HolyHelperCommand {
             }
             source.sendFeedback(row);
         }
+        return 1;
+    }
+
+    /**
+     * Курс монеток по истории сделок.
+     * <p>
+     * Здесь именно совершённые сделки, а не открытые заявки. В окне Биржи висят
+     * заявки, разброс между ними бывает двукратным, и то число значит другое:
+     * «за столько кто-то готов меняться», а не «за столько менялись».
+     */
+    private static int rate(FabricClientCommandSource source) {
+        HolyHelperClient mod = HolyHelperClient.instance();
+        CoinRateTracker rates = mod.rates();
+
+        head(source, "Курс монеток");
+
+        CoinRateTracker.Trade latest = rates.latest().orElse(null);
+        if (latest == null) {
+            line(source, "Данных нет", mod.api().lastError()
+                    .map(error -> "последняя попытка: " + error)
+                    .orElse("опрос ещё не проходил"));
+            return 1;
+        }
+
+        line(source, "Последняя сделка", Math.round(latest.rate()) + " монеток за жетон · "
+                + humanAge(Duration.between(latest.at(), Instant.now())));
+
+        rates.median(RATE_WINDOW).ifPresent(median -> {
+            String text = String.valueOf(Math.round(median));
+            String deviation = rates.deviationPercent(RATE_WINDOW)
+                    .map(value -> String.format(Locale.ROOT, " · сейчас %+.1f%%", value))
+                    .orElse("");
+            line(source, "Медиана за сутки", text + deviation);
+        });
+
+        line(source, "Накоплено", rates.size() + " сделок");
+        mod.api().lastError().ifPresent(error ->
+                line(source, "API молчит", error + ", следующая попытка через "
+                        + mod.api().interval().toSeconds() + " с"));
         return 1;
     }
 
