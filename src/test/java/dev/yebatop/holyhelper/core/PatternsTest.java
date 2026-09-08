@@ -130,9 +130,26 @@ class PatternsTest {
     }
 
     @Test
+    @DisplayName("Метку слева украшают, и разбор это переживает")
+    void parsesDecoratedSidebar() {
+        // На этом мод и споткнулся в игре: слева от метки сервер рисует цветную полоску,
+        // «Баланс» уезжал в -1, хотя панель читалась. Якорь ^ такое не переживает.
+        assertEquals(800, patterns.number("board.coins", "▌ Монеток: 800 ⛁").orElseThrow());
+        assertEquals(0, patterns.number("board.gems", "\u258C Гемов: 0 \u2724").orElseThrow());
+        assertEquals(65, patterns.number("board.ping", "  ▌Пинг: 65 ⚡").orElseThrow());
+        assertEquals("polyayak",
+                patterns.match("board.nick", "▌ Ник: polyayak").orElseThrow().group(1));
+        assertEquals("Нет",
+                patterns.match("board.group", "▌ Группа: Нет").orElseThrow().group(1));
+    }
+
+    @Test
     @DisplayName("Чужие строки не притворяются нашими")
     void ignoresUnrelatedLines() {
         assertTrue(patterns.match("board.coins", "Монет: 800").isEmpty());
+        // Ослабление якоря не должно ловить метку, приклеенную к другому слову.
+        assertTrue(patterns.match("board.coins", "ВсегоМонеток: 800").isEmpty());
+        assertTrue(patterns.match("board.nick", "ПсевдоНик: polyayak").isEmpty());
         assertTrue(patterns.number("buyer.available", "Доступно: 83,230 (монеток)").isEmpty());
         assertTrue(patterns.match("market.screenTitle", "Биржа").isEmpty());
     }

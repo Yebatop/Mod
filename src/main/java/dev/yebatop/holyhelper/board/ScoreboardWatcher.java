@@ -34,6 +34,7 @@ public final class ScoreboardWatcher {
     private final Patterns patterns;
 
     private volatile Snapshot snapshot = Snapshot.EMPTY;
+    private volatile String lastSlot = "не читали";
 
     public record Snapshot(String nick, long coins, long gems, long tokens, String server, boolean present) {
         public static final Snapshot EMPTY = new Snapshot("", -1, -1, -1, "", false);
@@ -91,17 +92,52 @@ public final class ScoreboardWatcher {
         snapshot = new Snapshot(nick, coins, gems, tokens, server, true);
     }
 
+    /** Слот, из которого в последний раз читали панель. Нужен только для диагностики. */
+    public String lastSlot() {
+        return lastSlot;
+    }
+
+    /**
+     * Ищет объектив боковой панели.
+     * <p>
+     * Слот не один: когда игрок состоит в команде с цветом, сервер показывает панель
+     * в {@code SIDEBAR_TEAM_<цвет>}, и обычный {@code SIDEBAR} при этом пуст. Ванильный
+     * HUD сначала смотрит командный слот, потом общий — повторяем тот же порядок.
+     * Слоты перебираем по имени, чтобы не завязываться на методы, которые меняются
+     * от версии к версии.
+     */
+    private ScoreboardObjective sidebarObjective(Scoreboard scoreboard) {
+        ScoreboardObjective fallback = null;
+        for (ScoreboardDisplaySlot slot : ScoreboardDisplaySlot.values()) {
+            if (!slot.name().startsWith("SIDEBAR")) {
+                continue;
+            }
+            ScoreboardObjective objective = scoreboard.getObjectiveForSlot(slot);
+            if (objective == null) {
+                continue;
+            }
+            if (slot == ScoreboardDisplaySlot.SIDEBAR) {
+                fallback = objective;
+            } else {
+                lastSlot = slot.name();
+                return objective;
+            }
+        }
+        lastSlot = fallback == null ? "не найден" : ScoreboardDisplaySlot.SIDEBAR.name();
+        return fallback;
+    }
+
     /** Строки боковой панели сверху вниз, уже с префиксами и суффиксами команд. */
     public List<String> readSidebar() {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.world == null) {
+            lastSlot = "нет мира";
             return List.of();
         }
 
         try {
             Scoreboard scoreboard = client.world.getScoreboard();
-            ScoreboardObjective objective =
-                    scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.SIDEBAR);
+            ScoreboardObjective objective = sidebarObjective(scoreboard);
             if (objective == null) {
                 return List.of();
             }

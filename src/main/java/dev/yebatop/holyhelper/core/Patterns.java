@@ -30,6 +30,11 @@ import java.util.regex.PatternSyntaxException;
  * Файл из ресурсов копируется в конфиг при первом запуске. Если пользовательский файл
  * не читается или в нём битая регулярка, берётся встроенный: сломанный конфиг не должен
  * ронять мод.
+ * <p>
+ * Побеждает более свежая версия. Пользовательский файл имеет приоритет, только пока его
+ * {@code version} не ниже встроенной: иначе обновление мода не чинило бы разбор — файл
+ * в конфиге молча перекрывал бы исправленные регулярки. Устаревший файл не удаляется,
+ * а откладывается в {@code patterns.v<N>.bak.json}.
  */
 public final class Patterns {
 
@@ -61,20 +66,46 @@ public final class Patterns {
     public static Patterns load(Path configDir) {
         Path userFile = configDir.resolve("patterns.json");
 
+        Patterns builtin = builtin();
+
         if (Files.isRegularFile(userFile)) {
             try (Reader reader = Files.newBufferedReader(userFile, StandardCharsets.UTF_8)) {
                 Patterns user = new Patterns(new Gson().fromJson(reader, JsonObject.class));
-                if (!user.compiled.isEmpty()) {
+                if (user.compiled.isEmpty()) {
+                    LOG.warn("В {} не нашлось ни одной рабочей регулярки — беру встроенные", userFile);
+                } else if (user.version >= builtin.version) {
                     LOG.info("Загружены пользовательские паттерны версии {}", user.version);
                     return user;
+                } else {
+                    // Файл в конфиге старее того, что приехал с модом. Раньше он побеждал
+                    // молча и навсегда: мод обновлялся, а разбор оставался сломанным.
+                    // Теперь выигрывает свежий, а старый сохраняется рядом — правки не пропадут.
+                    LOG.info("Паттерны в конфиге версии {}, в моде {} — беру версию из мода",
+                            user.version, builtin.version);
+                    archive(userFile, user.version);
                 }
-                LOG.warn("В {} не нашлось ни одной рабочей регулярки — беру встроенные", userFile);
             } catch (IOException | RuntimeException e) {
                 LOG.warn("Не удалось прочитать {} ({}) — беру встроенные", userFile, e.getMessage());
             }
         }
 
-        Patterns builtin = builtin();
+        writeBuiltin(configDir, userFile);
+        return builtin;
+    }
+
+    /** Убирает устаревший файл в сторону, чтобы записать свежий и ничего не потерять. */
+    private static void archive(Path userFile, int version) {
+        Path backup = userFile.resolveSibling("patterns.v" + version + ".bak.json");
+        try {
+            Files.deleteIfExists(backup);
+            Files.move(userFile, backup);
+            LOG.info("Прежние паттерны сохранены в {}", backup);
+        } catch (IOException e) {
+            LOG.warn("Не удалось отложить старые паттерны ({}) — оставляю как есть", e.getMessage());
+        }
+    }
+
+    private static void writeBuiltin(Path configDir, Path userFile) {
         try {
             Files.createDirectories(configDir);
             if (!Files.exists(userFile)) {
@@ -88,7 +119,6 @@ public final class Patterns {
         } catch (IOException e) {
             LOG.warn("Не удалось положить паттерны в конфиг: {}", e.getMessage());
         }
-        return builtin;
     }
 
     public static Patterns builtin() {
