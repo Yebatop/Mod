@@ -1,5 +1,8 @@
 plugins {
-    id("fabric-loom") version "${property("loom_version")}"
+    // Версию плагина здесь можно задать только литералом: в блоке plugins {}
+    // получатель — PluginDependenciesSpec, и property() резолвится в
+    // ObjectFactory.property, что даёт ошибку несовпадения получателя.
+    id("fabric-loom") version "1.17.20"
     `java-library`
 }
 

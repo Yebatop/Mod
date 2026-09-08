@@ -35,6 +35,6 @@ sed -i \
 
 echo
 echo "Остальные версии оставлены как есть:"
-grep -E '^(loader_version|loom_version|fabric_api_version)=' gradle.properties | sed 's/^/  /'
+grep -E '^(loader_version|fabric_api_version)=' gradle.properties | sed 's/^/  /'
 echo
 echo "gradle.properties обновлён."

@@ -43,8 +43,12 @@ jobs:
             echo
             echo "| | |"
             echo "|---|---|"
-            grep -E '^(minecraft_version|yarn_mappings|loader_version|loom_version|fabric_api_version)=' \
+            grep -E '^(minecraft_version|yarn_mappings|loader_version|fabric_api_version)=' \
               gradle.properties | sed 's/^/| /; s/=/ | /; s/$/ |/'
+            # Версия Loom живёт только в build.gradle.kts: в блоке plugins {}
+            # её нельзя вычислить, поэтому она задана литералом.
+            grep -o 'id("fabric-loom") version "[^"]*"' build.gradle.kts \
+              | sed 's/.*version "\(.*\)"/| loom_version | \1 |/' || true
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Выложить jar
