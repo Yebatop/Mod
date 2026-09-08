@@ -5,11 +5,15 @@ import dev.yebatop.holyhelper.HolyHelperClient;
 import dev.yebatop.holyhelper.board.ScoreboardWatcher;
 import dev.yebatop.holyhelper.core.ServerDetector;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
+import dev.yebatop.holyhelper.scan.BuyerParser;
+import dev.yebatop.holyhelper.scan.BuyerScanner;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.time.Duration;
 import java.util.List;
 
 /** Клиентская команда {@code /holyhelper}. На сервер ничего не уходит. */
@@ -24,7 +28,9 @@ public final class HolyHelperCommand {
                 .then(ClientCommandManager.literal("status")
                         .executes(context -> status(context.getSource())))
                 .then(ClientCommandManager.literal("board")
-                        .executes(context -> board(context.getSource()))));
+                        .executes(context -> board(context.getSource())))
+                .then(ClientCommandManager.literal("buy")
+                        .executes(context -> buy(context.getSource()))));
     }
 
     private static int status(FabricClientCommandSource source) {
@@ -106,6 +112,64 @@ public final class HolyHelperCommand {
             out.append(String.format("U+%04X", cp));
         });
         return out.length() == 0 ? "" : "необычные символы: " + out;
+    }
+
+    /** Что мод видит в открытом окне Скупца. */
+    private static int buy(FabricClientCommandSource source) {
+        BuyerScanner.Snapshot snapshot = HolyHelperClient.instance().buyer().scan();
+
+        if (snapshot.kind() == BuyerScanner.Kind.NONE) {
+            head(source, "Скупец");
+            source.sendFeedback(Text.literal("  откройте /b — сканер читает только то окно, "
+                    + "которое открыто прямо сейчас").formatted(Formatting.GRAY));
+            return 1;
+        }
+
+        head(source, snapshot.title());
+
+        if (!snapshot.multipliers().isEmpty()) {
+            for (BuyerParser.Multiplier multiplier : snapshot.multipliers()) {
+                line(source, multiplier.category(), multiplier.stacks() + " стаков"
+                        + (multiplier.level() > 0 ? " · " + multiplier.level() + " ур." : ""));
+            }
+        }
+
+        if (snapshot.offers().isEmpty()) {
+            source.sendFeedback(Text.literal("  товаров в этом окне нет").formatted(Formatting.GRAY));
+            return 1;
+        }
+
+        source.sendFeedback(Text.literal("  " + snapshot.offers().size()
+                + " товаров, дороже сверху — цена за штуку").formatted(Formatting.GRAY));
+
+        for (BuyerParser.Offer offer : snapshot.offers()) {
+            MutableText row = Text.literal("  ")
+                    .append(Text.literal(String.format("%8.2f", offer.unitPrice()))
+                            .formatted(Formatting.GOLD))
+                    .append(Text.literal("  " + offer.name()).formatted(Formatting.WHITE));
+
+            if (offer.special()) {
+                row.append(Text.literal(" ✦").formatted(Formatting.GREEN));
+            }
+            if (offer.multiplierFactor() > 1.001) {
+                row.append(Text.literal(String.format(" ×%.2f", offer.multiplierFactor()))
+                        .formatted(Formatting.LIGHT_PURPLE));
+            }
+
+            row.append(Text.literal("  осталось " + offer.available()).formatted(Formatting.DARK_GRAY));
+            if (offer.rotation() != null) {
+                row.append(Text.literal("  " + humanTime(offer.rotation())).formatted(Formatting.DARK_GRAY));
+            }
+            source.sendFeedback(row);
+        }
+        return 1;
+    }
+
+    /** Остаток времени коротко: часы показываем только когда они есть. */
+    private static String humanTime(Duration left) {
+        long hours = left.toHours();
+        long minutes = left.toMinutesPart();
+        return hours > 0 ? hours + " ч " + minutes + " мин" : minutes + " мин";
     }
 
     private static void head(FabricClientCommandSource source, String title) {

@@ -8,6 +8,7 @@ import dev.yebatop.holyhelper.core.ServerDetector;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.liteapi.LiteApiChannel;
 import dev.yebatop.holyhelper.liteapi.LiteApiPayload;
+import dev.yebatop.holyhelper.scan.BuyerScanner;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -42,6 +43,7 @@ public final class HolyHelperClient implements ClientModInitializer {
     private LiteApiChannel channel;
     private FeatureGate featureGate;
     private ScoreboardWatcher board;
+    private BuyerScanner buyer;
 
     private int tickCounter;
     private int announceAtTick;
@@ -59,6 +61,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         channel = new LiteApiChannel();
         featureGate = new FeatureGate(channel);
         board = new ScoreboardWatcher(patterns);
+        buyer = new BuyerScanner(patterns);
 
         // Канал LiteAPI объявляется в обе стороны: без C2S нечем отправить,
         // без S2C Fabric не отдаст нам входящий пакет.
@@ -166,5 +169,9 @@ public final class HolyHelperClient implements ClientModInitializer {
 
     public ScoreboardWatcher board() {
         return board;
+    }
+
+    public BuyerScanner buyer() {
+        return buyer;
     }
 }
