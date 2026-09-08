@@ -1,15 +1,6 @@
 package dev.yebatop.holyhelper.scan;
 
 import dev.yebatop.holyhelper.core.Patterns;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,13 +91,7 @@ public final class BuyerScanner {
 
     /** Читает то окно, которое открыто прямо сейчас. */
     public Snapshot scan() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        Screen screen = client.currentScreen;
-        if (!(screen instanceof HandledScreen<?> handled)) {
-            return Snapshot.EMPTY;
-        }
-
-        String title = screen.getTitle().getString();
+        String title = ScreenReader.title().orElse("");
         Kind kind = kindOf(title);
         if (kind == Kind.NONE) {
             return Snapshot.EMPTY;
@@ -119,20 +104,15 @@ public final class BuyerScanner {
         BuyerParser.Bonuses bonuses = null;
 
         try {
-            for (Slot slot : handled.getScreenHandler().slots) {
-                ItemStack stack = slot.getStack();
-                if (stack.isEmpty()) {
-                    continue;
-                }
-                String name = stack.getName().getString();
-                List<String> lore = loreOf(stack);
+            for (ScreenReader.Item item : ScreenReader.items()) {
+                List<String> lore = item.lore();
 
                 // Инвентарь игрока тоже попадает в этот список, но у его предметов
                 // нет ни объёма приёма, ни заголовка множителя, так что фильтр по
                 // подсказке отсекает их сам — отдельная проверка не нужна.
-                parser.parseOffer(name, idOf(stack), lore).ifPresent(offers::add);
-                parser.parseMultiplier(name, lore).ifPresent(multipliers::add);
-                parser.parseStage(name, lore).ifPresent(stages::add);
+                parser.parseOffer(item.name(), item.id(), lore).ifPresent(offers::add);
+                parser.parseMultiplier(item.name(), lore).ifPresent(multipliers::add);
+                parser.parseStage(item.name(), lore).ifPresent(stages::add);
                 parser.parseLockedSlot(lore).ifPresent(lockedSlots::add);
 
                 // Справка окна множителей называется так же, как само окно,
@@ -156,17 +136,11 @@ public final class BuyerScanner {
 
     /** Периоды ротации из книги справки, если она лежит в открытом окне. */
     public Optional<java.time.Duration> rotationPeriod(boolean special) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (!(client.currentScreen instanceof HandledScreen<?> handled)) {
-            return Optional.empty();
-        }
         try {
-            for (Slot slot : handled.getScreenHandler().slots) {
-                ItemStack stack = slot.getStack();
-                if (stack.isEmpty() || patterns.match("info.title", stack.getName().getString()).isEmpty()) {
-                    continue;
+            for (ScreenReader.Item item : ScreenReader.items()) {
+                if (patterns.match("info.title", item.name()).isPresent()) {
+                    return parser.parseRotationPeriod(item.lore(), special);
                 }
-                return parser.parseRotationPeriod(loreOf(stack), special);
             }
         } catch (RuntimeException e) {
             LOG.warn("Не удалось прочитать справку: {}", e.toString());
@@ -190,20 +164,5 @@ public final class BuyerScanner {
         return Kind.NONE;
     }
 
-    /** Строки подсказки предмета. Форматирование отбрасываем — разбор идёт по тексту. */
-    private static List<String> loreOf(ItemStack stack) {
-        LoreComponent lore = stack.get(DataComponentTypes.LORE);
-        if (lore == null) {
-            return List.of();
-        }
-        List<String> lines = new ArrayList<>(lore.lines().size());
-        for (Text line : lore.lines()) {
-            lines.add(line.getString());
-        }
-        return lines;
-    }
 
-    private static String idOf(ItemStack stack) {
-        return Registries.ITEM.getId(stack.getItem()).toString();
-    }
 }

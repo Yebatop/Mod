@@ -7,6 +7,8 @@ import dev.yebatop.holyhelper.core.ServerDetector;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.scan.BuyerParser;
 import dev.yebatop.holyhelper.scan.BuyerScanner;
+import dev.yebatop.holyhelper.scan.MarketParser;
+import dev.yebatop.holyhelper.scan.MarketScanner;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.MutableText;
@@ -31,7 +33,9 @@ public final class HolyHelperCommand {
                 .then(ClientCommandManager.literal("board")
                         .executes(context -> board(context.getSource())))
                 .then(ClientCommandManager.literal("buy")
-                        .executes(context -> buy(context.getSource()))));
+                        .executes(context -> buy(context.getSource())))
+                .then(ClientCommandManager.literal("ah")
+                        .executes(context -> market(context.getSource()))));
     }
 
     private static int status(FabricClientCommandSource source) {
@@ -207,6 +211,53 @@ public final class HolyHelperCommand {
             row.append(Text.literal("  осталось " + offer.available()).formatted(Formatting.DARK_GRAY));
             if (offer.rotation() != null) {
                 row.append(Text.literal("  " + humanTime(offer.rotation())).formatted(Formatting.DARK_GRAY));
+            }
+            source.sendFeedback(row);
+        }
+        return 1;
+    }
+
+    /**
+     * Что мод прочитал на витрине Маркета.
+     * <p>
+     * Вместе с лотами печатаются страница, категория и сортировка. Без них список
+     * вводит в заблуждение: под «сначала дешёвые» первая страница — это дно рынка,
+     * под «сначала дорогие» — потолок, и одни и те же числа значат разное.
+     */
+    private static int market(FabricClientCommandSource source) {
+        MarketScanner.Snapshot snapshot = HolyHelperClient.instance().market().last();
+
+        if (!snapshot.present()) {
+            head(source, "Маркет");
+            source.sendFeedback(Text.literal("  витрину ещё не открывали — зайдите через /ah "
+                    + "и закройте окно").formatted(Formatting.GRAY));
+            return 1;
+        }
+
+        head(source, "Маркет " + snapshot.page().current() + "/" + snapshot.page().total());
+        line(source, "Снято", humanAge(Duration.between(snapshot.seenAt(), Instant.now())));
+        line(source, "Срез", (snapshot.category().isEmpty() ? "категория неизвестна" : snapshot.category())
+                + " · " + (snapshot.sort().isEmpty() ? "сортировка неизвестна" : snapshot.sort()));
+
+        if (snapshot.lots().isEmpty()) {
+            source.sendFeedback(Text.literal("  лотов на этой странице нет").formatted(Formatting.GRAY));
+            return 1;
+        }
+
+        source.sendFeedback(Text.literal("  " + snapshot.lots().size()
+                + " лотов, дешевле сверху — цена за штуку").formatted(Formatting.GRAY));
+
+        for (MarketParser.Lot lot : snapshot.lots()) {
+            MutableText row = Text.literal("  ")
+                    .append(Text.literal(String.format("%8d", lot.unitPrice())).formatted(Formatting.GOLD))
+                    .append(Text.literal("  " + lot.name()).formatted(Formatting.WHITE));
+
+            if (lot.quantity() > 1) {
+                row.append(Text.literal(" ×" + lot.quantity()).formatted(Formatting.GRAY));
+            }
+            row.append(Text.literal("  " + lot.seller()).formatted(Formatting.DARK_GRAY));
+            if (lot.expiresIn() != null) {
+                row.append(Text.literal("  " + humanTime(lot.expiresIn())).formatted(Formatting.DARK_GRAY));
             }
             source.sendFeedback(row);
         }

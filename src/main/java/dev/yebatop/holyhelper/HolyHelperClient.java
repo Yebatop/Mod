@@ -11,6 +11,7 @@ import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.liteapi.LiteApiChannel;
 import dev.yebatop.holyhelper.liteapi.LiteApiPayload;
 import dev.yebatop.holyhelper.scan.BuyerScanner;
+import dev.yebatop.holyhelper.scan.MarketScanner;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -46,6 +47,7 @@ public final class HolyHelperClient implements ClientModInitializer {
     private FeatureGate featureGate;
     private ScoreboardWatcher board;
     private BuyerScanner buyer;
+    private MarketScanner market;
     private RotationTimer rotation;
 
     private int tickCounter;
@@ -65,6 +67,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         featureGate = new FeatureGate(channel);
         board = new ScoreboardWatcher(patterns);
         buyer = new BuyerScanner(patterns);
+        market = new MarketScanner(patterns);
         rotation = new RotationTimer();
 
         // Канал LiteAPI объявляется в обе стороны: без C2S нечем отправить,
@@ -127,6 +130,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         // с открытым окном чат не открыть, и набрать её игроку негде.
         if (tickCounter % 10 == 0) {
             buyer.tickScan();
+            market.tickScan();
             // Из остатка в подсказке считаем момент обновления: дальше часы идут сами,
             // и переоткрывать окно ради таймера не нужно.
             if (buyer.last().kind() == BuyerScanner.Kind.TRADE) {
@@ -190,6 +194,10 @@ public final class HolyHelperClient implements ClientModInitializer {
 
     public BuyerScanner buyer() {
         return buyer;
+    }
+
+    public MarketScanner market() {
+        return market;
     }
 
     public RotationTimer rotation() {
