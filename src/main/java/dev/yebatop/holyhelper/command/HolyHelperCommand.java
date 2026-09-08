@@ -9,6 +9,7 @@ import dev.yebatop.holyhelper.scan.BuyerParser;
 import dev.yebatop.holyhelper.scan.BuyerScanner;
 import dev.yebatop.holyhelper.scan.MarketParser;
 import dev.yebatop.holyhelper.scan.MarketScanner;
+import dev.yebatop.holyhelper.analytics.MultiplierMath;
 import dev.yebatop.holyhelper.rest.CoinRateTracker;
 import dev.yebatop.holyhelper.store.PriceStore;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -228,10 +229,7 @@ public final class HolyHelperCommand {
             if (offer.special()) {
                 row.append(Text.literal(" ✦").formatted(Formatting.GREEN));
             }
-            if (offer.multiplierFactor() > 1.001) {
-                row.append(Text.literal(String.format(" ×%.2f", offer.multiplierFactor()))
-                        .formatted(Formatting.LIGHT_PURPLE));
-            }
+            appendMultiplier(row, offer);
 
             row.append(Text.literal("  ост. " + offer.available()).formatted(Formatting.DARK_GRAY));
             source.sendFeedback(row);
@@ -356,6 +354,44 @@ public final class HolyHelperCommand {
     private static void line(FabricClientCommandSource source, String key, String value) {
         source.sendFeedback(Text.literal("  " + key + ": ").formatted(Formatting.GRAY)
                 .append(Text.literal(value).formatted(Formatting.WHITE)));
+    }
+
+    /**
+     * Дописывает действующий множитель.
+     * <p>
+     * Отношение итоговой цены к начальной у дешёвых товаров врёт из-за округления:
+     * ламинария показывала ×1.06 там, где у соседей стояло ×1.05, хотя множитель
+     * был один и тот же. Поэтому наблюдаемое значение приводится к ближайшему
+     * достижимому — из надбавок, которые сервер называет сам.
+     * <p>
+     * Если сошлось произведение двух надбавок, значит на товар действуют два
+     * множителя сразу; это единственный способ узнать такое, потому что списки
+     * категорий пересекаются и по содержимому их не различить.
+     */
+    private static void appendMultiplier(MutableText row, BuyerParser.Offer offer) {
+        double observed = offer.multiplierFactor();
+        BuyerParser.Bonuses bonuses = HolyHelperClient.instance().buyer().bonuses();
+
+        MultiplierMath.Applied applied =
+                MultiplierMath.explain(observed, offer.batchPrice(), bonuses).orElse(null);
+
+        if (applied != null) {
+            if (!applied.any()) {
+                return;
+            }
+            String text = String.format(Locale.ROOT, " ×%.2f", applied.factor());
+            if (applied.count() > 1) {
+                text += " (" + applied.count() + " множителя)";
+            }
+            row.append(Text.literal(text).formatted(Formatting.LIGHT_PURPLE));
+            return;
+        }
+
+        // Объяснения не нашлось — печатаем как есть и не выдаём догадку за факт.
+        if (observed > 1.001) {
+            row.append(Text.literal(String.format(Locale.ROOT, " ×%.2f?", observed))
+                    .formatted(Formatting.LIGHT_PURPLE));
+        }
     }
 
     /**

@@ -34,6 +34,7 @@ public final class BuyerScanner {
     private final BuyerParser parser;
 
     private volatile Snapshot last = Snapshot.EMPTY;
+    private volatile BuyerParser.Bonuses bonuses;
 
     public enum Kind {
         /** Открытого окна нет либо оно чужое. */
@@ -77,6 +78,17 @@ public final class BuyerScanner {
     }
 
     /**
+     * Надбавки уровней из справки множителей.
+     * <p>
+     * Хранятся отдельно от снимка: справка лежит в окне множителей, а нужны они
+     * в окне товаров, и снимок к тому моменту уже перезаписан. Числа при этом
+     * не меняются, так что запомнить их один раз достаточно.
+     */
+    public BuyerParser.Bonuses bonuses() {
+        return bonuses;
+    }
+
+    /**
      * Читает окно, если оно сейчас открыто. Зовётся из тика клиента.
      * <p>
      * Чужие экраны и закрытый инвентарь снимок не затирают: иначе он пропадал бы
@@ -84,8 +96,12 @@ public final class BuyerScanner {
      */
     public void tickScan() {
         Snapshot fresh = scan();
-        if (fresh.kind() != Kind.NONE) {
-            last = fresh;
+        if (fresh.kind() == Kind.NONE) {
+            return;
+        }
+        last = fresh;
+        if (fresh.bonuses() != null) {
+            bonuses = fresh.bonuses();
         }
     }
 
