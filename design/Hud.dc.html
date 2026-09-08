@@ -11,7 +11,13 @@
   <style>
     body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
     a { color: #e6a13c; } a:hover { color: #f0b95f; }
-    .hh-panel { border-radius: 6px; border: 1px solid rgba(255,255,255,0.10); box-shadow: 0 6px 22px rgba(0,0,0,0.38); backdrop-filter: blur(7px); }
+    .hh-panel { position: relative; overflow: hidden; border-radius: 8px; border: 1px solid rgba(255,255,255,0.10); box-shadow: 0 10px 30px rgba(0,0,0,0.46), inset 0 1px 0 rgba(255,255,255,0.09); backdrop-filter: blur(8px); }
+    .hh-panel::after { content: ""; position: absolute; top: 0; left: -40%; width: 40%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent); animation: hhSheen 8s ease-in-out infinite; }
+    .hh-panel:nth-child(2)::after { animation-delay: 2s; }
+    .hh-panel:nth-child(3)::after { animation-delay: 4s; }
+    .hh-panel:nth-child(4)::after { animation-delay: 6s; }
+    @keyframes hhSheen { 0% { left: -40%; } 44%, 100% { left: 140%; } }
+    .grad { background: linear-gradient(135deg, #ffe2b6 0%, #f2b45c 46%, #c9862a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .hh-cap { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.06em; color: rgba(232,234,237,0.62); }
     .hh-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
   
@@ -120,7 +126,7 @@
       </div>
       <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 10px;">
         <div>
-          <div class="hh-num" style="font-size: 19px; font-weight: 500; line-height: 1.1;">1 250 000</div>
+          <div class="hh-num grad" style="font-size: 21px; font-weight: 700; line-height: 1.1;">1 250 000</div>
           <div style="font-size: 10px; color: rgba(232,234,237,0.44); margin-top: 2px;">монеток за жетон</div>
         </div>
         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">

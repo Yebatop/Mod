@@ -14,7 +14,8 @@
     .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
     .u-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
     .u-lab { font-size: 9.5px; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: #5d6472; }
-    .tip { position: relative; border-radius: 7px; overflow: hidden; background: linear-gradient(180deg, #151821 0%, #0d0f14 100%); border: 1px solid rgba(255,255,255,0.085); box-shadow: 0 26px 64px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.055); }
+    .tip { position: relative; border-radius: 9px; overflow: hidden; background: linear-gradient(180deg, #171b25 0%, #0b0d12 100%); border: 1px solid rgba(255,255,255,0.09); box-shadow: 0 30px 72px rgba(0,0,0,0.76), inset 0 1px 0 rgba(255,255,255,0.085); }
+    .tip::after { content: ""; position: absolute; top: 2px; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); animation: hhSheen 8.5s ease-in-out infinite; }
     .tip-top { height: 2px; }
     .tip-in { padding: 14px 16px 13px; }
     .tip-sep { height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.11), rgba(255,255,255,0.03) 72%, transparent); margin: 12px 0; }
@@ -33,12 +34,18 @@
     .trk > div, .trk > span { transform-origin: left; animation: hhGrow 0.95s cubic-bezier(0.2, 0.72, 0.2, 1) 0.6s both; }
     .tt-spark { stroke-dasharray: 200; stroke-dashoffset: 200; animation: hhDraw 1.1s ease-out 0.8s forwards; }
 
+    .grad { background: linear-gradient(135deg, #ffe2b6 0%, #f2b45c 46%, #c9862a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .grad-t { background: linear-gradient(135deg, #c2f6f8 0%, #46d3d9 48%, #1f9198 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .facets { position: absolute; inset: 0; pointer-events: none; background-image: repeating-linear-gradient(114deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 148px), repeating-linear-gradient(-41deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 196px); }
+    .pnl::after { content: ""; position: absolute; top: 0; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent); animation: hhSheen 7.5s ease-in-out infinite; }
+    @keyframes hhSheen { 0% { left: -38%; } 44%, 100% { left: 138%; } }
   </style>
 </helmet>
 <div style="position: relative; width: 1240px; height: 820px; box-sizing: border-box; overflow: hidden; background: #08090d; color: #e9ecf1; --accent: {{accent}};">
 
   <div style="position: absolute; inset: 0; background: radial-gradient(700px 420px at 46% 34%, rgba(242,180,92,0.10), transparent 64%), radial-gradient(560px 380px at 88% 78%, rgba(70,211,217,0.07), transparent 62%), linear-gradient(180deg, #0d0f15 0%, #08090d 60%);"></div>
   <div style="position: absolute; inset: 0; background: radial-gradient(130% 100% at 50% 45%, transparent 42%, rgba(0,0,0,0.55) 100%);"></div>
+  <div class="facets"></div>
   <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.045; pointer-events: none;"><filter id="grainT"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainT)"/></svg>
 
   <div style="position: absolute; left: 54px; top: 92px; padding: 12px; border-radius: 9px; background: rgba(17,20,27,0.78); border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 20px 48px rgba(0,0,0,0.5);">
@@ -101,7 +108,7 @@
 
         <div style="display: flex; align-items: center; gap: 18px;">
           <div style="flex: 0 0 auto;">
-            <div class="u-num" style="font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1;">+27 %</div>
+            <div class="u-num grad" style="font-size: 34px; font-weight: 800; line-height: 1;">+27 %</div>
             <div style="font-size: 12.5px; color: #b6bdc9; margin-top: 6px;">нести Скупцу</div>
           </div>
           <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 9px;">
@@ -171,7 +178,7 @@
         <div class="tip-sep"></div>
         <div style="display: flex; align-items: center; gap: 16px;">
           <div style="flex: 0 0 auto;">
-            <div class="u-num" style="font-size: 26px; font-weight: 700; color: #46d3d9; line-height: 1;">+45 %</div>
+            <div class="u-num grad-t" style="font-size: 28px; font-weight: 800; line-height: 1;">+45 %</div>
             <div style="font-size: 12px; color: #b6bdc9; margin-top: 5px;">на аукцион</div>
           </div>
           <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">

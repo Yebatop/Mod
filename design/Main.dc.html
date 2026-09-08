@@ -18,7 +18,7 @@
     .u-slot { width: 26px; height: 26px; flex: 0 0 auto; background: #1a1f29; border: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; }
     .u-row { display: flex; align-items: center; gap: 16px; padding: var(--row-pad) 14px; border-bottom: 1px solid rgba(255,255,255,0.045); }
     .u-cell { flex: 0 0 auto; font-size: 13px; color: #cdd3dc; text-align: right; }
-    .u-pill { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 3px; }
+    .u-pill { display: inline-flex; box-shadow: 0 0 18px rgba(0,0,0,0.22); align-items: center; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 3px; }
     .u-track { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.07); overflow: hidden; }
   
     @keyframes hhRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
@@ -52,19 +52,32 @@
     @keyframes hhRingB { from { stroke-dashoffset: 113.1; } to { stroke-dashoffset: 71.3; } }
     .ring-a { animation: hhRingA 1.25s cubic-bezier(0.2, 0.72, 0.2, 1) 0.25s both; }
     .ring-b { animation: hhRingB 1.25s cubic-bezier(0.2, 0.72, 0.2, 1) 0.35s both; }
+    .grad { background: linear-gradient(135deg, #ffe2b6 0%, #f2b45c 46%, #c9862a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .grad-t { background: linear-gradient(135deg, #c2f6f8 0%, #46d3d9 48%, #1f9198 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .facets { position: absolute; inset: 0; pointer-events: none; background-image: repeating-linear-gradient(114deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 148px), repeating-linear-gradient(-41deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 196px); }
+    .pnl::after { content: ""; position: absolute; top: 0; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent); animation: hhSheen 7.5s ease-in-out infinite; }
+    .pnl:nth-of-type(2)::after { animation-delay: 2.4s; }
+    @keyframes hhSheen { 0% { left: -38%; } 44%, 100% { left: 138%; } }
   </style>
 </helmet>
-<div style="--accent: {{accent}}; --row-pad: {{rowPad}}; position: relative; width: 1360px; height: 940px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1;">
+<div style="--accent: {{accent}}; --row-pad: {{rowPad}}; position: relative; width: 1360px; height: 1000px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1;">
 
   <div style="position: absolute; inset: 0; background: radial-gradient(760px 420px at 12% -6%, rgba(242,180,92,0.13), transparent 62%), radial-gradient(680px 400px at 92% 4%, rgba(70,211,217,0.09), transparent 60%), linear-gradient(180deg, #0e1118 0%, #0a0c11 46%, #090b0f 100%);"></div>
+  <div class="facets"></div>
   <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none;"><filter id="grainA"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainA)"/></svg>
 
   <div style="position: relative; height: 100%; box-sizing: border-box; padding: 26px 30px 22px; display: flex; flex-direction: column; gap: 18px;">
 
     <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;">
       <div style="display: flex; align-items: center; gap: 15px;">
-        <div style="width: 42px; height: 42px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, rgba(242,180,92,0.22), rgba(242,180,92,0.05)); border: 1px solid rgba(242,180,92,0.30); box-shadow: 0 0 26px rgba(242,180,92,0.16);">
-          <div style="width: 16px; height: 16px; background: var(--accent); box-shadow: 0 0 12px rgba(242,180,92,0.7);"></div>
+        <div style="position: relative; width: 46px; height: 46px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;">
+          <div style="position: absolute; inset: -6px; border-radius: 50%; background: var(--accent); filter: blur(16px); opacity: 0.26;"></div>
+          <svg width="44" height="44" viewBox="0 0 88 88" fill="none" style="position: relative;">
+            <defs><linearGradient id="markA" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe2b6"/><stop offset="52%" stop-color="{{accent}}"/><stop offset="100%" stop-color="#b9761f"/></linearGradient></defs>
+            <path d="M44 12 70 26v28L44 68 18 54V26L44 12Z" fill="rgba(242,180,92,0.07)" stroke="url(#markA)" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M18 26 44 40l26-14M44 40v28" stroke="url(#markA)" stroke-width="2" opacity="0.4"/>
+            <polyline points="27,52 38,44 49,49 62,32" stroke="#46d3d9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
         <div>
           <div class="u-disp" style="font-size: 25px; font-weight: 700; line-height: 1.05;">Скупец</div>
@@ -97,53 +110,64 @@
     </div>
 
     <div style="display: flex; align-items: stretch; gap: 14px;">
-      <div style="flex: 0 0 auto; width: 116px; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding-left: 2px;">
-        <div class="u-lab" style="color: var(--accent);">Нести<br>сейчас</div>
+
+      <div class="pnl" style="flex: 0 0 auto; width: 388px; padding: 17px 22px 19px; background: linear-gradient(150deg, rgba(242,180,92,0.15), rgba(255,255,255,0.012) 70%); border: 1px solid rgba(242,180,92,0.22); border-radius: 10px; box-shadow: 0 22px 54px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.09);">
+        <div class="u-lab" style="color: rgba(242,180,92,0.82);">Если разложить всё оптимально</div>
+        <div class="u-disp grad" style="font-size: 44px; font-weight: 800; line-height: 1; margin-top: 9px;">+12 400 000</div>
+        <div style="font-size: 12px; color: #7b8496; margin-top: 8px; line-height: 1.45;">монеток сверх того, что вышло бы, если сдать весь склад Скупцу не глядя</div>
       </div>
-      <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
-        <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 8px; background: linear-gradient(135deg, rgba(242,180,92,0.13), rgba(242,180,92,0.02) 62%); border: 1px solid rgba(242,180,92,0.24);">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="u-slot"><div style="width: 13px; height: 13px; background: #7a4a3c;"></div></div>
-            <div style="flex-grow: 1;">
-              <div style="font-size: 14px; font-weight: 500;">Гнилая плоть</div>
-              <div class="u-num" style="font-size: 11px; color: #7b8496; margin-top: 2px;">132 против 90</div>
-            </div>
-            <div style="text-align: right;">
-              <div class="u-num" style="font-size: 20px; font-weight: 700; color: var(--accent); line-height: 1;">+47 %</div>
-              <div class="u-lab" style="margin-top: 4px; color: rgba(242,180,92,0.72);">Скупец</div>
-            </div>
-          </div>
-        </div>
-        <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 8px; background: linear-gradient(135deg, rgba(70,211,217,0.12), rgba(70,211,217,0.02) 62%); border: 1px solid rgba(70,211,217,0.22);">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="u-slot"><div style="width: 13px; height: 13px; background: #8c6aa0;"></div></div>
-            <div style="flex-grow: 1;">
-              <div style="font-size: 14px; font-weight: 500;">Панцирь шалкера</div>
-              <div class="u-num" style="font-size: 11px; color: #7b8496; margin-top: 2px;">61 000 против 42 000</div>
-            </div>
-            <div style="text-align: right;">
-              <div class="u-num" style="font-size: 20px; font-weight: 700; color: #46d3d9; line-height: 1;">+45 %</div>
-              <div class="u-lab" style="margin-top: 4px; color: rgba(70,211,217,0.72);">Аукцион</div>
+
+      <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 9px;">
+        <div class="u-lab" style="color: var(--accent);">Нести сейчас</div>
+        <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+
+          <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 9px; background: linear-gradient(140deg, rgba(242,180,92,0.15), rgba(242,180,92,0.02) 66%); border: 1px solid rgba(242,180,92,0.26); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="u-slot"><div style="width: 13px; height: 13px; background: #7a4a3c;"></div></div>
+              <div style="flex-grow: 1;">
+                <div style="font-size: 14px; font-weight: 500;">Гнилая плоть</div>
+                <div class="u-num" style="font-size: 11px; color: #7b8496; margin-top: 2px;">132 против 90</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="u-num grad" style="font-size: 22px; font-weight: 800; line-height: 1;">+47 %</div>
+                <div class="u-lab" style="margin-top: 4px; color: rgba(242,180,92,0.72);">Скупец</div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 8px; background: linear-gradient(135deg, rgba(70,211,217,0.12), rgba(70,211,217,0.02) 62%); border: 1px solid rgba(70,211,217,0.22);">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="u-slot"><div style="width: 13px; height: 13px; background: #cfe6e6;"></div></div>
-            <div style="flex-grow: 1;">
-              <div style="font-size: 14px; font-weight: 500;">Слеза гаста</div>
-              <div class="u-num" style="font-size: 11px; color: #7b8496; margin-top: 2px;">26 000 против 18 400</div>
-            </div>
-            <div style="text-align: right;">
-              <div class="u-num" style="font-size: 20px; font-weight: 700; color: #46d3d9; line-height: 1;">+41 %</div>
-              <div class="u-lab" style="margin-top: 4px; color: rgba(70,211,217,0.72);">Аукцион</div>
+
+          <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 9px; background: linear-gradient(140deg, rgba(70,211,217,0.14), rgba(70,211,217,0.02) 66%); border: 1px solid rgba(70,211,217,0.24); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="u-slot"><div style="width: 13px; height: 13px; background: #8c6aa0;"></div></div>
+              <div style="flex-grow: 1;">
+                <div style="font-size: 14px; font-weight: 500;">Панцирь шалкера</div>
+                <div class="u-num" style="font-size: 11px; color: #7b8496; margin-top: 2px;">61 000 против 42 000</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="u-num grad-t" style="font-size: 22px; font-weight: 800; line-height: 1;">+45 %</div>
+                <div class="u-lab" style="margin-top: 4px; color: rgba(70,211,217,0.72);">Аукцион</div>
+              </div>
             </div>
           </div>
+
+          <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 9px; background: linear-gradient(140deg, rgba(70,211,217,0.14), rgba(70,211,217,0.02) 66%); border: 1px solid rgba(70,211,217,0.24); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="u-slot"><div style="width: 13px; height: 13px; background: #cfe6e6;"></div></div>
+              <div style="flex-grow: 1;">
+                <div style="font-size: 14px; font-weight: 500;">Слеза гаста</div>
+                <div class="u-num" style="font-size: 11px; color: #7b8496; margin-top: 2px;">26 000 против 18 400</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="u-num grad-t" style="font-size: 22px; font-weight: 800; line-height: 1;">+41 %</div>
+                <div class="u-lab" style="margin-top: 4px; color: rgba(70,211,217,0.72);">Аукцион</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <div style="flex-grow: 1; display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.022); border: 1px solid rgba(255,255,255,0.065); box-shadow: 0 18px 46px rgba(0,0,0,0.45);">
+    <div class="pnl" style="flex-grow: 1; display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)); border: 1px solid rgba(255,255,255,0.075); box-shadow: 0 26px 64px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.085);">
 
       <div style="display: flex; align-items: flex-end; gap: 16px; padding: 11px 14px 9px; border-bottom: 1px solid rgba(255,255,255,0.075); background: rgba(255,255,255,0.02);">
         <span style="width: 280px; flex: 0 0 auto; display: flex; align-items: center; gap: 6px;">
