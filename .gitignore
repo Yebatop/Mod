@@ -1,2 +1,8 @@
 # Собранный холст дизайна — пересобирается из design/*.dc.html
 design/holyhelper-interface.html
+
+# Gradle / сборка
+.gradle/
+build/
+run/
+*.bak

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "holyhelper",
+  "version": "${version}",
+  "name": "HolyHelper",
+  "description": "Экономический помощник для режима Прайм Анархия сервера HolyWorld. Читает окна Скупца, Маркета и Биржи, которые игрок открыл сам, считает, где выгоднее продать, и напоминает о ротации торгов. Ничего не кликает и не автоматизирует.",
+  "authors": [
+    "Yebatop"
+  ],
+  "contact": {
+    "sources": "https://github.com/Yebatop/Mod"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.yebatop.holyhelper.HolyHelperClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "~1.21.11",
+    "java": ">=21"
+  }
+}
