@@ -19,6 +19,7 @@ import net.minecraft.util.Formatting;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 /** Клиентская команда {@code /holyhelper}. На сервер ничего не уходит. */
 public final class HolyHelperCommand {
@@ -200,6 +201,14 @@ public final class HolyHelperCommand {
             return 1;
         }
 
+        // Таймер у всех товаров группы один и тот же — в шапку, а не в каждую строку.
+        // Иначе строка не помещается в чат, переносится, и подсказка Маркета
+        // оказывается под соседним товаром, будто она к нему и относится.
+        snapshot.offers().stream()
+                .filter(offer -> offer.rotation() != null)
+                .findFirst()
+                .ifPresent(offer -> line(source, "Обновление", humanTime(offer.rotation())));
+
         source.sendFeedback(Text.literal("  " + snapshot.offers().size()
                 + " товаров, дороже сверху — цена за штуку").formatted(Formatting.GRAY));
 
@@ -217,12 +226,12 @@ public final class HolyHelperCommand {
                         .formatted(Formatting.LIGHT_PURPLE));
             }
 
-            row.append(Text.literal("  осталось " + offer.available()).formatted(Formatting.DARK_GRAY));
-            if (offer.rotation() != null) {
-                row.append(Text.literal("  " + humanTime(offer.rotation())).formatted(Formatting.DARK_GRAY));
-            }
-            appendMarketHint(row, offer);
+            row.append(Text.literal("  ост. " + offer.available()).formatted(Formatting.DARK_GRAY));
             source.sendFeedback(row);
+
+            // Подсказка Маркета — отдельной строкой с отступом. В хвосте товарной
+            // строки она не помещалась и уезжала переносом под соседний товар.
+            marketHint(offer).ifPresent(source::sendFeedback);
         }
         return 1;
     }
@@ -315,20 +324,33 @@ public final class HolyHelperCommand {
      * платит сразу и сколько угодно раз в пределах остатка, а лот на Маркете надо
      * выставить, дождаться покупателя и подвинуться ниже нынешнего дна.
      */
-    private static void appendMarketHint(MutableText row, BuyerParser.Offer offer) {
+    private static Optional<Text> marketHint(BuyerParser.Offer offer) {
         PriceStore prices = HolyHelperClient.instance().prices();
         PriceStore.Known known = prices.known(offer.itemId(), MARKET_MEMORY).orElse(null);
         if (known == null) {
-            return;
+            return Optional.empty();
         }
 
         double buyer = offer.unitPrice();
         long market = known.cheapestUnitPrice();
         // Разница меньше процента — это шум разбора и округления, а не сигнал.
-        boolean marketDearer = market > buyer * 1.01;
+        boolean dearer = market > buyer * 1.01;
 
-        row.append(Text.literal("  Маркет от " + market)
-                .formatted(marketDearer ? Formatting.GREEN : Formatting.DARK_GRAY));
+        // Одно наблюдение и десять выглядели одинаково уверенно, а весят по-разному:
+        // единственный лот по дикой цене мог просто висеть и никогда не продаться.
+        // Поэтому число наблюдений печатается всегда, а зелёным подсвечивается только
+        // то, что мод видел не один раз.
+        boolean trustworthy = known.samples() > 1;
+        Formatting color = dearer && trustworthy ? Formatting.GREEN
+                : dearer ? Formatting.YELLOW
+                : Formatting.DARK_GRAY;
+
+        String samples = known.samples() == 1
+                ? "видел 1 раз"
+                : "видел " + known.samples() + " раз";
+
+        return Optional.of(Text.literal("         Маркет от " + market + " · " + samples)
+                .formatted(color));
     }
 
     /** -1 — это «не нашли в панели», а не сумма. Печатать его как число нечестно. */
