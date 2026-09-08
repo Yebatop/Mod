@@ -83,12 +83,13 @@ public final class HolyHelperClient implements ClientModInitializer {
             return;
         }
 
-        channel.reset();
-        featureGate.reset();
-        featureGate.check();
+        // reset() здесь не зовём: вход срабатывает дважды (лобби, затем Прайм),
+        // и сбрасывать уже полученный ответ на второй половине перехода незачем.
+        // Полная очистка — при отключении.
+        featureGate.armOnJoin();
 
         if (config.announceOnJoin) {
-            // Ответ придёт асинхронно, поэтому отчёт откладываем на несколько секунд.
+            // Исход выясняется асинхронно, поэтому отчёт откладываем.
             scheduleAnnounce();
         }
     }
@@ -105,20 +106,27 @@ public final class HolyHelperClient implements ClientModInitializer {
         }
         tickCounter++;
 
+        // Ждём, пока сервер объявит канал LiteAPI. Пока не объявил — не шлём ничего.
+        featureGate.tick();
+
         // Сайдбар перечитываем раз в секунду: чаще незачем, сервер обновляет его редко.
         if (tickCounter % 20 == 0) {
             board.refresh();
         }
 
-        if (announceAtTick > 0 && tickCounter >= announceAtTick) {
+        // Отчитываемся, как только исход ясен, но не позже жёсткого срока: иначе на
+        // сервере без LiteAPI сообщение висело бы в ожидании неизвестно сколько.
+        if (announceAtTick > 0
+                && (featureGate.status() != FeatureGate.Status.NOT_ASKED || tickCounter >= announceAtTick)) {
             announceAtTick = 0;
             announce(client);
         }
     }
 
     private void scheduleAnnounce() {
-        // Пять секунд: таймаут запроса — пять, значит к этому моменту исход уже известен.
-        announceAtTick = tickCounter + 20 * 6;
+        // Жёсткий потолок: десять секунд ожидания канала плюс пять на таймаут запроса.
+        // Обычно отчёт уходит раньше — как только состояние перестало быть «не спрашивали».
+        announceAtTick = tickCounter + 20 * 16;
     }
 
     private void announce(MinecraftClient client) {

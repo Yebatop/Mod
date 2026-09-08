@@ -46,7 +46,15 @@ public final class FeatureGate {
     private final LiteApiChannel channel;
     private final Set<String> blocked = new CopyOnWriteArraySet<>();
 
+    /**
+     * Сколько ждём объявления канала после входа. Регистрация приходит за секунду-две;
+     * десяти секунд хватает с запасом, а дольше ждать нечего — канала просто нет.
+     */
+    private static final long CHANNEL_WAIT_MS = 10_000L;
+
     private volatile Status status = Status.NOT_ASKED;
+    private volatile boolean waiting = false;
+    private volatile long waitUntil = 0L;
 
     public enum Status {
         NOT_ASKED("не спрашивали"),
@@ -65,17 +73,51 @@ public final class FeatureGate {
         this.channel = channel;
     }
 
-    /** Спрашивает блок-лист. Вызывается один раз при входе на сервер. */
-    public void check() {
-        blocked.clear();
-        status = Status.NOT_ASKED;
+    /**
+     * Ставит запрос в очередь на ближайший момент, когда сервер объявит канал.
+     * <p>
+     * Спрашивать прямо на входе нельзя: регистрация каналов приходит от сервера
+     * через мгновение после логина, а событие входа срабатывает сразу, и канал
+     * в этот момент почти всегда ещё не объявлен. Раньше мод отправлял запрос
+     * вслепую и ловил таймаут — то есть слал пакет в никуда на каждом заходе.
+     * Теперь он ждёт объявления и, если не дождался, не отправляет ничего вовсе.
+     */
+    public void armOnJoin() {
+        // Ни статус, ни блок-лист здесь не сбрасываем. Вход срабатывает дважды подряд
+        // (лобби, потом Прайм), и второй запрос упрётся в лимит 1/10 с. Затирать
+        // полученный ответ из-за этого нельзя — иначе на сервере, где канал есть,
+        // мод соврал бы «молчит». Полная очистка происходит при отключении.
+        waitUntil = System.currentTimeMillis() + CHANNEL_WAIT_MS;
+        waiting = true;
+    }
 
-        if (!channel.serverDeclaresChannel()) {
-            // Пробуем всё равно: сервер может принимать канал, не объявляя его.
-            LOG.info("Сервер не объявил канал {} — пробую запрос вслепую",
-                    LiteApiPayload.FEATURE_CONTROL_CHANNEL);
+    /** Двигает ожидание канала. Зовётся из тика клиента, стоит один вызов canSend. */
+    public void tick() {
+        if (!waiting) {
+            return;
         }
+        if (channel.serverDeclaresChannel()) {
+            if (status == Status.NO_CHANNEL) {
+                status = Status.NOT_ASKED;
+            }
+            waiting = false;
+            ask();
+            return;
+        }
+        if (System.currentTimeMillis() >= waitUntil) {
+            waiting = false;
+            status = Status.NO_CHANNEL;
+            LOG.info("Сервер так и не объявил канал {} за {} с — ничего не отправляю",
+                    LiteApiPayload.FEATURE_CONTROL_CHANNEL, CHANNEL_WAIT_MS / 1000);
+        }
+    }
 
+    /** Ждём ли мы ещё появления канала. */
+    public boolean waiting() {
+        return waiting;
+    }
+
+    private void ask() {
         JsonArray features = new JsonArray();
         FEATURES.forEach(features::add);
 
@@ -86,7 +128,11 @@ public final class FeatureGate {
         channel.request("checkFeatures", payload)
                 .thenAccept(this::apply)
                 .exceptionally(error -> {
-                    status = channel.serverDeclaresChannel() ? Status.NO_ANSWER : Status.NO_CHANNEL;
+                    // Уже полученный ответ важнее неудачи повторной попытки:
+                    // чаще всего это просто лимит запросов при перезаходе.
+                    if (status != Status.ANSWERED) {
+                        status = Status.NO_ANSWER;
+                    }
                     LOG.info("checkFeatures без ответа ({}). Считаю все функции разрешёнными.",
                             error.getMessage());
                     return null;
@@ -102,6 +148,7 @@ public final class FeatureGate {
         }
 
         JsonObject payload = response.getAsJsonObject("payload");
+        blocked.clear();
         if (payload != null && payload.has("blocklist")) {
             payload.getAsJsonArray("blocklist")
                     .forEach(element -> blocked.add(element.getAsString()));
@@ -126,5 +173,6 @@ public final class FeatureGate {
     public void reset() {
         blocked.clear();
         status = Status.NOT_ASKED;
+        waiting = false;
     }
 }

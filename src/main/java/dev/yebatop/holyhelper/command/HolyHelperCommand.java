@@ -39,7 +39,7 @@ public final class HolyHelperCommand {
             case ANSWERED -> "отвечает";
             case NO_CHANNEL -> "канал не объявлен сервером";
             case NO_ANSWER -> "не ответил (" + safe(mod.channel().lastError()) + ")";
-            case NOT_ASKED -> "ещё не спрашивали";
+            case NOT_ASKED -> gate.waiting() ? "ждём, объявит ли сервер канал" : "ещё не спрашивали";
         });
 
         if (gate.status() == FeatureGate.Status.ANSWERED) {
