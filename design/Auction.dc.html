@@ -7,183 +7,219 @@
 <body>
 <x-dc>
 <helmet>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@400..700&display=swap">
   <style>
     body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
-    a { color: #6b4a12; } a:hover { color: #8a6118; }
-    .mc-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
-    .mc-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
-    .mc-slot { background: #8b8b8b; box-shadow: inset 2px 2px 0 #373737, inset -2px -2px 0 #ffffff; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
-    .mc-inset { box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0; }
-    .lot-row { display: flex; align-items: center; gap: 14px; padding: 7px 10px; background: #bcbcbc; }
-    .lot-cell { flex: 0 0 auto; font-size: 13px; color: #2f2f2f; }
+    a { color: #46d3d9; } a:hover { color: #7ce8ed; }
+    .u-disp { font-family: 'Unbounded', 'Onest', system-ui, sans-serif; letter-spacing: -0.02em; }
+    .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .u-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
+    .u-lab { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #626b7b; }
+    .u-slot { width: 26px; height: 26px; flex: 0 0 auto; background: #1a1f29; border: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; }
+    .u-tile { flex-grow: 1; padding: 13px 16px; border-radius: 8px; background: rgba(255,255,255,0.028); border: 1px solid rgba(255,255,255,0.065); }
+    .u-lot { display: flex; align-items: center; gap: 18px; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,0.045); }
+    .u-seg { font-size: 12px; padding: 7px 15px; border-radius: 6px; color: #7b8496; }
   </style>
 </helmet>
-<div style="--accent: {{accent}}; width: 1100px; height: 820px; box-sizing: border-box; background: #c6c6c6; box-shadow: inset 3px 3px 0 #ffffff, inset -3px -3px 0 #565656; padding: 17px 17px 14px; display: flex; flex-direction: column; gap: 12px;">
+<div style="position: relative; width: 1360px; height: 880px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1; --accent: {{accent}};">
 
-  <div style="display: flex; align-items: flex-end; justify-content: space-between;">
-    <div style="display: flex; align-items: center; gap: 11px;">
-      <div class="mc-slot" style="width: 30px; height: 30px;"><div style="width: 16px; height: 16px; background: #35a8ad; box-shadow: inset 2px 2px 0 rgba(255,255,255,0.35), inset -2px -2px 0 rgba(0,0,0,0.28);"></div></div>
-      <div>
-        <div class="mc-px" style="font-size: 21px; color: #3a3a3a; line-height: 1;">Аукцион — цены</div>
-        <div style="font-size: 11px; color: #616161; margin-top: 3px;">14 268 наблюдений · последнее 40 секунд назад</div>
-      </div>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <div class="mc-px" style="font-size: 14px; padding: 7px 13px; background: #c6c6c6; box-shadow: inset 2px 2px 0 #ffffff, inset -2px -2px 0 #6e6e6e; color: #2f2f2f;">7 дней</div>
-      <div class="mc-px" style="font-size: 14px; padding: 7px 13px; background: #a2a2a2; box-shadow: inset 2px 2px 0 #c4c4c4, inset -2px -2px 0 #6e6e6e; color: #4a4a4a;">30 дней</div>
-      <div class="mc-px" style="font-size: 14px; padding: 7px 13px; background: #a2a2a2; box-shadow: inset 2px 2px 0 #c4c4c4, inset -2px -2px 0 #6e6e6e; color: #4a4a4a;">вайп</div>
-    </div>
-  </div>
+  <div style="position: absolute; inset: 0; background: radial-gradient(820px 460px at 78% -8%, rgba(70,211,217,0.13), transparent 62%), radial-gradient(620px 380px at 6% 10%, rgba(169,140,240,0.07), transparent 60%), linear-gradient(180deg, #0e1118 0%, #0a0c11 46%, #090b0f 100%);"></div>
+  <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none;"><filter id="grainB"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainB)"/></svg>
 
-  <div style="display: flex; align-items: center; gap: 10px; padding: 9px 11px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0;">
-    <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5.8" stroke="#f0f0f0" stroke-width="1.8"/><path d="m13.4 13.4 3.6 3.6" stroke="#f0f0f0" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <div style="display: flex; align-items: center; gap: 8px; padding: 4px 9px 4px 5px; background: #6f6f6f;">
-      <div class="mc-slot" style="width: 20px; height: 20px;"><div style="width: 11px; height: 11px; background: #5b4a52;"></div></div>
-      <span style="font-size: 13px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Незеритовый слиток</span>
-      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="m3 3 6 6M9 3l-6 6" stroke="#d8d8d8" stroke-width="1.6" stroke-linecap="round"/></svg>
-    </div>
-    <span style="font-size: 12px; color: #d4d4d4;">введите название или бросьте предмет в это поле</span>
-  </div>
+  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 26px 30px 22px; display: flex; flex-direction: column; gap: 16px;">
 
-  <div style="display: flex; gap: 8px;">
-    <div style="flex-grow: 1; padding: 9px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
-      <div style="font-size: 10px; color: #5a5a5a; margin-bottom: 3px;">Медиана</div>
-      <div class="mc-num" style="font-size: 17px; color: #2f2f2f;">1 850 000</div>
-    </div>
-    <div style="flex-grow: 1; padding: 9px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
-      <div style="font-size: 10px; color: #5a5a5a; margin-bottom: 3px;">Минимум сейчас</div>
-      <div class="mc-num" style="font-size: 17px; color: #2f6f45;">1 420 000</div>
-    </div>
-    <div style="flex-grow: 1; padding: 9px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
-      <div style="font-size: 10px; color: #5a5a5a; margin-bottom: 3px;">Максимум за 7 дней</div>
-      <div class="mc-num" style="font-size: 17px; color: #8a3f36;">2 240 000</div>
-    </div>
-    <div style="flex-grow: 1; padding: 9px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
-      <div style="font-size: 10px; color: #5a5a5a; margin-bottom: 3px;">Лотов в продаже</div>
-      <div class="mc-num" style="font-size: 17px; color: #2f2f2f;">31</div>
-    </div>
-    <div style="flex-grow: 1; padding: 9px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
-      <div style="font-size: 10px; color: #5a5a5a; margin-bottom: 3px;">Тренд за неделю</div>
-      <div class="mc-num" style="font-size: 17px; color: #2f6f45;">+18 %</div>
-    </div>
-  </div>
-
-  <div style="padding: 3px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0;">
-    <div style="background: #171b22; padding: 14px 16px 10px;">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-        <span class="mc-px" style="font-size: 14px; color: rgba(232,234,237,0.72);">Цена за штуку · 7 дней</span>
-        <div style="display: flex; align-items: center; gap: 16px;">
-          <span style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(232,234,237,0.60);"><span style="width: 14px; height: 2px; background: var(--accent);"></span>цена</span>
-          <span style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(232,234,237,0.60);"><span style="width: 14px; height: 0; border-top: 2px dashed rgba(232,234,237,0.5);"></span>медиана</span>
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 42px; height: 42px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, rgba(70,211,217,0.20), rgba(70,211,217,0.04)); border: 1px solid rgba(70,211,217,0.28); box-shadow: 0 0 26px rgba(70,211,217,0.14);">
+          <div style="width: 16px; height: 16px; background: var(--accent); box-shadow: 0 0 12px rgba(70,211,217,0.7);"></div>
+        </div>
+        <div>
+          <div class="u-disp" style="font-size: 25px; font-weight: 700; line-height: 1.05;">Аукцион</div>
+          <div style="font-size: 12px; color: #6f7889; margin-top: 4px;">14 268 наблюдений · последнее 40 секунд назад</div>
         </div>
       </div>
-      <svg width="1020" height="216" viewBox="0 0 1020 216" fill="none">
-        <line x1="0" y1="24" x2="1020" y2="24" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-        <line x1="0" y1="72" x2="1020" y2="72" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-        <line x1="0" y1="120" x2="1020" y2="120" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-        <line x1="0" y1="168" x2="1020" y2="168" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-        <path d="M20 150 L96 138 L172 158 L248 120 L324 132 L400 96 L476 110 L552 74 L628 88 L704 62 L780 80 L856 58 L932 70 L1004 46 L1004 190 L20 190 Z" fill="rgba(230,161,60,0.14)"/>
-        <polyline points="20,150 96,138 172,158 248,120 324,132 400,96 476,110 552,74 628,88 704,62 780,80 856,58 932,70 1004,46" stroke="{{accent}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="0" y1="104" x2="1020" y2="104" stroke="rgba(232,234,237,0.45)" stroke-width="1.6" stroke-dasharray="6 6"/>
-        <circle cx="1004" cy="46" r="4" fill="#171b22" stroke="{{accent}}" stroke-width="2.4"/>
-        <circle cx="552" cy="74" r="3.4" fill="{{accent}}"/>
-      </svg>
-      <div style="display: flex; justify-content: space-between; margin-top: 6px; padding: 0 4px;">
-        <span class="mc-num" style="font-size: 10px; color: rgba(232,234,237,0.42);">7 дн назад</span>
-        <span class="mc-num" style="font-size: 10px; color: rgba(232,234,237,0.42);">5 дн</span>
-        <span class="mc-num" style="font-size: 10px; color: rgba(232,234,237,0.42);">3 дн</span>
-        <span class="mc-num" style="font-size: 10px; color: rgba(232,234,237,0.42);">вчера</span>
-        <span class="mc-num" style="font-size: 10px; color: rgba(232,234,237,0.42);">сегодня</span>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border-radius: 7px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.09);">
+          <div class="u-slot" style="width: 22px; height: 22px;"><div style="width: 11px; height: 11px; background: #6b5a63;"></div></div>
+          <span style="font-size: 13px;">Незеритовый слиток</span>
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="m3 3 6 6M9 3l-6 6" stroke="#6f7889" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </div>
+        <div style="display: flex; gap: 2px; padding: 3px; border-radius: 8px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.06);">
+          <span class="u-seg" style="background: rgba(70,211,217,0.14); color: #46d3d9;">7 дней</span>
+          <span class="u-seg">30 дней</span>
+          <span class="u-seg">вайп</span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div style="display: flex; align-items: center; gap: 14px; padding: 7px 10px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0;">
-    <span style="width: 150px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Цена лота</span>
-    <span style="width: 110px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">К медиане</span>
-    <span style="width: 90px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Кол-во</span>
-    <span style="width: 210px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Продавец</span>
-    <span style="flex-grow: 1; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Замечен</span>
-    <span style="width: 130px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-align: right; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">За стак</span>
-  </div>
+    <div style="position: relative; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.022); border: 1px solid rgba(255,255,255,0.065); box-shadow: 0 20px 52px rgba(0,0,0,0.5); padding: 20px 22px 14px;">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px;">
+        <div>
+          <div class="u-lab">Медиана за 7 дней</div>
+          <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 6px;">
+            <span class="u-num u-disp" style="font-size: 40px; font-weight: 700; line-height: 1;">1 850 000</span>
+            <span style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 4px; background: rgba(95,209,139,0.12); border: 1px solid rgba(95,209,139,0.26);">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.5 8 6 4l3.5 4" stroke="#5fd18b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="u-num" style="font-size: 12px; font-weight: 500; color: #5fd18b;">+18 %</span>
+            </span>
+          </div>
+          <div style="font-size: 12px; color: #6f7889; margin-top: 6px;">монеток за штуку · 31 лот в продаже</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 18px; padding-top: 4px;">
+          <span style="display: flex; align-items: center; gap: 7px; font-size: 11px; color: #7b8496;"><span style="width: 16px; height: 2px; background: var(--accent); border-radius: 1px;"></span>цена</span>
+          <span style="display: flex; align-items: center; gap: 7px; font-size: 11px; color: #7b8496;"><span style="width: 16px; height: 0; border-top: 2px dashed rgba(233,236,241,0.42);"></span>медиана</span>
+        </div>
+      </div>
 
-  <div style="display: flex; flex-direction: column; gap: 1px; background: #a6a6a6; flex-grow: 1;">
-    <div class="lot-row" style="background: #c2cdbd;">
-      <span class="lot-cell mc-num" style="width: 150px; font-weight: 500;">1 420 000</span>
-      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #4a8a5f; color: #ecf6ef;">−23 %</span></span>
-      <span class="lot-cell mc-num" style="width: 90px;">12 шт</span>
-      <span class="lot-cell" style="width: 210px;">Kartoshka</span>
-      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">3 минуты назад</span>
-      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">90 880 000</span>
-    </div>
-    <div class="lot-row" style="background: #c2cdbd;">
-      <span class="lot-cell mc-num" style="width: 150px; font-weight: 500;">1 510 000</span>
-      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #4a8a5f; color: #ecf6ef;">−18 %</span></span>
-      <span class="lot-cell mc-num" style="width: 90px;">5 шт</span>
-      <span class="lot-cell" style="width: 210px;">Kirpich</span>
-      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">11 минут назад</span>
-      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">96 640 000</span>
-    </div>
-    <div class="lot-row" style="background: #c2cdbd;">
-      <span class="lot-cell mc-num" style="width: 150px; font-weight: 500;">1 620 000</span>
-      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #4a8a5f; color: #ecf6ef;">−12 %</span></span>
-      <span class="lot-cell mc-num" style="width: 90px;">1 шт</span>
-      <span class="lot-cell" style="width: 210px;">Zloy_Kot</span>
-      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">24 минуты назад</span>
-      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">103 680 000</span>
-    </div>
-    <div class="lot-row">
-      <span class="lot-cell mc-num" style="width: 150px;">1 700 000</span>
-      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #7f9e88; color: #22301f;">−8 %</span></span>
-      <span class="lot-cell mc-num" style="width: 90px;">32 шт</span>
-      <span class="lot-cell" style="width: 210px;">MineBoy</span>
-      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">41 минуту назад</span>
-      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">108 800 000</span>
-    </div>
-    <div class="lot-row">
-      <span class="lot-cell mc-num" style="width: 150px;">1 780 000</span>
-      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #7f9e88; color: #22301f;">−4 %</span></span>
-      <span class="lot-cell mc-num" style="width: 90px;">8 шт</span>
-      <span class="lot-cell" style="width: 210px;">Holy_Fan</span>
-      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">1 час назад</span>
-      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">113 920 000</span>
-    </div>
-    <div class="lot-row">
-      <span class="lot-cell mc-num" style="width: 150px;">1 850 000</span>
-      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #9a9a9a; color: #333333;">0 %</span></span>
-      <span class="lot-cell mc-num" style="width: 90px;">3 шт</span>
-      <span class="lot-cell" style="width: 210px;">Ender_Pro</span>
-      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">2 часа назад</span>
-      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">118 400 000</span>
-    </div>
-    <div class="lot-row">
-      <span class="lot-cell mc-num" style="width: 150px;">1 960 000</span>
-      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #a86a60; color: #f5e9e7;">+6 %</span></span>
-      <span class="lot-cell mc-num" style="width: 90px;">16 шт</span>
-      <span class="lot-cell" style="width: 210px;">TradeKing</span>
-      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">3 часа назад</span>
-      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">125 440 000</span>
-    </div>
-  </div>
+      <svg width="1290" height="266" viewBox="0 0 1290 266" fill="none">
+        <defs>
+          <linearGradient id="ahFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="{{accent}}" stop-opacity="0.30"/>
+            <stop offset="100%" stop-color="{{accent}}" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="ahGlow" x="-20%" y="-40%" width="140%" height="200%">
+            <feGaussianBlur stdDeviation="7" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <line x1="0" y1="52" x2="1290" y2="52" stroke="rgba(255,255,255,0.055)" stroke-width="1"/>
+        <line x1="0" y1="110" x2="1290" y2="110" stroke="rgba(255,255,255,0.055)" stroke-width="1"/>
+        <line x1="0" y1="168" x2="1290" y2="168" stroke="rgba(255,255,255,0.055)" stroke-width="1"/>
+        <line x1="0" y1="226" x2="1290" y2="226" stroke="rgba(255,255,255,0.055)" stroke-width="1"/>
 
-  <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <span style="width: 9px; height: 9px; background: #4a8a5f;"></span>
-      <span style="font-size: 12px; color: #2f2f2f;">3 лота дешевле медианы более чем на 10 %</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 7px;">
-      <span class="mc-px" style="font-size: 13px; padding: 3px 7px; background: #8b8b8b; color: #f0f0f0;">H</span>
-      <span style="font-size: 11px; color: #4a4a4a;">открыть · история пишется только из того, что вы видели в /ah</span>
-    </div>
-  </div>
+        <path d="M30 186 L125 172 L219 196 L314 150 L409 164 L503 118 L598 134 L693 92 L787 108 L882 76 L977 96 L1071 68 L1166 84 L1260 52 L1260 240 L30 240 Z" fill="url(#ahFill)"/>
+        <polyline points="30,186 125,172 219,196 314,150 409,164 503,118 598,134 693,92 787,108 882,76 977,96 1071,68 1166,84 1260,52" stroke="{{accent}}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.32" filter="url(#ahGlow)"/>
+        <polyline points="30,186 125,172 219,196 314,150 409,164 503,118 598,134 693,92 787,108 882,76 977,96 1071,68 1166,84 1260,52" stroke="{{accent}}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
 
+        <line x1="0" y1="128" x2="1290" y2="128" stroke="rgba(233,236,241,0.40)" stroke-width="1.5" stroke-dasharray="7 7"/>
+
+        <line x1="693" y1="92" x2="693" y2="240" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+        <circle cx="693" cy="92" r="5" fill="#0d1017" stroke="{{accent}}" stroke-width="2.6"/>
+        <g>
+          <rect x="612" y="34" width="164" height="44" rx="6" fill="#141922" stroke="rgba(255,255,255,0.12)"/>
+          <text x="626" y="52" font-family="Onest, sans-serif" font-size="11" fill="#7b8496">3 дня назад</text>
+          <text x="626" y="69" font-family="JetBrains Mono, monospace" font-size="14" fill="#eef1f5">1 980 000</text>
+        </g>
+
+        <circle cx="1260" cy="52" r="12" fill="{{accent}}" opacity="0.16"/>
+        <circle cx="1260" cy="52" r="5" fill="{{accent}}"/>
+      </svg>
+
+      <div style="display: flex; justify-content: space-between; margin-top: 8px; padding: 0 6px;">
+        <span class="u-num" style="font-size: 10px; color: #4f5766;">7 дн назад</span>
+        <span class="u-num" style="font-size: 10px; color: #4f5766;">5 дн</span>
+        <span class="u-num" style="font-size: 10px; color: #4f5766;">3 дн</span>
+        <span class="u-num" style="font-size: 10px; color: #4f5766;">вчера</span>
+        <span class="u-num" style="font-size: 10px; color: #4f5766;">сегодня</span>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+      <div class="u-tile" style="border-color: rgba(95,209,139,0.28); background: linear-gradient(150deg, rgba(95,209,139,0.10), rgba(255,255,255,0.02) 70%);">
+        <div class="u-lab">Минимум сейчас</div>
+        <div class="u-num" style="font-size: 22px; font-weight: 500; color: #5fd18b; margin-top: 6px;">1 420 000</div>
+        <div style="font-size: 11px; color: #6f7889; margin-top: 3px;">на 23 % ниже медианы</div>
+      </div>
+      <div class="u-tile">
+        <div class="u-lab">Максимум за 7 дней</div>
+        <div class="u-num" style="font-size: 22px; font-weight: 500; color: #ef7264; margin-top: 6px;">2 240 000</div>
+        <div style="font-size: 11px; color: #6f7889; margin-top: 3px;">позавчера вечером</div>
+      </div>
+      <div class="u-tile">
+        <div class="u-lab">Разброс цен</div>
+        <div class="u-num" style="font-size: 22px; font-weight: 500; margin-top: 6px;">×1,58</div>
+        <div style="font-size: 11px; color: #6f7889; margin-top: 3px;">от минимума к максимуму</div>
+      </div>
+      <div class="u-tile">
+        <div class="u-lab">Лотов в продаже</div>
+        <div class="u-num" style="font-size: 22px; font-weight: 500; margin-top: 6px;">31</div>
+        <div style="font-size: 11px; color: #6f7889; margin-top: 3px;">у 19 продавцов</div>
+      </div>
+      <div class="u-tile">
+        <div class="u-lab">Скупец даёт</div>
+        <div class="u-num" style="font-size: 22px; font-weight: 500; color: #f2b45c; margin-top: 6px;">не берёт</div>
+        <div style="font-size: 11px; color: #6f7889; margin-top: 3px;">нет в текущих торгах</div>
+      </div>
+    </div>
+
+    <div style="flex-grow: 1; display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.022); border: 1px solid rgba(255,255,255,0.065);">
+      <div style="display: flex; align-items: center; gap: 18px; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,0.075); background: rgba(255,255,255,0.02);">
+        <span class="u-lab" style="width: 170px; flex: 0 0 auto;">Цена лота</span>
+        <span class="u-lab" style="width: 120px; flex: 0 0 auto;">К медиане</span>
+        <span class="u-lab" style="width: 100px; flex: 0 0 auto;">Кол-во</span>
+        <span class="u-lab" style="width: 220px; flex: 0 0 auto;">Продавец</span>
+        <span class="u-lab" style="flex-grow: 1;">Замечен</span>
+        <span class="u-lab" style="width: 190px; flex: 0 0 auto; text-align: right;">Выгода на стаке</span>
+      </div>
+
+      <div class="u-lot" style="background: rgba(95,209,139,0.06); box-shadow: inset 2px 0 0 #5fd18b;">
+        <span class="u-num" style="width: 170px; flex: 0 0 auto; font-size: 14px; font-weight: 500; color: #ffffff;">1 420 000</span>
+        <span style="width: 120px; flex: 0 0 auto;"><span class="u-num" style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 3px; background: rgba(95,209,139,0.15); border: 1px solid rgba(95,209,139,0.32); color: #5fd18b;">−23 %</span></span>
+        <span class="u-num" style="width: 100px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">12 шт</span>
+        <span style="width: 220px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">Kartoshka</span>
+        <span style="flex-grow: 1; font-size: 13px; color: #6f7889;">3 минуты назад</span>
+        <span class="u-num" style="width: 190px; flex: 0 0 auto; text-align: right; font-size: 13px; color: #5fd18b;">+27 520 000</span>
+      </div>
+      <div class="u-lot">
+        <span class="u-num" style="width: 170px; flex: 0 0 auto; font-size: 14px; color: #eef1f5;">1 510 000</span>
+        <span style="width: 120px; flex: 0 0 auto;"><span class="u-num" style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 3px; background: rgba(95,209,139,0.15); border: 1px solid rgba(95,209,139,0.32); color: #5fd18b;">−18 %</span></span>
+        <span class="u-num" style="width: 100px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">5 шт</span>
+        <span style="width: 220px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">Kirpich</span>
+        <span style="flex-grow: 1; font-size: 13px; color: #6f7889;">11 минут назад</span>
+        <span class="u-num" style="width: 190px; flex: 0 0 auto; text-align: right; font-size: 13px; color: #5fd18b;">+21 760 000</span>
+      </div>
+      <div class="u-lot">
+        <span class="u-num" style="width: 170px; flex: 0 0 auto; font-size: 14px; color: #eef1f5;">1 620 000</span>
+        <span style="width: 120px; flex: 0 0 auto;"><span class="u-num" style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 3px; background: rgba(95,209,139,0.15); border: 1px solid rgba(95,209,139,0.32); color: #5fd18b;">−12 %</span></span>
+        <span class="u-num" style="width: 100px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">1 шт</span>
+        <span style="width: 220px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">Zloy_Kot</span>
+        <span style="flex-grow: 1; font-size: 13px; color: #6f7889;">24 минуты назад</span>
+        <span class="u-num" style="width: 190px; flex: 0 0 auto; text-align: right; font-size: 13px; color: #5fd18b;">+14 720 000</span>
+      </div>
+      <div class="u-lot">
+        <span class="u-num" style="width: 170px; flex: 0 0 auto; font-size: 14px; color: #eef1f5;">1 700 000</span>
+        <span style="width: 120px; flex: 0 0 auto;"><span class="u-num" style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 3px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: #8b93a1;">−8 %</span></span>
+        <span class="u-num" style="width: 100px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">32 шт</span>
+        <span style="width: 220px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">MineBoy</span>
+        <span style="flex-grow: 1; font-size: 13px; color: #6f7889;">41 минуту назад</span>
+        <span class="u-num" style="width: 190px; flex: 0 0 auto; text-align: right; font-size: 13px; color: #8b93a1;">+9 600 000</span>
+      </div>
+      <div class="u-lot">
+        <span class="u-num" style="width: 170px; flex: 0 0 auto; font-size: 14px; color: #eef1f5;">1 780 000</span>
+        <span style="width: 120px; flex: 0 0 auto;"><span class="u-num" style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 3px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: #8b93a1;">−4 %</span></span>
+        <span class="u-num" style="width: 100px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">8 шт</span>
+        <span style="width: 220px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">Holy_Fan</span>
+        <span style="flex-grow: 1; font-size: 13px; color: #6f7889;">1 час назад</span>
+        <span class="u-num" style="width: 190px; flex: 0 0 auto; text-align: right; font-size: 13px; color: #8b93a1;">+4 480 000</span>
+      </div>
+      <div class="u-lot" style="border-bottom: none;">
+        <span class="u-num" style="width: 170px; flex: 0 0 auto; font-size: 14px; color: #eef1f5;">1 960 000</span>
+        <span style="width: 120px; flex: 0 0 auto;"><span class="u-num" style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 3px; background: rgba(239,114,100,0.12); border: 1px solid rgba(239,114,100,0.28); color: #ef7264;">+6 %</span></span>
+        <span class="u-num" style="width: 100px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">16 шт</span>
+        <span style="width: 220px; flex: 0 0 auto; font-size: 13px; color: #cdd3dc;">TradeKing</span>
+        <span style="flex-grow: 1; font-size: 13px; color: #6f7889;">3 часа назад</span>
+        <span class="u-num" style="width: 190px; flex: 0 0 auto; text-align: right; font-size: 13px; color: #6f7889;">переплата</span>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 9px;">
+        <span style="width: 7px; height: 7px; border-radius: 50%; background: #5fd18b; box-shadow: 0 0 10px rgba(95,209,139,0.8);"></span>
+        <span style="font-size: 12px; color: #8b93a1;">3 лота дешевле медианы более чем на 10 %</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="u-px" style="font-size: 14px; padding: 3px 9px; border-radius: 3px; background: rgba(255,255,255,0.07); color: #b6bdc9;">H</span>
+        <span style="font-size: 11px; color: #5d6472;">история пишется только из того, что вы видели в /ah</span>
+      </div>
+    </div>
+
+  </div>
 </div>
 </x-dc>
-<script data-dc-script data-props='{"accent":{"editor":"color","default":"#e6a13c","options":["#e6a13c","#35a8ad","#57c07d","#a98cf0"]}}'>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#46d3d9","options":["#46d3d9","#f2b45c","#5fd18b","#a98cf0"]}}'>
 class Component extends DCLogic {
   renderVals() {
-    return { accent: this.props.accent ?? '#e6a13c' };
+    return { accent: this.props.accent ?? '#46d3d9' };
   }
 }
 </script>
