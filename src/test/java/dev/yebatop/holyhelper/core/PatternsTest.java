@@ -144,6 +144,21 @@ class PatternsTest {
     }
 
     @Test
+    @DisplayName("Невидимый хвост строки не попадает в число")
+    void ignoresInvisibleSuffix() {
+        // Сервер довешивает справа § и служебный символ, чтобы строки были уникальными.
+        // Строки сняты с живого дампа: U+258C слева, U+00A7 U+00A6 справа.
+        assertEquals(801, patterns.number("board.coins", "\u258C Монеток: 801 ⛁\u00A7\u00A6").orElseThrow());
+        assertEquals(0, patterns.number("board.tokens", "\u258C Жетонов: 0 ⛎\u00A7\u009F").orElseThrow());
+
+        // Здесь и видно, зачем нужен узкий класс захвата. Numbers.parse выкусывает
+        // все нецифры подряд и на этой строке дал бы 8011 — если бы регулярка
+        // отдала ему хвост целиком. Она обрывается на §, поэтому 801.
+        assertEquals(8011, Numbers.parse("801 ⛁\u00A71").orElseThrow());
+        assertEquals(801, patterns.number("board.coins", "\u258C Монеток: 801 ⛁\u00A71").orElseThrow());
+    }
+
+    @Test
     @DisplayName("Чужие строки не притворяются нашими")
     void ignoresUnrelatedLines() {
         assertTrue(patterns.match("board.coins", "Монет: 800").isEmpty());

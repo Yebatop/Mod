@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -24,12 +25,21 @@ import java.util.OptionalLong;
  * прислали, — ни одного лишнего пакета, никакого сканирования окон.
  * <p>
  * Строки собираются так же, как их рисует ванильный HUD: имя записи, украшенное
- * префиксом и суффиксом команды. Иначе половина текста потеряется — сервер кладёт
- * значения именно в суффиксы.
+ * префиксом и суффиксом команды, отсортированное по счёту убыванием и обрезанное
+ * до пятнадцати. Иначе половина текста потеряется — сервер кладёт значения именно
+ * в суффиксы, а порядок пришёл бы перевёрнутым.
+ * <p>
+ * На Прайме подписи украшены слева символом U+258C, а справа несут невидимый
+ * суффикс из {@code §} и служебного символа — так сервер делает строки уникальными.
+ * Поэтому метки в {@code patterns.json} не привязаны к началу строки, а числа
+ * захватываются классом, который обрывается на первом же не-числовом символе.
  */
 public final class ScoreboardWatcher {
 
     private static final Logger LOG = LoggerFactory.getLogger("holyhelper/board");
+
+    /** Столько строк рисует ванильный HUD, остальные сервер всё равно не покажет. */
+    private static final int SIDEBAR_LIMIT = 15;
 
     private final Patterns patterns;
 
@@ -142,15 +152,19 @@ public final class ScoreboardWatcher {
                 return List.of();
             }
 
+            // Порядок и потолок — как в ванильном HUD. Сам по себе объектив отдаёт записи
+            // по возрастанию счёта, то есть снизу вверх: в живом дампе нулевой строкой
+            // шёл нижний «Прайм #1», а последней — верхний ник. Разбору по меткам это
+            // безразлично, но сканерам порядок важен, поэтому приводим к экранному.
             List<String> lines = new ArrayList<>();
-            for (ScoreboardEntry entry : scoreboard.getScoreboardEntries(objective)) {
-                if (entry.hidden()) {
-                    continue;
-                }
-                Team team = scoreboard.getScoreHolderTeam(entry.owner());
-                Text decorated = Team.decorateName(team, entry.name());
-                lines.add(decorated.getString());
-            }
+            scoreboard.getScoreboardEntries(objective).stream()
+                    .filter(entry -> !entry.hidden())
+                    .sorted(Comparator.comparing(ScoreboardEntry::value).reversed())
+                    .limit(SIDEBAR_LIMIT)
+                    .forEach(entry -> {
+                        Team team = scoreboard.getScoreHolderTeam(entry.owner());
+                        lines.add(Team.decorateName(team, entry.name()).getString());
+                    });
             return lines;
         } catch (RuntimeException e) {
             // Сайдбар — не критичная функция: если версия игры поменяла API, мод должен жить дальше.
