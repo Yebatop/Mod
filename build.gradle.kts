@@ -23,6 +23,11 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.11.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+
+    // Gradle 9 больше не подкладывает лаунчер JUnit Platform в classpath тестов сам:
+    // без этой строки задача :test падает ещё до первого теста с «Failed to load
+    // JUnit Platform». Версию берёт BOM выше.
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 java {
