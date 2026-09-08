@@ -155,4 +155,82 @@ class BuyerParserTest {
         assertEquals(Duration.ofHours(8), parser.parseRotationPeriod(help, true).orElseThrow());
         assertTrue(parser.parseRotationPeriod(List.of("что-то другое"), false).isEmpty());
     }
+
+    /** Этап #17, закрытый. Снят с живого окна «Этапы и награды». */
+    private static final List<String> STAGE_17 = List.of(
+            "▌ Заработать 175 000 монеток, торгуя",
+            "▌ со Скупцом любыми товарами, которые",
+            "▌ можно получить при торговле с жителями",
+            "✗ Сперва необходимо выполнить",
+            "  предыдущие этапы!",
+            "Награда:",
+            "- Случайное яйцо из:",
+            " - яйцо крипера",
+            " - яйцо визер-скелета",
+            " - яйцо всполоха",
+            " - яйцо эндермена");
+
+    @Test
+    @DisplayName("Закрытый этап: цель, склеенное описание, отсутствующий прогресс")
+    void parsesLockedStage() {
+        BuyerParser.Stage stage = parser.parseStage("Этап #17", STAGE_17).orElseThrow();
+
+        assertEquals(17, stage.number());
+        assertEquals(175000, stage.goal());
+        assertTrue(stage.locked());
+
+        // Сервер разбивает текст цели переносами на три строки — склеиваем обратно.
+        assertEquals("Заработать 175 000 монеток, торгуя со Скупцом любыми товарами, "
+                + "которые можно получить при торговле с жителями", stage.description());
+
+        // У закрытого этапа прогресса нет вовсе. Ноль здесь был бы враньём:
+        // это «неизвестно», а не «нисколько».
+        assertFalse(stage.hasProgress());
+        assertEquals(-1, stage.progress());
+        assertEquals(0, stage.completion(), 1e-9);
+    }
+
+    @Test
+    @DisplayName("Открытый этап показывает прогресс")
+    void parsesOpenStage() {
+        BuyerParser.Stage stage = parser.parseStage("Этап #1", List.of(
+                "▌ Заработать 1 000 монеток, торгуя со Скупцом",
+                "▌ любыми предметами",
+                "▌ Прогресс: 250 / 1 000",
+                "Награда:")).orElseThrow();
+
+        assertFalse(stage.locked());
+        assertTrue(stage.hasProgress());
+        assertEquals(250, stage.progress());
+        assertEquals(0.25, stage.completion(), 1e-9);
+    }
+
+    @Test
+    @DisplayName("Цель этапа и цель ежедневной сделки — разные строки")
+    void stageGoalDiffersFromDailyGoal() {
+        // «Заработать N монеток, торгуя» против «Заработайте у Скупца N монеток».
+        // Одной регуляркой их не поймать, и попытка обошлась бы молчащим разбором.
+        BuyerParser.Stage stage = parser.parseStage("Этап #2",
+                List.of("▌ Заработать 5 000 монеток, торгуя со Скупцом")).orElseThrow();
+        assertEquals(5000, stage.goal());
+
+        assertTrue(parser.parseStage("Яблоко", List.of("▌ Доступно к торговле: 16")).isEmpty());
+    }
+
+    @Test
+    @DisplayName("Закрытая ячейка товара опознаётся отдельно")
+    void parsesLockedSlot() {
+        List<String> lore = List.of(
+                "✗ Эта ячейка для Товаров будет",
+                "  разблокирована после выполнения",
+                "  15 Этапов торговли со Скупцом!");
+
+        // Товаром она не считается — объёма приёма у неё нет.
+        assertTrue(parser.parseOffer("", "minecraft:gray_stained_glass_pane", lore).isEmpty());
+
+        BuyerParser.LockedSlot slot = parser.parseLockedSlot(lore).orElseThrow();
+        assertEquals(15, slot.stagesRequired());
+
+        assertTrue(parser.parseLockedSlot(APPLE).isEmpty());
+    }
 }

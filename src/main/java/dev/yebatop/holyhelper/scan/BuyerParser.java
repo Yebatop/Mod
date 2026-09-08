@@ -63,6 +63,37 @@ public final class BuyerParser {
     }
 
     /**
+     * Этап торговли.
+     *
+     * @param goal        сколько монеток нужно заработать
+     * @param description чем именно торговать; сервер разбивает текст переносами
+     *                    на несколько строк, здесь он уже склеен
+     * @param locked      закрыт ли этап невыполненными предыдущими
+     * @param progress    накоплено; {@code -1}, если сервер не написал прогресс —
+     *                    у закрытых этапов его нет вовсе
+     */
+    public record Stage(
+            int number,
+            long goal,
+            String description,
+            boolean locked,
+            long progress) {
+
+        public boolean hasProgress() {
+            return progress >= 0;
+        }
+
+        /** Доля выполнения от нуля до единицы. Ноль, если прогресс неизвестен. */
+        public double completion() {
+            return hasProgress() && goal > 0 ? Math.min(1.0, (double) progress / goal) : 0;
+        }
+    }
+
+    /** Закрытая ячейка товара: сколько этапов нужно, чтобы её открыть. */
+    public record LockedSlot(int stagesRequired) {
+    }
+
+    /**
      * Собирает товар из подсказки. Пусто — значит это не товар: стекло-разделитель,
      * кнопка «Назад» или книга со справкой.
      */
@@ -129,6 +160,94 @@ public final class BuyerParser {
         }
 
         return Optional.of(new Multiplier(category, level, stacks));
+    }
+
+    /**
+     * Этап из подсказки золотого слитка в «Этапах и наградах».
+     * <p>
+     * Цель здесь звучит иначе, чем у ежедневной сделки: «Заработать 175 000 монеток,
+     * торгуя» против «Заработайте у Скупца 15 000 монеток». Это разные строки, и одной
+     * регуляркой их не поймать. Сам текст цели сервер разбивает переносами на три
+     * строки, поэтому описание собирается склейкой до первого служебного раздела.
+     */
+    public Optional<Stage> parseStage(String name, List<String> lore) {
+        Optional<Matcher> number = patterns.match("stage.number", name);
+        if (number.isEmpty()) {
+            return Optional.empty();
+        }
+
+        long goal = firstNumber("stage.goal", lore).orElse(-1);
+        boolean locked = lore.stream()
+                .anyMatch(line -> patterns.match("stage.locked", line).isPresent());
+
+        // Прогресс есть только у открытого этапа: у закрытого сервер его не пишет,
+        // и подставлять туда ноль было бы враньём — это «неизвестно», а не «нисколько».
+        long progress = -1;
+        for (String line : lore) {
+            Optional<Matcher> matcher = patterns.match("buyer.progress", line);
+            if (matcher.isPresent()) {
+                progress = Numbers.parse(matcher.get().group(1)).orElse(-1);
+                break;
+            }
+        }
+
+        return Optional.of(new Stage(
+                Integer.parseInt(number.get().group(1)),
+                goal, describe(lore), locked, progress));
+    }
+
+    /** Закрытая ячейка товара. У неё нет объёма приёма, поэтому товаром она не считается. */
+    public Optional<LockedSlot> parseLockedSlot(List<String> lore) {
+        boolean locked = lore.stream()
+                .anyMatch(line -> patterns.match("buyer.lockedSlot", line).isPresent());
+        if (!locked) {
+            return Optional.empty();
+        }
+        int stages = firstMatch("buyer.lockedSlotStages", lore)
+                .map(matcher -> Integer.parseInt(matcher.group(1)))
+                .orElse(0);
+        return Optional.of(new LockedSlot(stages));
+    }
+
+    /**
+     * Склеивает текст цели этапа.
+     * <p>
+     * Идём от строки с целью и добираем следующие, пока не упрёмся в пустую строку
+     * или в служебный раздел — отметку о закрытии либо заголовок награды.
+     */
+    private String describe(List<String> lore) {
+        StringBuilder text = new StringBuilder();
+        boolean started = false;
+
+        for (String line : lore) {
+            if (!started) {
+                started = patterns.match("stage.goal", line).isPresent();
+                if (!started) {
+                    continue;
+                }
+            } else if (patterns.match("stage.locked", line).isPresent()
+                    || patterns.match("stage.rewardsHeader", line).isPresent()
+                    || clean(line).isEmpty()) {
+                break;
+            }
+
+            String piece = clean(line);
+            if (piece.isEmpty()) {
+                continue;
+            }
+            if (text.length() > 0) {
+                text.append(' ');
+            }
+            text.append(piece);
+        }
+        return text.toString();
+    }
+
+    /** Снимает оформление: полоску слева и невидимый хвост справа. */
+    private static String clean(String line) {
+        return line.replaceAll("§.*$", "")
+                .replaceAll("^[^\\p{L}\\p{N}]+", "")
+                .trim();
     }
 
     /**

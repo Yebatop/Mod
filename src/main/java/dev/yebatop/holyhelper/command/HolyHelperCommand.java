@@ -142,8 +142,35 @@ public final class HolyHelperCommand {
             }
         }
 
+        for (BuyerParser.Stage stage : snapshot.stages()) {
+            MutableText row = Text.literal("  ")
+                    .append(Text.literal("Этап #" + stage.number()).formatted(Formatting.GOLD))
+                    .append(Text.literal("  " + stage.goal() + " монеток").formatted(Formatting.WHITE));
+
+            if (stage.locked()) {
+                row.append(Text.literal("  закрыт").formatted(Formatting.DARK_GRAY));
+            } else if (stage.hasProgress()) {
+                row.append(Text.literal(String.format("  %d (%.0f%%)",
+                        stage.progress(), stage.completion() * 100)).formatted(Formatting.GREEN));
+            }
+            source.sendFeedback(row);
+        }
+
+        if (!snapshot.lockedSlots().isEmpty()) {
+            int stagesNeeded = snapshot.lockedSlots().stream()
+                    .mapToInt(BuyerParser.LockedSlot::stagesRequired)
+                    .filter(value -> value > 0)
+                    .min()
+                    .orElse(0);
+            line(source, "Закрыто ячеек", snapshot.lockedSlots().size()
+                    + (stagesNeeded > 0 ? " · ближайшая с " + stagesNeeded + " этапов" : ""));
+        }
+
         if (snapshot.offers().isEmpty()) {
-            source.sendFeedback(Text.literal("  товаров в этом окне нет").formatted(Formatting.GRAY));
+            if (snapshot.stages().isEmpty() && snapshot.multipliers().isEmpty()) {
+                source.sendFeedback(Text.literal("  разбирать в этом окне нечего")
+                        .formatted(Formatting.GRAY));
+            }
             return 1;
         }
 

@@ -126,7 +126,7 @@ class PatternsTest {
     @Test
     @DisplayName("Этап и ежедневная сделка")
     void parsesStageAndDaily() {
-        assertEquals(1, patterns.number("buyer.stage", "Этап #1").orElseThrow());
+        assertEquals(1, patterns.number("stage.number", "Этап #1").orElseThrow());
 
         Matcher progress = patterns.match("buyer.progress", "Прогресс: 0 / 1 000").orElseThrow();
         assertEquals(0, Numbers.parse(progress.group(1)).orElseThrow());

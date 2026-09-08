@@ -62,10 +62,12 @@ public final class BuyerScanner {
             String title,
             List<BuyerParser.Offer> offers,
             List<BuyerParser.Multiplier> multipliers,
+            List<BuyerParser.Stage> stages,
+            List<BuyerParser.LockedSlot> lockedSlots,
             Instant seenAt) {
 
-        public static final Snapshot EMPTY =
-                new Snapshot(Kind.NONE, "", List.of(), List.of(), Instant.EPOCH);
+        public static final Snapshot EMPTY = new Snapshot(
+                Kind.NONE, "", List.of(), List.of(), List.of(), List.of(), Instant.EPOCH);
     }
 
     public BuyerScanner(Patterns patterns) {
@@ -111,6 +113,8 @@ public final class BuyerScanner {
 
         List<BuyerParser.Offer> offers = new ArrayList<>();
         List<BuyerParser.Multiplier> multipliers = new ArrayList<>();
+        List<BuyerParser.Stage> stages = new ArrayList<>();
+        List<BuyerParser.LockedSlot> lockedSlots = new ArrayList<>();
 
         try {
             for (Slot slot : handled.getScreenHandler().slots) {
@@ -126,6 +130,8 @@ public final class BuyerScanner {
                 // подсказке отсекает их сам — отдельная проверка не нужна.
                 parser.parseOffer(name, idOf(stack), lore).ifPresent(offers::add);
                 parser.parseMultiplier(name, lore).ifPresent(multipliers::add);
+                parser.parseStage(name, lore).ifPresent(stages::add);
+                parser.parseLockedSlot(lore).ifPresent(lockedSlots::add);
             }
         } catch (RuntimeException e) {
             // Чтение окна — не критичная функция: пусть мод молчит, а не падает.
@@ -134,7 +140,10 @@ public final class BuyerScanner {
         }
 
         offers.sort(Comparator.comparingDouble(BuyerParser.Offer::unitPrice).reversed());
-        return new Snapshot(kind, title, List.copyOf(offers), List.copyOf(multipliers), Instant.now());
+        stages.sort(Comparator.comparingInt(BuyerParser.Stage::number));
+        return new Snapshot(kind, title,
+                List.copyOf(offers), List.copyOf(multipliers),
+                List.copyOf(stages), List.copyOf(lockedSlots), Instant.now());
     }
 
     /** Периоды ротации из книги справки, если она лежит в открытом окне. */
