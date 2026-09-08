@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -46,6 +47,80 @@ class PatternsTest {
         assertEquals("3", rotation.group(1));
         assertEquals("13", rotation.group(2));
         assertEquals("51", rotation.group(3));
+    }
+
+    @Test
+    @DisplayName("Особое предложение подписывает цену другими словами")
+    void parsesSpecialOfferWording() {
+        // Ровно та ловушка, ради которой стоило посмотреть на два товара, а не на один.
+        // У обычного товара строка «Цена с множителями», у особого — «с учётом множителей».
+        // Одна регулярка на оба случая, иначе у всех особых предложений цена терялась бы молча.
+        assertEquals(242, patterns.number("buyer.finalPrice", "▌ Цена с множителями: 242 монеток ⛁").orElseThrow());
+        assertEquals(757, patterns.number("buyer.finalPrice", "▌ с учётом множителей: 757 монеток ⛁").orElseThrow());
+
+        assertTrue(patterns.match("buyer.special", "✔ Особое предложение ✔").isPresent());
+        assertTrue(patterns.match("buyer.special", "Яблоко").isEmpty());
+    }
+
+    @Test
+    @DisplayName("Строки Скупца сняты с двух живых тултипов")
+    void parsesLiveBuyerTooltips() {
+        assertEquals(8192, patterns.number("buyer.available", "▌ Доступно к торговле: 8192").orElseThrow());
+        assertEquals(16384, patterns.number("buyer.available", "▌ Доступно к торговле: 16384").orElseThrow());
+
+        Matcher hay = patterns.match("buyer.batchPrice", "▌ Начальная цена за 16 шт: 757 монеток ⛁").orElseThrow();
+        assertEquals(16, Numbers.parse(hay.group(1)).orElseThrow());
+        assertEquals(757, Numbers.parse(hay.group(2)).orElseThrow());
+
+        // У особого предложения таймер шёл на часы, у обычного — на минуты.
+        // Это два разных цикла ротации, и группа часов обязана быть необязательной.
+        Matcher special = patterns.match("buyer.rotation", "▌ Обновление товаров через: 6 ч. 12 мин. 47 сек").orElseThrow();
+        assertEquals("6", special.group(1));
+        assertEquals("12", special.group(2));
+        assertEquals("47", special.group(3));
+
+        Matcher plain = patterns.match("buyer.rotation", "▌ Обновление товаров через: 12 мин. 21 сек").orElseThrow();
+        assertNull(plain.group(1));
+        assertEquals("12", plain.group(2));
+        assertEquals("21", plain.group(3));
+    }
+
+    @Test
+    @DisplayName("Скупец и Торговля — разные окна")
+    void separatesBuyerScreens() {
+        // Раньше оба заголовка ловились одной регуляркой, хотя это разные экраны:
+        // «Скупец» — меню с разделами, «Торговля и заработок» — сетка товаров.
+        assertTrue(patterns.match("buyer.hubTitle", "Скупец").isPresent());
+        assertTrue(patterns.match("buyer.tradeTitle", "Скупец").isEmpty());
+
+        assertTrue(patterns.match("buyer.tradeTitle", "Торговля и заработок").isPresent());
+        assertTrue(patterns.match("buyer.hubTitle", "Торговля и заработок").isEmpty());
+
+        // Падежи в подсказках не должны сходить за заголовок окна.
+        assertTrue(patterns.match("buyer.hubTitle", "Сдавай накопившиеся ресурсы Скупцу").isEmpty());
+        assertTrue(patterns.match("buyer.hubTitle", "Заработайте у Скупца 15 000 монеток").isEmpty());
+    }
+
+    @Test
+    @DisplayName("Ежедневная сделка целиком")
+    void parsesDailyDeal() {
+        assertTrue(patterns.match("daily.title", "Ежедневная сделка").isPresent());
+        assertEquals(15000, patterns.number("daily.goal",
+                "▌ Заработайте у Скупца 15 000 монеток,").orElseThrow());
+
+        // «Прогресс» одинаков у этапов и у ежедневной сделки, поэтому регулярка одна.
+        Matcher progress = patterns.match("buyer.progress", "▌ Прогресс: 0 / 15 000").orElseThrow();
+        assertEquals(0, Numbers.parse(progress.group(1)).orElseThrow());
+        assertEquals(15000, Numbers.parse(progress.group(2)).orElseThrow());
+
+        assertTrue(patterns.match("daily.indicator", "▌ Ваш показатель ежедневности:").isPresent());
+        assertEquals(0, patterns.number("daily.percent", "████████████ 0%").orElseThrow());
+
+        assertTrue(patterns.match("daily.rewardsHeader", "Случайная награда:").isPresent());
+        assertEquals("10 000 монеток",
+                patterns.match("daily.reward", "- 10 000 монеток").orElseThrow().group(1));
+        assertEquals("множитель на всё 1 уровня на 64 стака",
+                patterns.match("daily.reward", "- множитель на всё 1 уровня на 64 стака").orElseThrow().group(1));
     }
 
     @Test
@@ -156,6 +231,22 @@ class PatternsTest {
         // отдала ему хвост целиком. Она обрывается на §, поэтому 801.
         assertEquals(8011, Numbers.parse("801 ⛁\u00A71").orElseThrow());
         assertEquals(801, patterns.number("board.coins", "\u258C Монеток: 801 ⛁\u00A71").orElseThrow());
+    }
+
+    @Test
+    @DisplayName("Невидимый хвост не попадает и в текстовые значения")
+    void ignoresInvisibleSuffixInText() {
+        // Числа защищал класс захвата, а свободный текст — нет: жадное (.+) утаскивало
+        // хвост целиком. Ник выглядел правильным на экране, потому что U+009D невидим,
+        // но в сравнении и в базе это уже был другой ник.
+        assertEquals("polyayak",
+                patterns.match("board.nick", "\u258C Ник: polyayak\u00A7\u009D").orElseThrow().group(1));
+        assertEquals("Нет",
+                patterns.match("board.group", "\u258C Группа: Нет\u00A7\u009E").orElseThrow().group(1));
+        assertEquals("lemonoff45",
+                patterns.match("market.seller", "Продавец: lemonoff45\u00A7\u009C").orElseThrow().group(1));
+        assertEquals("Блоки, Все подряд",
+                patterns.match("market.category", "Категория: Блоки, Все подряд\u00A7\u009B").orElseThrow().group(1));
     }
 
     @Test
