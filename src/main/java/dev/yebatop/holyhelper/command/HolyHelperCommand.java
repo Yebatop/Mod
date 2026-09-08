@@ -14,6 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 /** Клиентская команда {@code /holyhelper}. На сервер ничего не уходит. */
@@ -114,18 +115,25 @@ public final class HolyHelperCommand {
         return out.length() == 0 ? "" : "необычные символы: " + out;
     }
 
-    /** Что мод видит в открытом окне Скупца. */
+    /**
+     * Что мод прочитал в окне Скупца.
+     * <p>
+     * Показывает последний снимок, а не текущий экран: с открытым окном чат не открыть,
+     * поэтому мод читает его сам, пока оно на виду, а команда набирается уже после.
+     * Возраст снимка печатается всегда — иначе он однажды соврёт молча.
+     */
     private static int buy(FabricClientCommandSource source) {
-        BuyerScanner.Snapshot snapshot = HolyHelperClient.instance().buyer().scan();
+        BuyerScanner.Snapshot snapshot = HolyHelperClient.instance().buyer().last();
 
         if (snapshot.kind() == BuyerScanner.Kind.NONE) {
             head(source, "Скупец");
-            source.sendFeedback(Text.literal("  откройте /b — сканер читает только то окно, "
-                    + "которое открыто прямо сейчас").formatted(Formatting.GRAY));
+            source.sendFeedback(Text.literal("  окно ещё не открывали — зайдите к Скупцу через /b, "
+                    + "посмотрите на товары и закройте окно").formatted(Formatting.GRAY));
             return 1;
         }
 
         head(source, snapshot.title());
+        line(source, "Снято", humanAge(Duration.between(snapshot.seenAt(), Instant.now())));
 
         if (!snapshot.multipliers().isEmpty()) {
             for (BuyerParser.Multiplier multiplier : snapshot.multipliers()) {
@@ -163,6 +171,19 @@ public final class HolyHelperCommand {
             source.sendFeedback(row);
         }
         return 1;
+    }
+
+    /** Давность снимка словами. Секунды важнее всего: остатки меняются быстро. */
+    private static String humanAge(Duration age) {
+        long seconds = Math.max(0, age.toSeconds());
+        if (seconds < 60) {
+            return seconds + " с назад";
+        }
+        long minutes = seconds / 60;
+        if (minutes < 60) {
+            return minutes + " мин назад";
+        }
+        return age.toHours() + " ч назад — откройте окно заново, числа наверняка устарели";
     }
 
     /** Остаток времени коротко: часы показываем только когда они есть. */

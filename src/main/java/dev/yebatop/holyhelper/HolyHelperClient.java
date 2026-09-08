@@ -117,6 +117,12 @@ public final class HolyHelperClient implements ClientModInitializer {
             board.refresh();
         }
 
+        // Окно Скупца читаем дважды в секунду, пока оно открыто. Ждать команды нельзя:
+        // с открытым окном чат не открыть, и набрать её игроку негде.
+        if (tickCounter % 10 == 0) {
+            buyer.tickScan();
+        }
+
         // Отчитываемся, как только исход ясен, но не позже жёсткого срока: иначе на
         // сервере без LiteAPI сообщение висело бы в ожидании неизвестно сколько.
         if (announceAtTick > 0
