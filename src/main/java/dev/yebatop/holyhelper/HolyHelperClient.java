@@ -1,10 +1,12 @@
 package dev.yebatop.holyhelper;
 
+import dev.yebatop.holyhelper.analytics.RotationTimer;
 import dev.yebatop.holyhelper.board.ScoreboardWatcher;
 import dev.yebatop.holyhelper.command.HolyHelperCommand;
 import dev.yebatop.holyhelper.core.HolyHelperConfig;
 import dev.yebatop.holyhelper.core.Patterns;
 import dev.yebatop.holyhelper.core.ServerDetector;
+import dev.yebatop.holyhelper.hud.HudOverlay;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.liteapi.LiteApiChannel;
 import dev.yebatop.holyhelper.liteapi.LiteApiPayload;
@@ -44,6 +46,7 @@ public final class HolyHelperClient implements ClientModInitializer {
     private FeatureGate featureGate;
     private ScoreboardWatcher board;
     private BuyerScanner buyer;
+    private RotationTimer rotation;
 
     private int tickCounter;
     private int announceAtTick;
@@ -62,12 +65,14 @@ public final class HolyHelperClient implements ClientModInitializer {
         featureGate = new FeatureGate(channel);
         board = new ScoreboardWatcher(patterns);
         buyer = new BuyerScanner(patterns);
+        rotation = new RotationTimer();
 
         // Канал LiteAPI объявляется в обе стороны: без C2S нечем отправить,
         // без S2C Fabric не отдаст нам входящий пакет.
         PayloadTypeRegistry.playC2S().register(LiteApiPayload.FEATURE_CONTROL, LiteApiPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(LiteApiPayload.FEATURE_CONTROL, LiteApiPayload.CODEC);
         channel.registerReceiver();
+        HudOverlay.register();
 
         ClientCommandRegistrationCallback.EVENT.register(
                 (dispatcher, access) -> HolyHelperCommand.register(dispatcher));
@@ -100,6 +105,7 @@ public final class HolyHelperClient implements ClientModInitializer {
     private void onDisconnect() {
         channel.reset();
         featureGate.reset();
+        rotation.reset();
         tickCounter = 0;
     }
 
@@ -121,6 +127,11 @@ public final class HolyHelperClient implements ClientModInitializer {
         // с открытым окном чат не открыть, и набрать её игроку негде.
         if (tickCounter % 10 == 0) {
             buyer.tickScan();
+            // Из остатка в подсказке считаем момент обновления: дальше часы идут сами,
+            // и переоткрывать окно ради таймера не нужно.
+            if (buyer.last().kind() == BuyerScanner.Kind.TRADE) {
+                rotation.update(buyer.last().offers(), buyer.last().seenAt());
+            }
         }
 
         // Отчитываемся, как только исход ясен, но не позже жёсткого срока: иначе на
@@ -179,5 +190,9 @@ public final class HolyHelperClient implements ClientModInitializer {
 
     public BuyerScanner buyer() {
         return buyer;
+    }
+
+    public RotationTimer rotation() {
+        return rotation;
     }
 }
