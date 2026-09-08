@@ -206,6 +206,44 @@ class BuyerParserTest {
     }
 
     @Test
+    @DisplayName("Прогресс читается и когда съехал на следующую строку")
+    void parsesProgressSplitAcrossLines() {
+        // Живой Этап #1: «Прогресс:» в одной строке, «800 / 1 000» в следующей.
+        // У ежедневной сделки та же пара умещалась в одну строку — сервер переносит
+        // непоследовательно, поэтому значение ищется рядом с меткой, а не в ней.
+        BuyerParser.Stage stage = parser.parseStage("Этап #1", List.of(
+                "▌ Заработать 1 000 монеток, торгуя",
+                "▌ со Скупцом любыми предметами",
+                "⚡ Прогресс:",
+                "⚡ 800 / 1 000",
+                "Награда:",
+                "- Особый ключ испытаний x1",
+                "- Множитель I ур. на всё на 100 стаков")).orElseThrow();
+
+        assertEquals(1, stage.number());
+        assertEquals(1000, stage.goal());
+        assertFalse(stage.locked());
+        assertTrue(stage.hasProgress());
+        assertEquals(800, stage.progress());
+        assertEquals(0.8, stage.completion(), 1e-9);
+    }
+
+    @Test
+    @DisplayName("Чужое число из соседнего раздела за прогресс не сходит")
+    void doesNotGrabDistantNumbers() {
+        // Между меткой и числом наград лежит достаточно строк, чтобы поиск не дотянулся.
+        BuyerParser.Stage stage = parser.parseStage("Этап #5", List.of(
+                "▌ Заработать 10 000 монеток, торгуя",
+                "✗ Сперва необходимо выполнить",
+                "  предыдущие этапы!",
+                "Награда:",
+                "- 40 / 60 чего-то постороннего")).orElseThrow();
+
+        assertTrue(stage.locked());
+        assertFalse(stage.hasProgress());
+    }
+
+    @Test
     @DisplayName("Цель этапа и цель ежедневной сделки — разные строки")
     void stageGoalDiffersFromDailyGoal() {
         // «Заработать N монеток, торгуя» против «Заработайте у Скупца N монеток».

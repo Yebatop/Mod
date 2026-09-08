@@ -146,18 +146,9 @@ public final class BuyerParser {
                 .map(matcher -> Integer.parseInt(matcher.group(1)))
                 .orElse(0);
 
-        int stacks = 0;
-        boolean afterLabel = false;
-        for (String line : lore) {
-            if (afterLabel) {
-                Optional<Matcher> value = patterns.match("multiplier.stacks", line);
-                if (value.isPresent()) {
-                    stacks = Integer.parseInt(value.get().group(1));
-                    break;
-                }
-            }
-            afterLabel = patterns.match("multiplier.availableLabel", line).isPresent();
-        }
+        int stacks = valueNearLabel("multiplier.availableLabel", "multiplier.stacks", lore)
+                .map(matcher -> Integer.parseInt(matcher.group(1)))
+                .orElse(0);
 
         return Optional.of(new Multiplier(category, level, stacks));
     }
@@ -182,14 +173,9 @@ public final class BuyerParser {
 
         // Прогресс есть только у открытого этапа: у закрытого сервер его не пишет,
         // и подставлять туда ноль было бы враньём — это «неизвестно», а не «нисколько».
-        long progress = -1;
-        for (String line : lore) {
-            Optional<Matcher> matcher = patterns.match("buyer.progress", line);
-            if (matcher.isPresent()) {
-                progress = Numbers.parse(matcher.get().group(1)).orElse(-1);
-                break;
-            }
-        }
+        long progress = valueNearLabel("buyer.progressLabel", "buyer.progressValue", lore)
+                .map(matcher -> Numbers.parse(matcher.group(1)).orElse(-1))
+                .orElse(-1L);
 
         return Optional.of(new Stage(
                 Integer.parseInt(number.get().group(1)),
@@ -275,6 +261,37 @@ public final class BuyerParser {
     private static long group(Matcher matcher, int index) {
         String value = matcher.group(index);
         return value == null ? 0 : Long.parseLong(value);
+    }
+
+    /**
+     * Ищет значение рядом с меткой — в той же строке либо в одной из двух следующих.
+     * <p>
+     * Сервер переносит строку посреди фразы, и делает это непоследовательно: у
+     * ежедневной сделки «Прогресс: 0 / 15 000» умещается в строку, а у этапа
+     * «Прогресс:» и «800 / 1 000» разъезжаются на две. То же у множителя с
+     * «Доступно:» и «0 стаков». Разбирать это по отдельности — значит чинить
+     * одну и ту же ошибку снова и снова, поэтому приём общий.
+     */
+    private Optional<Matcher> valueNearLabel(String labelKey, String valueKey, List<String> lore) {
+        for (int i = 0; i < lore.size(); i++) {
+            if (patterns.match(labelKey, lore.get(i)).isEmpty()) {
+                continue;
+            }
+            // Сначала та же строка: если значение уместилось рядом с меткой, оно там.
+            Optional<Matcher> here = patterns.match(valueKey, lore.get(i));
+            if (here.isPresent()) {
+                return here;
+            }
+            // Дальше — пара ближайших строк. Больше заглядывать нельзя: подхватим
+            // чужое число из следующего раздела подсказки.
+            for (int j = i + 1; j < lore.size() && j <= i + 2; j++) {
+                Optional<Matcher> next = patterns.match(valueKey, lore.get(j));
+                if (next.isPresent()) {
+                    return next;
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     private Optional<Matcher> firstMatch(String key, List<String> lore) {

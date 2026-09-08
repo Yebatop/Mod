@@ -109,7 +109,7 @@ class PatternsTest {
                 "▌ Заработайте у Скупца 15 000 монеток,").orElseThrow());
 
         // «Прогресс» одинаков у этапов и у ежедневной сделки, поэтому регулярка одна.
-        Matcher progress = patterns.match("buyer.progress", "▌ Прогресс: 0 / 15 000").orElseThrow();
+        Matcher progress = patterns.match("buyer.progressValue", "▌ Прогресс: 0 / 15 000").orElseThrow();
         assertEquals(0, Numbers.parse(progress.group(1)).orElseThrow());
         assertEquals(15000, Numbers.parse(progress.group(2)).orElseThrow());
 
@@ -128,7 +128,7 @@ class PatternsTest {
     void parsesStageAndDaily() {
         assertEquals(1, patterns.number("stage.number", "Этап #1").orElseThrow());
 
-        Matcher progress = patterns.match("buyer.progress", "Прогресс: 0 / 1 000").orElseThrow();
+        Matcher progress = patterns.match("buyer.progressValue", "Прогресс: 0 / 1 000").orElseThrow();
         assertEquals(0, Numbers.parse(progress.group(1)).orElseThrow());
         assertEquals(1000, Numbers.parse(progress.group(2)).orElseThrow());
 
