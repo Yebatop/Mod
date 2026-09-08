@@ -113,14 +113,38 @@
 
     <div style="flex-grow: 1; display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.022); border: 1px solid rgba(255,255,255,0.065); box-shadow: 0 18px 46px rgba(0,0,0,0.45);">
 
-      <div style="display: flex; align-items: center; gap: 16px; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.075); background: rgba(255,255,255,0.02);">
-        <span class="u-lab" style="width: 280px; flex: 0 0 auto;">Товар</span>
-        <span class="u-lab" style="width: 110px; flex: 0 0 auto; text-align: right;">Цена / шт</span>
+      <div style="display: flex; align-items: flex-end; gap: 16px; padding: 11px 14px 9px; border-bottom: 1px solid rgba(255,255,255,0.075); background: rgba(255,255,255,0.02);">
+        <span style="width: 280px; flex: 0 0 auto; display: flex; align-items: center; gap: 6px;">
+          <span class="u-lab">Товар</span>
+          <svg width="8" height="11" viewBox="0 0 8 11" fill="none"><path d="M4 0.5 7 4H1z" fill="#39404c"/><path d="M4 10.5 1 7h6z" fill="#39404c"/></svg>
+        </span>
+        <span style="width: 110px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+          <span class="u-lab">Цена / шт</span>
+          <svg width="8" height="11" viewBox="0 0 8 11" fill="none"><path d="M4 0.5 7 4H1z" fill="#39404c"/><path d="M4 10.5 1 7h6z" fill="#39404c"/></svg>
+        </span>
         <span class="u-lab" style="width: 90px; flex: 0 0 auto; text-align: center;">Множитель</span>
         <span class="u-lab" style="width: 190px; flex: 0 0 auto;">Лимит приёма</span>
-        <span class="u-lab" style="width: 130px; flex: 0 0 auto; text-align: right;">Скупец с множ.</span>
-        <span class="u-lab" style="width: 130px; flex: 0 0 auto; text-align: right;">Медиана АХ</span>
-        <span class="u-lab" style="width: 150px; flex: 0 0 auto; text-align: right; color: var(--accent);">Выгоднее ↓</span>
+        <span style="width: 130px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
+          <span style="display: flex; align-items: center; gap: 6px;">
+            <span class="u-lab">Скупец</span>
+            <svg width="8" height="11" viewBox="0 0 8 11" fill="none"><path d="M4 0.5 7 4H1z" fill="#39404c"/><path d="M4 10.5 1 7h6z" fill="#39404c"/></svg>
+          </span>
+          <span style="font-size: 9px; letter-spacing: 0.06em; color: #4d5563;">с множителем</span>
+        </span>
+        <span style="width: 130px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 3px 6px; margin: -3px -6px; border-radius: 5px; background: rgba(255,255,255,0.05);">
+          <span style="display: flex; align-items: center; gap: 6px;">
+            <span class="u-lab" style="color: #969fae;">Аукцион</span>
+            <svg width="8" height="11" viewBox="0 0 8 11" fill="none"><path d="M4 0.5 7 4H1z" fill="#6f7889"/><path d="M4 10.5 1 7h6z" fill="#6f7889"/></svg>
+          </span>
+          <span style="font-size: 9px; letter-spacing: 0.06em; color: #5d6472;">медиана</span>
+        </span>
+        <span style="width: 150px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
+          <span style="display: flex; align-items: center; gap: 6px;">
+            <span class="u-lab" style="color: var(--accent);">Выгоднее</span>
+            <svg width="8" height="11" viewBox="0 0 8 11" fill="none"><path d="M4 0.5 7 4H1z" fill="rgba(242,180,92,0.30)"/><path d="M4 10.5 1 7h6z" fill="{{accent}}"/></svg>
+          </span>
+          <span style="font-size: 9px; letter-spacing: 0.06em; color: rgba(242,180,92,0.58);">по убыванию</span>
+        </span>
       </div>
 
       <div class="u-row" style="background: rgba(242,180,92,0.055); box-shadow: inset 2px 0 0 var(--accent);">
