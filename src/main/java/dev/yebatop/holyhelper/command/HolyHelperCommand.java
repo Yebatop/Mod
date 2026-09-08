@@ -135,11 +135,22 @@ public final class HolyHelperCommand {
         head(source, snapshot.title());
         line(source, "Снято", humanAge(Duration.between(snapshot.seenAt(), Instant.now())));
 
-        if (!snapshot.multipliers().isEmpty()) {
-            for (BuyerParser.Multiplier multiplier : snapshot.multipliers()) {
-                line(source, multiplier.category(), multiplier.stacks() + " стаков"
-                        + (multiplier.level() > 0 ? " · " + multiplier.level() + " ур." : ""));
+        BuyerParser.Bonuses bonuses = snapshot.bonuses();
+        if (bonuses != null) {
+            line(source, "Надбавки", "I +" + bonuses.levelOne() + "% · II +"
+                    + bonuses.levelTwo() + "% · III +" + bonuses.levelThree()
+                    + "%, разные категории перемножаются");
+        }
+
+        for (BuyerParser.Multiplier multiplier : snapshot.multipliers()) {
+            StringBuilder value = new StringBuilder(multiplier.stacks() + " стаков");
+            if (multiplier.level() > 0) {
+                value.append(" · ").append(multiplier.level()).append(" ур.");
+                if (bonuses != null) {
+                    value.append(String.format(" (+%.0f%%)", bonuses.share(multiplier.level()) * 100));
+                }
             }
+            line(source, multiplier.category(), value.toString());
         }
 
         for (BuyerParser.Stage stage : snapshot.stages()) {
@@ -147,7 +158,9 @@ public final class HolyHelperCommand {
                     .append(Text.literal("Этап #" + stage.number()).formatted(Formatting.GOLD))
                     .append(Text.literal("  " + stage.goal() + " монеток").formatted(Formatting.WHITE));
 
-            if (stage.locked()) {
+            if (stage.completed()) {
+                row.append(Text.literal("  выполнен").formatted(Formatting.GREEN));
+            } else if (stage.locked()) {
                 row.append(Text.literal("  закрыт").formatted(Formatting.DARK_GRAY));
             } else if (stage.hasProgress()) {
                 row.append(Text.literal(String.format("  %d (%.0f%%)",

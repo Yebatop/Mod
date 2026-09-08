@@ -130,12 +130,14 @@ class BuyerParserTest {
         assertEquals("блоки", zero.category());
         assertEquals(0, zero.stacks());
 
-        BuyerParser.Multiplier stocked = parser.parseMultiplier("Множитель на всё 1 уровня", List.of(
+        // Уровень здесь намеренно не проверяется: в названии его нет. Прежняя версия
+        // теста искала арабскую цифру в названии — это была догадка, и игра её
+        // опровергла. Настоящий разбор уровня проверяется на строке из подсказки.
+        BuyerParser.Multiplier stocked = parser.parseMultiplier("Множитель на все", List.of(
                 "▌ Доступно:",
                 "▌ 64 стака")).orElseThrow();
 
         assertEquals(64, stocked.stacks());
-        assertEquals(1, stocked.level());
 
         assertTrue(parser.parseMultiplier("Яблоко", List.of("▌ Доступно к торговле: 16")).isEmpty());
     }
@@ -270,5 +272,86 @@ class BuyerParserTest {
         assertEquals(15, slot.stagesRequired());
 
         assertTrue(parser.parseLockedSlot(APPLE).isEmpty());
+    }
+
+    @Test
+    @DisplayName("Выполненный этап — третье состояние, а не текущий без прогресса")
+    void parsesCompletedStage() {
+        // У выполненного этапа нет ни прогресса, ни отметки о закрытии. Без отдельного
+        // признака он выглядел бы ровно как текущий с неизвестным прогрессом.
+        BuyerParser.Stage done = parser.parseStage("Этап #1", List.of(
+                "▌ Заработать 1 000 монеток, торгуя",
+                "▌ со Скупцом любыми предметами",
+                "✓ Выполнено",
+                "Награда:",
+                "- Особый ключ испытаний x1",
+                "- Множитель I ур. на всё на 100 стаков")).orElseThrow();
+
+        assertTrue(done.completed());
+        assertFalse(done.locked());
+        assertFalse(done.hasProgress());
+
+        BuyerParser.Stage current = parser.parseStage("Этап #2", List.of(
+                "▌ Заработать 2 500 монеток, торгуя",
+                "⚡ Прогресс:",
+                "⚡ 0 / 2 500")).orElseThrow();
+
+        assertFalse(current.completed());
+        assertFalse(current.locked());
+        assertTrue(current.hasProgress());
+        assertEquals(0, current.progress());
+    }
+
+    @Test
+    @DisplayName("Уровень множителя стоит римской цифрой в подсказке, не в названии")
+    void parsesRomanLevelFromLore() {
+        BuyerParser.Multiplier all = parser.parseMultiplier("Множитель на все", List.of(
+                "▌ Доступно:",
+                "▌ 100 стаков с множителем I ур.",
+                "▶ Нажмите, чтобы посмотреть предметы,")).orElseThrow();
+
+        assertEquals("все", all.category());
+        assertEquals(100, all.stacks());
+        assertEquals(1, all.level());
+
+        // Пустой множитель уровня не называет вовсе.
+        BuyerParser.Multiplier empty = parser.parseMultiplier("Множитель на блоки", List.of(
+                "▌ Доступно:",
+                "▌ 0 стаков")).orElseThrow();
+        assertEquals(0, empty.level());
+    }
+
+    @Test
+    @DisplayName("Надбавки уровней читаются из справки сервера")
+    void parsesBonusesFromHelp() {
+        // Формула выгоды напечатана сервером: I, II, III дают 5, 10 и 15 процентов,
+        // а множители разных категорий перемножаются. Зашивать это в код незачем.
+        List<String> help = List.of(
+                "▌ На многие товары может действовать множитель.",
+                "▌ Они бывают I, II и III уровней, прибавляя к стоимости",
+                "▌ товаров по 5%, 10% и 15% соответственно.",
+                "▌ Если один товар относится сразу к нескольким множителям,",
+                "▌ то они между собой умножаются, и цена получается выше!");
+
+        BuyerParser.Bonuses bonuses = parser.parseBonuses(help).orElseThrow();
+        assertEquals(5, bonuses.levelOne());
+        assertEquals(10, bonuses.levelTwo());
+        assertEquals(15, bonuses.levelThree());
+
+        assertEquals(0.05, bonuses.share(1), 1e-9);
+        assertEquals(0.15, bonuses.share(3), 1e-9);
+        assertEquals(0, bonuses.share(0), 1e-9);
+
+        assertTrue(parser.parseBonuses(List.of("ничего похожего")).isEmpty());
+    }
+
+    @Test
+    @DisplayName("Две категории с множителями перемножаются, а не складываются")
+    void bonusesMultiply() {
+        BuyerParser.Bonuses bonuses = new BuyerParser.Bonuses(5, 10, 15);
+
+        // Товар в двух категориях с уровнями I и II: 1,05 × 1,10 = 1,155, а не 1,15.
+        double combined = (1 + bonuses.share(1)) * (1 + bonuses.share(2));
+        assertEquals(1.155, combined, 1e-9);
     }
 }

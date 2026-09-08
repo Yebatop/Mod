@@ -77,6 +77,7 @@ public final class BuyerParser {
             long goal,
             String description,
             boolean locked,
+            boolean completed,
             long progress) {
 
         public boolean hasProgress() {
@@ -91,6 +92,26 @@ public final class BuyerParser {
 
     /** Закрытая ячейка товара: сколько этапов нужно, чтобы её открыть. */
     public record LockedSlot(int stagesRequired) {
+    }
+
+    /**
+     * Надбавки уровней множителя в процентах, как их печатает справка сервера.
+     * <p>
+     * Это не украшение, а арифметика выгоды: множители разных категорий
+     * перемножаются, поэтому итог считается как произведение {@code (1 + надбавка)}.
+     * Зашивать 5, 10 и 15 в код незачем — сервер называет их сам.
+     */
+    public record Bonuses(int levelOne, int levelTwo, int levelThree) {
+
+        /** Надбавка уровня в долях единицы. Ноль для неизвестного уровня. */
+        public double share(int level) {
+            return switch (level) {
+                case 1 -> levelOne / 100.0;
+                case 2 -> levelTwo / 100.0;
+                case 3 -> levelThree / 100.0;
+                default -> 0;
+            };
+        }
     }
 
     /**
@@ -142,8 +163,10 @@ public final class BuyerParser {
         }
         String category = title.get().group(1);
 
-        int level = patterns.match("multiplier.level", name)
-                .map(matcher -> Integer.parseInt(matcher.group(1)))
+        // Уровень стоит не в названии, а в строке остатка, и римской цифрой:
+        // «100 стаков с множителем I ур.». В названии его нет вовсе.
+        int level = valueNearLabel("multiplier.availableLabel", "multiplier.level", lore)
+                .map(matcher -> roman(matcher.group(1)))
                 .orElse(0);
 
         int stacks = valueNearLabel("multiplier.availableLabel", "multiplier.stacks", lore)
@@ -177,9 +200,15 @@ public final class BuyerParser {
                 .map(matcher -> Numbers.parse(matcher.group(1)).orElse(-1))
                 .orElse(-1L);
 
+        // Состояний три, а не два: закрытый предыдущими, текущий с прогрессом
+        // и уже выполненный. У выполненного нет ни прогресса, ни отметки о закрытии,
+        // и без отдельного признака он выглядел бы как текущий с неизвестным прогрессом.
+        boolean completed = lore.stream()
+                .anyMatch(line -> patterns.match("stage.completed", line).isPresent());
+
         return Optional.of(new Stage(
                 Integer.parseInt(number.get().group(1)),
-                goal, describe(lore), locked, progress));
+                goal, describe(lore), locked, completed, progress));
     }
 
     /** Закрытая ячейка товара. У неё нет объёма приёма, поэтому товаром она не считается. */
@@ -234,6 +263,26 @@ public final class BuyerParser {
         return line.replaceAll("§.*$", "")
                 .replaceAll("^[^\\p{L}\\p{N}]+", "")
                 .trim();
+    }
+
+    /** Надбавки уровней из справки «Множители торговли». */
+    public Optional<Bonuses> parseBonuses(List<String> lore) {
+        return firstMatch("multiplier.bonusLevels", lore).map(matcher -> new Bonuses(
+                Integer.parseInt(matcher.group(1)),
+                Integer.parseInt(matcher.group(2)),
+                Integer.parseInt(matcher.group(3))));
+    }
+
+    /** Уровни сервер пишет римскими цифрами и не выше третьего. */
+    private static int roman(String value) {
+        return switch (value) {
+            case "I" -> 1;
+            case "II" -> 2;
+            case "III" -> 3;
+            case "IV" -> 4;
+            case "V" -> 5;
+            default -> 0;
+        };
     }
 
     /**

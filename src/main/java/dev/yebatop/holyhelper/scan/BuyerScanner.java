@@ -64,10 +64,11 @@ public final class BuyerScanner {
             List<BuyerParser.Multiplier> multipliers,
             List<BuyerParser.Stage> stages,
             List<BuyerParser.LockedSlot> lockedSlots,
+            BuyerParser.Bonuses bonuses,
             Instant seenAt) {
 
         public static final Snapshot EMPTY = new Snapshot(
-                Kind.NONE, "", List.of(), List.of(), List.of(), List.of(), Instant.EPOCH);
+                Kind.NONE, "", List.of(), List.of(), List.of(), List.of(), null, Instant.EPOCH);
     }
 
     public BuyerScanner(Patterns patterns) {
@@ -115,6 +116,7 @@ public final class BuyerScanner {
         List<BuyerParser.Multiplier> multipliers = new ArrayList<>();
         List<BuyerParser.Stage> stages = new ArrayList<>();
         List<BuyerParser.LockedSlot> lockedSlots = new ArrayList<>();
+        BuyerParser.Bonuses bonuses = null;
 
         try {
             for (Slot slot : handled.getScreenHandler().slots) {
@@ -132,6 +134,12 @@ public final class BuyerScanner {
                 parser.parseMultiplier(name, lore).ifPresent(multipliers::add);
                 parser.parseStage(name, lore).ifPresent(stages::add);
                 parser.parseLockedSlot(lore).ifPresent(lockedSlots::add);
+
+                // Справка окна множителей называется так же, как само окно,
+                // и печатает надбавки уровней — это арифметика выгоды, а не текст.
+                if (bonuses == null) {
+                    bonuses = parser.parseBonuses(lore).orElse(null);
+                }
             }
         } catch (RuntimeException e) {
             // Чтение окна — не критичная функция: пусть мод молчит, а не падает.
@@ -143,7 +151,7 @@ public final class BuyerScanner {
         stages.sort(Comparator.comparingInt(BuyerParser.Stage::number));
         return new Snapshot(kind, title,
                 List.copyOf(offers), List.copyOf(multipliers),
-                List.copyOf(stages), List.copyOf(lockedSlots), Instant.now());
+                List.copyOf(stages), List.copyOf(lockedSlots), bonuses, Instant.now());
     }
 
     /** Периоды ротации из книги справки, если она лежит в открытом окне. */
