@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
+    a { color: #6b4a12; } a:hover { color: #8a6118; }
+    .mc-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
+    .mc-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .mc-slot { background: #8b8b8b; box-shadow: inset 2px 2px 0 #373737, inset -2px -2px 0 #ffffff; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+    .mc-inset { box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0; }
+    .lot-row { display: flex; align-items: center; gap: 14px; padding: 7px 10px; background: #bcbcbc; }
+    .lot-cell { flex: 0 0 auto; font-size: 13px; color: #2f2f2f; }
+  </style>
+</helmet>
+<div style="--accent: {{accent}}; width: 1100px; height: 820px; box-sizing: border-box; background: #c6c6c6; box-shadow: inset 3px 3px 0 #ffffff, inset -3px -3px 0 #565656; padding: 17px 17px 14px; display: flex; flex-direction: column; gap: 12px;">
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 11px;">
+      <div class="mc-slot" style="width: 30px; height: 30px;"><div style="width: 16px; height: 16px; background: #35a8ad; box-shadow: inset 2px 2px 0 rgba(255,255,255,0.35), inset -2px -2px 0 rgba(0,0,0,0.28);"></div></div>
+      <div>
+        <div class="mc-px" style="font-size: 21px; color: #3a3a3a; line-height: 1;">Аукцион — цены</div>
+        <div style="font-size: 11px; color: #616161; margin-top: 3px;">14 268 наблюдений · последнее 40 секунд назад</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div class="mc-px" style="font-size: 14px; padding: 7px 13px; background: #c6c6c6; box-shadow: inset 2px 2px 0 #ffffff, inset -2px -2px 0 #6e6e6e; color: #2f2f2f;">7 дней</div>
+      <div class="mc-px" style="font-size: 14px; padding: 7px 13px; background: #a2a2a2; box-shadow: inset 2px 2px 0 #c4c4c4, inset -2px -2px 0 #6e6e6e; color: #4a4a4a;">30 дней</div>
+      <div class="mc-px" style="font-size: 14px; padding: 7px 13px; background: #a2a2a2; box-shadow: inset 2px 2px 0 #c4c4c4, inset -2px -2px 0 #6e6e6e; color: #4a4a4a;">вайп</div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; padding: 9px 11px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0;">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5.8" stroke="#f0f0f0" stroke-width="1.8"/><path d="m13.4 13.4 3.6 3.6" stroke="#f0f0f0" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <div style="display: flex; align-items: center; gap: 8px; padding: 4px 9px 4px 5px; background: #6f6f6f;">
+      <div class="mc-slot" style="width: 20px; height: 20px;"><div style="width: 11px; height: 11px; background: #5b4a52;"></div></div>
+      <span style="font-size: 13px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Незеритовый слиток</span>
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="m3 3 6 6M9 3l-6 6" stroke="#d8d8d8" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <span style="font-size: 12px; color: #d4d4d4;">введите название или бросьте предмет в это поле</span>
+  </div>
+
+  <div style="display: flex; gap: 8px;">
+    <div style="flex-grow: 1; padding: 9px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
+      <div style="font-size: 10px; color: #5a5a5a; margin-bottom: 3px;">Медиана</div>
+      <div class="mc-num" style="font-size: 17px; color: #2f2f2f;">1 850 000</div>
+    </div>
+    <div style="flex-grow: 1; padding: 9px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
+      <div style="font-size: 10px; color: #5a5a5a; margin-bottom: 3px;">Минимум сейчас</div>
+      <div class="mc-num" style="font-size: 17px; color: #2f6f45;">1 420 000</div>
+    </div>
+    <div style="flex-grow: 1; padding: 9px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
+      <div style="font-size: 10px; color: #5a5a5a; margin-bottom: 3px;">Максимум за 7 дней</div>
+      <div class="mc-num" style="font-size: 17px; color: #8a3f36;">2 240 000</div>
+    </div>
+    <div style="flex-grow: 1; padding: 9px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
+      <div style="font-size: 10px; color: #5a5a5a; margin-bottom: 3px;">Лотов в продаже</div>
+      <div class="mc-num" style="font-size: 17px; color: #2f2f2f;">31</div>
+    </div>
+    <div style="flex-grow: 1; padding: 9px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
+      <div style="font-size: 10px; color: #5a5a5a; margin-bottom: 3px;">Тренд за неделю</div>
+      <div class="mc-num" style="font-size: 17px; color: #2f6f45;">+18 %</div>
+    </div>
+  </div>
+
+  <div style="padding: 3px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0;">
+    <div style="background: #171b22; padding: 14px 16px 10px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+        <span class="mc-px" style="font-size: 14px; color: rgba(232,234,237,0.72);">Цена за штуку · 7 дней</span>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <span style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(232,234,237,0.60);"><span style="width: 14px; height: 2px; background: var(--accent);"></span>цена</span>
+          <span style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(232,234,237,0.60);"><span style="width: 14px; height: 0; border-top: 2px dashed rgba(232,234,237,0.5);"></span>медиана</span>
+        </div>
+      </div>
+      <svg width="1020" height="216" viewBox="0 0 1020 216" fill="none">
+        <line x1="0" y1="24" x2="1020" y2="24" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <line x1="0" y1="72" x2="1020" y2="72" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <line x1="0" y1="120" x2="1020" y2="120" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <line x1="0" y1="168" x2="1020" y2="168" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <path d="M20 150 L96 138 L172 158 L248 120 L324 132 L400 96 L476 110 L552 74 L628 88 L704 62 L780 80 L856 58 L932 70 L1004 46 L1004 190 L20 190 Z" fill="rgba(230,161,60,0.14)"/>
+        <polyline points="20,150 96,138 172,158 248,120 324,132 400,96 476,110 552,74 628,88 704,62 780,80 856,58 932,70 1004,46" stroke="{{accent}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="0" y1="104" x2="1020" y2="104" stroke="rgba(232,234,237,0.45)" stroke-width="1.6" stroke-dasharray="6 6"/>
+        <circle cx="1004" cy="46" r="4" fill="#171b22" stroke="{{accent}}" stroke-width="2.4"/>
+        <circle cx="552" cy="74" r="3.4" fill="{{accent}}"/>
+      </svg>
+      <div style="display: flex; justify-content: space-between; margin-top: 6px; padding: 0 4px;">
+        <span class="mc-num" style="font-size: 10px; color: rgba(232,234,237,0.42);">7 дн назад</span>
+        <span class="mc-num" style="font-size: 10px; color: rgba(232,234,237,0.42);">5 дн</span>
+        <span class="mc-num" style="font-size: 10px; color: rgba(232,234,237,0.42);">3 дн</span>
+        <span class="mc-num" style="font-size: 10px; color: rgba(232,234,237,0.42);">вчера</span>
+        <span class="mc-num" style="font-size: 10px; color: rgba(232,234,237,0.42);">сегодня</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 14px; padding: 7px 10px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0;">
+    <span style="width: 150px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Цена лота</span>
+    <span style="width: 110px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">К медиане</span>
+    <span style="width: 90px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Кол-во</span>
+    <span style="width: 210px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Продавец</span>
+    <span style="flex-grow: 1; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Замечен</span>
+    <span style="width: 130px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-align: right; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">За стак</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 1px; background: #a6a6a6; flex-grow: 1;">
+    <div class="lot-row" style="background: #c2cdbd;">
+      <span class="lot-cell mc-num" style="width: 150px; font-weight: 500;">1 420 000</span>
+      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #4a8a5f; color: #ecf6ef;">−23 %</span></span>
+      <span class="lot-cell mc-num" style="width: 90px;">12 шт</span>
+      <span class="lot-cell" style="width: 210px;">Kartoshka</span>
+      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">3 минуты назад</span>
+      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">90 880 000</span>
+    </div>
+    <div class="lot-row" style="background: #c2cdbd;">
+      <span class="lot-cell mc-num" style="width: 150px; font-weight: 500;">1 510 000</span>
+      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #4a8a5f; color: #ecf6ef;">−18 %</span></span>
+      <span class="lot-cell mc-num" style="width: 90px;">5 шт</span>
+      <span class="lot-cell" style="width: 210px;">Kirpich</span>
+      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">11 минут назад</span>
+      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">96 640 000</span>
+    </div>
+    <div class="lot-row" style="background: #c2cdbd;">
+      <span class="lot-cell mc-num" style="width: 150px; font-weight: 500;">1 620 000</span>
+      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #4a8a5f; color: #ecf6ef;">−12 %</span></span>
+      <span class="lot-cell mc-num" style="width: 90px;">1 шт</span>
+      <span class="lot-cell" style="width: 210px;">Zloy_Kot</span>
+      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">24 минуты назад</span>
+      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">103 680 000</span>
+    </div>
+    <div class="lot-row">
+      <span class="lot-cell mc-num" style="width: 150px;">1 700 000</span>
+      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #7f9e88; color: #22301f;">−8 %</span></span>
+      <span class="lot-cell mc-num" style="width: 90px;">32 шт</span>
+      <span class="lot-cell" style="width: 210px;">MineBoy</span>
+      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">41 минуту назад</span>
+      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">108 800 000</span>
+    </div>
+    <div class="lot-row">
+      <span class="lot-cell mc-num" style="width: 150px;">1 780 000</span>
+      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #7f9e88; color: #22301f;">−4 %</span></span>
+      <span class="lot-cell mc-num" style="width: 90px;">8 шт</span>
+      <span class="lot-cell" style="width: 210px;">Holy_Fan</span>
+      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">1 час назад</span>
+      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">113 920 000</span>
+    </div>
+    <div class="lot-row">
+      <span class="lot-cell mc-num" style="width: 150px;">1 850 000</span>
+      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #9a9a9a; color: #333333;">0 %</span></span>
+      <span class="lot-cell mc-num" style="width: 90px;">3 шт</span>
+      <span class="lot-cell" style="width: 210px;">Ender_Pro</span>
+      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">2 часа назад</span>
+      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">118 400 000</span>
+    </div>
+    <div class="lot-row">
+      <span class="lot-cell mc-num" style="width: 150px;">1 960 000</span>
+      <span style="width: 110px; flex: 0 0 auto;"><span class="mc-num" style="font-size: 11px; padding: 2px 6px; background: #a86a60; color: #f5e9e7;">+6 %</span></span>
+      <span class="lot-cell mc-num" style="width: 90px;">16 шт</span>
+      <span class="lot-cell" style="width: 210px;">TradeKing</span>
+      <span class="lot-cell" style="flex-grow: 1; color: #5a5a5a;">3 часа назад</span>
+      <span class="lot-cell mc-num" style="width: 130px; text-align: right; color: #4f4f4f;">125 440 000</span>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="width: 9px; height: 9px; background: #4a8a5f;"></span>
+      <span style="font-size: 12px; color: #2f2f2f;">3 лота дешевле медианы более чем на 10 %</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 7px;">
+      <span class="mc-px" style="font-size: 13px; padding: 3px 7px; background: #8b8b8b; color: #f0f0f0;">H</span>
+      <span style="font-size: 11px; color: #4a4a4a;">открыть · история пишется только из того, что вы видели в /ah</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#e6a13c","options":["#e6a13c","#35a8ad","#57c07d","#a98cf0"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#e6a13c' };
+  }
+}
+</script>
+</body>
+</html>

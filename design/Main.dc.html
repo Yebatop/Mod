@@ -1,0 +1,388 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
+    a { color: #6b4a12; } a:hover { color: #8a6118; }
+    .mc-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
+    .mc-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .mc-slot { width: 22px; height: 22px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #373737, inset -2px -2px 0 #ffffff; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+    .mc-row { display: flex; align-items: center; gap: 12px; padding: var(--row-pad) 8px; background: #bcbcbc; }
+    .mc-name { font-size: 13px; color: #2f2f2f; }
+    .mc-sub { font-size: 10px; color: #616161; margin-top: 1px; }
+    .mc-cell { flex: 0 0 auto; font-size: 13px; color: #2f2f2f; text-align: right; }
+    .mc-bar { height: 5px; background: #8f8f8f; box-shadow: inset 1px 1px 0 #6e6e6e; }
+    .mc-badge { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; font-size: 12px; letter-spacing: 0.03em; padding: 2px 7px; }
+  </style>
+</helmet>
+<div style="--accent: {{accent}}; --row-pad: {{rowPad}}; width: 1120px; height: 860px; box-sizing: border-box; background: #c6c6c6; box-shadow: inset 3px 3px 0 #ffffff, inset -3px -3px 0 #565656; padding: 17px 17px 14px; display: flex; flex-direction: column; gap: 12px;">
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 11px;">
+      <div class="mc-slot" style="width: 30px; height: 30px;"><div style="width: 16px; height: 16px; background: var(--accent); box-shadow: inset 2px 2px 0 rgba(255,255,255,0.35), inset -2px -2px 0 rgba(0,0,0,0.28);"></div></div>
+      <div>
+        <div class="mc-px" style="font-size: 21px; color: #3a3a3a; line-height: 1;">Скупец — планировщик</div>
+        <div style="font-size: 11px; color: #616161; margin-top: 3px;">HolyHelper · Прайм Анархия</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 7px; padding: 6px 10px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0;">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.6" stroke="#f0f0f0" stroke-width="1.7"/><path d="M10 5.6V10l3 1.8" stroke="#f0f0f0" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <span class="mc-num" style="font-size: 13px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">2:14:07</span>
+      </div>
+      <div style="padding: 6px 12px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0;">
+        <span class="mc-num" style="font-size: 13px; color: #cfe9ea; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">5:02:41</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 6px;">
+    <div class="mc-px" style="font-size: 15px; padding: 8px 16px; background: #c6c6c6; box-shadow: inset 2px 2px 0 #ffffff, inset -2px -2px 0 #6e6e6e; color: #2f2f2f;">Обычные торги · 6 ч</div>
+    <div class="mc-px" style="font-size: 15px; padding: 8px 16px; background: #a2a2a2; box-shadow: inset 2px 2px 0 #c4c4c4, inset -2px -2px 0 #6e6e6e; color: #4a4a4a;">Особые торги · 8 ч</div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 8px; padding: 7px 11px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5.6" stroke="#3a3a3a" stroke-width="1.7"/><path d="m13.4 13.4 3.4 3.4" stroke="#3a3a3a" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span style="font-size: 12px; color: #4a4a4a;">Фильтр по названию</span>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 12px; padding: 7px 8px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #6e6e6e, inset -2px -2px 0 #d0d0d0;">
+    <span style="width: 300px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Товар</span>
+    <span style="width: 104px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-align: right; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Цена / шт</span>
+    <span style="width: 66px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-align: center; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Множ.</span>
+    <span style="width: 168px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Остаток лимита</span>
+    <span style="width: 122px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-align: right; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Скупец итог</span>
+    <span style="width: 116px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-align: right; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Медиана АХ</span>
+    <span style="width: 108px; flex: 0 0 auto; font-size: 11px; color: #f4f4f4; text-align: right; text-shadow: 1px 1px 0 rgba(0,0,0,0.35);">Выгоднее</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 1px; background: #a6a6a6; flex-grow: 1;">
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #2b2b2b;"></div></div>
+        <div><div class="mc-name">Уголь</div><div class="mc-sub">Драгоценности</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">1 240</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; padding: 2px 5px; background: var(--accent); color: #2a1c06;">+15 %</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">512 / 2 048</span></div>
+        <div class="mc-bar"><div style="width: 25%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">1 426</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">1 180</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: var(--accent); color: #2a1c06;">СКУПЕЦ</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+21 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #e8e2cf;"></div></div>
+        <div><div class="mc-name">Кость</div><div class="mc-sub">Лут из враждебных мобов</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">890</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; padding: 2px 5px; background: var(--accent); color: #2a1c06;">+10 %</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">1 024 / 4 096</span></div>
+        <div class="mc-bar"><div style="width: 25%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">979</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">1 340</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: #35a8ad; color: #06282a;">АУКЦИОН</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+37 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #dcdcdc;"></div></div>
+        <div><div class="mc-name">Нить</div><div class="mc-sub">Лут из враждебных мобов</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">2 100</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; padding: 2px 5px; background: var(--accent); color: #2a1c06;">+10 %</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">0 / 2 048</span></div>
+        <div class="mc-bar"><div style="width: 0%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">2 310</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">2 250</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: var(--accent); color: #2a1c06;">СКУПЕЦ</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+3 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #8c8c8c;"></div></div>
+        <div><div class="mc-name">Порох</div><div class="mc-sub">Лут из враждебных мобов</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">3 450</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; padding: 2px 5px; background: var(--accent); color: #2a1c06;">+10 %</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">640 / 1 536</span></div>
+        <div class="mc-bar"><div style="width: 42%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">3 795</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">4 900</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: #35a8ad; color: #06282a;">АУКЦИОН</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+29 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #1f7a6e;"></div></div>
+        <div><div class="mc-name">Эндер-жемчуг</div><div class="mc-sub">Лут из враждебных мобов</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">12 800</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; padding: 2px 5px; background: var(--accent); color: #2a1c06;">+10 %</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">96 / 512</span></div>
+        <div class="mc-bar"><div style="width: 19%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">14 080</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">13 500</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: var(--accent); color: #2a1c06;">СКУПЕЦ</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+4 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #7a4a3c;"></div></div>
+        <div><div class="mc-name">Гнилая плоть</div><div class="mc-sub">Лут из враждебных мобов</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">120</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; padding: 2px 5px; background: var(--accent); color: #2a1c06;">+10 %</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">3 200 / 8 192</span></div>
+        <div class="mc-bar"><div style="width: 39%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">132</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">90</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: var(--accent); color: #2a1c06;">СКУПЕЦ</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+47 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #cfe6e6;"></div></div>
+        <div><div class="mc-name">Слеза гаста</div><div class="mc-sub">Драгоценности</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">18 400</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; color: #7a7a7a;">—</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">24 / 256</span></div>
+        <div class="mc-bar"><div style="width: 9%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">18 400</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">26 000</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: #35a8ad; color: #06282a;">АУКЦИОН</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+41 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #c9b8a0;"></div></div>
+        <div><div class="mc-name">Мембрана фантома</div><div class="mc-sub">Лут из враждебных мобов</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">9 600</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; color: #7a7a7a;">—</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">48 / 384</span></div>
+        <div class="mc-bar"><div style="width: 13%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">9 600</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">9 400</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: #9a9a9a; color: #333333;">РАВНО</span>
+        <span class="mc-num" style="font-size: 10px; color: #616161;">2 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #7a5b8a;"></div></div>
+        <div><div class="mc-name">Панцирь шалкера</div><div class="mc-sub">Лут из враждебных мобов</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">42 000</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; color: #7a7a7a;">—</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">12 / 128</span></div>
+        <div class="mc-bar"><div style="width: 9%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">42 000</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">61 000</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: #35a8ad; color: #06282a;">АУКЦИОН</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+45 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #26183a;"></div></div>
+        <div><div class="mc-name">Обсидиан</div><div class="mc-sub">Блоки</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">5 200</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; padding: 2px 5px; background: var(--accent); color: #2a1c06;">+15 %</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">256 / 1 024</span></div>
+        <div class="mc-bar"><div style="width: 25%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">5 980</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">4 700</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: var(--accent); color: #2a1c06;">СКУПЕЦ</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+27 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #ece5dc;"></div></div>
+        <div><div class="mc-name">Кварц</div><div class="mc-sub">Драгоценности</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">2 900</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; color: #7a7a7a;">—</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">512 / 2 048</span></div>
+        <div class="mc-bar"><div style="width: 25%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">2 900</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">3 100</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: #9a9a9a; color: #333333;">РАВНО</span>
+        <span class="mc-num" style="font-size: 10px; color: #616161;">7 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #8a5f3a;"></div></div>
+        <div><div class="mc-name">Кожа</div><div class="mc-sub">Лут из мирных мобов</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">1 750</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; color: #7a7a7a;">—</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">320 / 1 536</span></div>
+        <div class="mc-bar"><div style="width: 21%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">1 750</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">2 400</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: #35a8ad; color: #06282a;">АУКЦИОН</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+37 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #f0f0f0;"></div></div>
+        <div><div class="mc-name">Перо</div><div class="mc-sub">Лут из мирных мобов</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">640</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; color: #7a7a7a;">—</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">768 / 3 072</span></div>
+        <div class="mc-bar"><div style="width: 25%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">640</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">520</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: var(--accent); color: #2a1c06;">СКУПЕЦ</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+23 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #d9a03a;"></div></div>
+        <div><div class="mc-name">Пчелиные соты</div><div class="mc-sub">Лут из мирных мобов</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">7 300</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; color: #7a7a7a;">—</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">64 / 512</span></div>
+        <div class="mc-bar"><div style="width: 13%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">7 300</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">7 200</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: #9a9a9a; color: #333333;">РАВНО</span>
+        <span class="mc-num" style="font-size: 10px; color: #616161;">1 %</span>
+      </div>
+    </div>
+
+    <div class="mc-row">
+      <div style="display: flex; align-items: center; gap: 9px; width: 300px; flex: 0 0 auto;">
+        <div class="mc-slot"><div style="width: 12px; height: 12px; background: #5b8a3c;"></div></div>
+        <div><div class="mc-name">Мох</div><div class="mc-sub">Блоки</div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 104px;">3 800</div>
+      <div style="width: 66px; flex: 0 0 auto; text-align: center;"><span class="mc-num" style="font-size: 11px; padding: 2px 5px; background: var(--accent); color: #2a1c06;">+15 %</span></div>
+      <div style="width: 168px; flex: 0 0 auto;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #616161; margin-bottom: 3px;"><span>продано</span><span class="mc-num">0 / 1 024</span></div>
+        <div class="mc-bar"><div style="width: 0%; height: 100%; background: #4f7fbf;"></div></div>
+      </div>
+      <div class="mc-cell mc-num" style="width: 122px; font-weight: 500;">4 370</div>
+      <div class="mc-cell mc-num" style="width: 116px; color: #4f4f4f;">3 300</div>
+      <div style="width: 108px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+        <span class="mc-badge" style="background: var(--accent); color: #2a1c06;">СКУПЕЦ</span>
+        <span class="mc-num" style="font-size: 10px; color: #2f6f45;">+32 %</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 12px; background: #b0b0b0; box-shadow: inset 2px 2px 0 #cccccc, inset -2px -2px 0 #6e6e6e;">
+    <div style="display: flex; align-items: center; gap: 9px;">
+      <span style="font-size: 11px; color: #4a4a4a;">Ежедневная сделка</span>
+      <span style="font-size: 12px; color: #2f2f2f;">Блоки</span>
+      <span class="mc-num" style="font-size: 12px; color: #2f6f45;">40 000 / 60 000</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 9px;">
+      <span style="font-size: 11px; color: #4a4a4a;">Обновить ассортимент</span>
+      <span class="mc-num" style="font-size: 11px; padding: 3px 7px; background: #8b8b8b; color: #f0f0f0;">1 Элемент</span>
+      <span class="mc-num" style="font-size: 11px; padding: 3px 7px; background: #8b8b8b; color: #f0f0f0;">49 гемов</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 7px;">
+      <span class="mc-px" style="font-size: 13px; padding: 3px 7px; background: #8b8b8b; color: #f0f0f0;">G</span>
+      <span style="font-size: 11px; color: #4a4a4a;">открыть · </span>
+      <span class="mc-px" style="font-size: 13px; padding: 3px 7px; background: #8b8b8b; color: #f0f0f0;">ESC</span>
+      <span style="font-size: 11px; color: #4a4a4a;">закрыть</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#d99a33","options":["#d99a33","#35a8ad","#57c07d","#a98cf0"]},"density":{"editor":"enum","default":"comfortable","options":["comfortable","compact"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const d = this.props.density ?? 'comfortable';
+    return {
+      accent: this.props.accent ?? '#d99a33',
+      rowPad: d === 'compact' ? '4px' : '7px'
+    };
+  }
+}
+</script>
+</body>
+</html>
