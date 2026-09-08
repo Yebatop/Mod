@@ -13,117 +13,200 @@
     a { color: #f2b45c; } a:hover { color: #ffd08a; }
     .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
     .u-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
-    .tt-frame { background: linear-gradient(160deg, #6a37d6 0%, #3a1a86 42%, #1d0c4d 100%); padding: 1px; border-radius: 2px; box-shadow: 0 18px 46px rgba(0,0,0,0.62), 0 0 34px rgba(106,55,214,0.20); }
-    .tt-body { background: #0c0a13; border-radius: 1px; padding: 11px 13px; }
-    .tt-row { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; }
-    .tt-key { font-size: 12px; color: #7d7d8f; }
-    .tt-val { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; font-size: 12.5px; color: #e6e6ee; }
-    .tt-sep { height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04) 70%, transparent); margin: 9px 0; }
-    .mc-slot { background: #2a2c33; border: 1px solid rgba(255,255,255,0.06); box-shadow: inset 2px 2px 0 rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+    .u-lab { font-size: 9.5px; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: #5d6472; }
+    .tip { position: relative; border-radius: 7px; overflow: hidden; background: linear-gradient(180deg, #151821 0%, #0d0f14 100%); border: 1px solid rgba(255,255,255,0.085); box-shadow: 0 26px 64px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.055); }
+    .tip-top { height: 2px; }
+    .tip-in { padding: 14px 16px 13px; }
+    .tip-sep { height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.11), rgba(255,255,255,0.03) 72%, transparent); margin: 12px 0; }
+    .slot { background: #1b1e26; border: 1px solid rgba(255,255,255,0.055); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+    .kv { display: flex; flex-direction: column; gap: 3px; }
+    .kv-v { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; font-size: 13px; color: #eef1f5; }
+    .trk { height: 5px; border-radius: 3px; background: rgba(255,255,255,0.07); overflow: hidden; }
   </style>
 </helmet>
-<div style="position: relative; width: 1040px; height: 700px; box-sizing: border-box; overflow: hidden; background: #090b0f; --accent: {{accent}};">
+<div style="position: relative; width: 1240px; height: 820px; box-sizing: border-box; overflow: hidden; background: #08090d; color: #e9ecf1; --accent: {{accent}};">
 
-  <div style="position: absolute; inset: 0; filter: blur(4px) brightness(0.55); background: linear-gradient(180deg, #182238 0%, #2f4067 42%, #6a6a86 68%, #a8714f 86%, #5d4230 100%);">
-    <div style="position: absolute; left: 0; right: 0; bottom: 190px; height: 130px; background: #2f4a3c; clip-path: polygon(0 70%, 15% 40%, 30% 66%, 46% 32%, 62% 60%, 78% 36%, 90% 62%, 100% 44%, 100% 100%, 0 100%);"></div>
-    <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 210px; background: linear-gradient(180deg, #3c5a3a 0%, #2c3f2a 55%, #23301f 100%);"></div>
-  </div>
-  <div style="position: absolute; inset: 0; background: rgba(6,8,12,0.62);"></div>
+  <div style="position: absolute; inset: 0; background: radial-gradient(700px 420px at 46% 34%, rgba(242,180,92,0.10), transparent 64%), radial-gradient(560px 380px at 88% 78%, rgba(70,211,217,0.07), transparent 62%), linear-gradient(180deg, #0d0f15 0%, #08090d 60%);"></div>
+  <div style="position: absolute; inset: 0; background: radial-gradient(130% 100% at 50% 45%, transparent 42%, rgba(0,0,0,0.55) 100%);"></div>
+  <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.045; pointer-events: none;"><filter id="grainT"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainT)"/></svg>
 
-  <div style="position: absolute; top: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 3px; padding: 5px; border-radius: 4px; background: rgba(16,19,26,0.72); border: 1px solid rgba(255,255,255,0.07);">
-    <div class="mc-slot" style="width: 34px; height: 34px;"><div style="width: 17px; height: 17px; background: #1f7a6e;"></div></div>
-    <div class="mc-slot" style="width: 34px; height: 34px; border-color: rgba(242,180,92,0.55); box-shadow: inset 2px 2px 0 rgba(0,0,0,0.35), 0 0 16px rgba(242,180,92,0.35);"><div style="width: 17px; height: 17px; background: #8c6aa0;"></div></div>
-    <div class="mc-slot" style="width: 34px; height: 34px;"><div style="width: 17px; height: 17px; background: #23262c;"></div></div>
-    <div class="mc-slot" style="width: 34px; height: 34px;"><div style="width: 17px; height: 17px; background: #5b8a3c;"></div></div>
-    <div class="mc-slot" style="width: 34px; height: 34px;"></div>
-    <div class="mc-slot" style="width: 34px; height: 34px;"><div style="width: 17px; height: 17px; background: #d9a03a;"></div></div>
-    <div class="mc-slot" style="width: 34px; height: 34px;"></div>
-    <div class="mc-slot" style="width: 34px; height: 34px;"><div style="width: 17px; height: 17px; background: #8a5f3a;"></div></div>
-    <div class="mc-slot" style="width: 34px; height: 34px;"></div>
-  </div>
-
-  <div style="position: absolute; left: 56px; top: 150px; width: 330px;">
-    <div class="tt-frame">
-      <div class="tt-body">
-        <div style="font-size: 15px; color: #ffffff; letter-spacing: 0.01em;">Эндер-жемчуг</div>
-        <div style="font-size: 11px; color: #5f5f74; margin-top: 3px;">minecraft:ender_pearl</div>
-        <div class="tt-sep"></div>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px;">
-          <span style="display: flex; align-items: center; gap: 7px;">
-            <span style="width: 8px; height: 8px; background: var(--accent); box-shadow: 0 0 9px rgba(242,180,92,0.85);"></span>
-            <span class="u-px" style="font-size: 13px; color: var(--accent); letter-spacing: 0.05em;">HOLYHELPER</span>
-          </span>
-          <svg width="62" height="17" viewBox="0 0 62 17" fill="none"><polyline points="1,13 10,11 19,14 28,8 37,10 46,5 54,7 61,3" stroke="{{accent}}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/></svg>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <div class="tt-row"><span class="tt-key">Скупец, за шт</span><span class="tt-val">14 080</span></div>
-          <div class="tt-row"><span class="tt-key">Множитель</span><span class="tt-val" style="color: var(--accent);">+10 % · Лут мобов</span></div>
-          <div class="tt-row"><span class="tt-key">Медиана АХ</span><span class="tt-val">13 500</span></div>
-          <div class="tt-row"><span class="tt-key">Остаток лимита</span><span class="tt-val">416 из 512</span></div>
-          <div class="tt-row"><span class="tt-key">Стак 64 шт</span><span class="tt-val" style="color: #9a9aae;">901 120</span></div>
-        </div>
-        <div class="tt-sep"></div>
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; border-radius: 3px; background: rgba(242,180,92,0.12); border: 1px solid rgba(242,180,92,0.26);">
-          <span style="font-size: 12.5px; color: #f2b45c;">Нести Скупцу</span>
-          <span class="u-num" style="font-size: 14px; font-weight: 700; color: #f2b45c;">+4 %</span>
-        </div>
-        <div style="margin-top: 9px; font-size: 10px; color: #4e4e60;">из /b · 6 минут назад</div>
+  <div style="position: absolute; left: 54px; top: 92px; padding: 12px; border-radius: 9px; background: rgba(17,20,27,0.78); border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 20px 48px rgba(0,0,0,0.5);">
+    <div class="u-lab" style="margin-bottom: 11px;">Инвентарь</div>
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+      <div style="display: flex; gap: 3px;">
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #1f7a6e;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #8c6aa0;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #d9a03a;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #8a5f3a;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #5b8a3c;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
       </div>
-    </div>
-    <svg width="24" height="28" viewBox="0 0 22 26" fill="none" style="position: absolute; left: -15px; top: -19px;"><path d="M3 2 3 20 8 15.5 11 22.5 14.5 21 11.5 14.2 18 14 3 2Z" fill="#ffffff" stroke="#0a0a0f" stroke-width="1.6" stroke-linejoin="round"/></svg>
-  </div>
-
-  <div style="position: absolute; right: 56px; top: 118px; width: 330px;">
-    <div class="tt-frame">
-      <div class="tt-body">
-        <div style="font-size: 15px; color: #ffffff; letter-spacing: 0.01em;">Панцирь шалкера</div>
-        <div style="font-size: 11px; color: #5f5f74; margin-top: 3px;">minecraft:shulker_shell</div>
-        <div class="tt-sep"></div>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px;">
-          <span style="display: flex; align-items: center; gap: 7px;">
-            <span style="width: 8px; height: 8px; background: #46d3d9; box-shadow: 0 0 9px rgba(70,211,217,0.85);"></span>
-            <span class="u-px" style="font-size: 13px; color: #46d3d9; letter-spacing: 0.05em;">HOLYHELPER</span>
-          </span>
-          <svg width="62" height="17" viewBox="0 0 62 17" fill="none"><polyline points="1,12 10,9 19,11 28,6 37,9 46,4 54,6 61,2" stroke="#46d3d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/></svg>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <div class="tt-row"><span class="tt-key">Скупец, за шт</span><span class="tt-val">42 000</span></div>
-          <div class="tt-row"><span class="tt-key">Множитель</span><span class="tt-val" style="color: #5f5f74;">нет</span></div>
-          <div class="tt-row"><span class="tt-key">Медиана АХ</span><span class="tt-val">61 000</span></div>
-          <div class="tt-row"><span class="tt-key">Минимум сейчас</span><span class="tt-val">58 000 · 4 лота</span></div>
-          <div class="tt-row"><span class="tt-key">Стак 64 шт</span><span class="tt-val" style="color: #9a9aae;">3 904 000</span></div>
-        </div>
-        <div class="tt-sep"></div>
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; border-radius: 3px; background: rgba(70,211,217,0.12); border: 1px solid rgba(70,211,217,0.26);">
-          <span style="font-size: 12.5px; color: #46d3d9;">Выставить на аукцион</span>
-          <span class="u-num" style="font-size: 14px; font-weight: 700; color: #46d3d9;">+45 %</span>
-        </div>
-        <div style="margin-top: 9px; font-size: 10px; color: #4e4e60;">из /ah · 40 секунд назад</div>
+      <div style="display: flex; gap: 3px;">
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #23262c;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #d5d8dd;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #c9b8a0;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #7a4a3c;"></div></div>
+      </div>
+      <div style="display: flex; gap: 3px;">
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #eae3d8;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #e8e2cf;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"></div>
+        <div class="slot" style="width: 40px; height: 40px;"><div style="width: 19px; height: 19px; background: #8c8c8c;"></div></div>
+        <div class="slot" style="width: 40px; height: 40px; position: relative; border-color: rgba(242,180,92,0.6); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 20px rgba(242,180,92,0.34);"><div style="width: 19px; height: 19px; background: #2b2340; box-shadow: 0 0 10px rgba(242,180,92,0.35);"></div></div>
       </div>
     </div>
   </div>
 
-  <div style="position: absolute; left: 210px; bottom: 44px; width: 330px;">
-    <div class="tt-frame" style="background: linear-gradient(160deg, #3a3a46 0%, #24242e 60%, #16161d 100%); box-shadow: 0 14px 34px rgba(0,0,0,0.55);">
-      <div class="tt-body">
-        <div style="font-size: 15px; color: #ffffff;">Сомнительный разящий клинок</div>
-        <div style="font-size: 11px; color: #5f5f74; margin-top: 3px;">Сомнительное зачарование</div>
-        <div class="tt-sep"></div>
-        <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 8px;">
-          <span style="width: 8px; height: 8px; background: #4e4e60;"></span>
-          <span class="u-px" style="font-size: 13px; color: #6e6e82; letter-spacing: 0.05em;">HOLYHELPER</span>
+  <svg width="26" height="30" viewBox="0 0 22 26" fill="none" style="position: absolute; left: 400px; top: 292px;"><path d="M3 2 3 20 8 15.5 11 22.5 14.5 21 11.5 14.2 18 14 3 2Z" fill="#ffffff" stroke="#07080b" stroke-width="1.7" stroke-linejoin="round"/></svg>
+
+  <div style="position: absolute; left: 424px; top: 246px; width: 392px;">
+    <div style="position: absolute; inset: 12px 8px -12px 8px; border-radius: 20px; background: var(--accent); opacity: 0.16; filter: blur(38px);"></div>
+    <div class="tip">
+      <div class="tip-top" style="background: linear-gradient(90deg, var(--accent), rgba(242,180,92,0.18) 58%, transparent);"></div>
+      <div class="tip-in">
+
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="slot" style="width: 34px; height: 34px; border-radius: 4px;"><div style="width: 17px; height: 17px; background: #2b2340;"></div></div>
+          <div style="flex-grow: 1;">
+            <div style="font-size: 16px; color: #ffffff; letter-spacing: 0.005em;">Обсидиан</div>
+            <div style="font-size: 11px; color: #5d6472; margin-top: 2px;">Блоки · minecraft:obsidian</div>
+          </div>
+          <span class="u-num" style="font-size: 10px; padding: 3px 7px; border-radius: 4px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); color: #8b93a1;">/b</span>
         </div>
-        <div style="font-size: 12.5px; color: #8a8a9c; line-height: 1.55;">Цен пока нет. Откройте <span class="u-num" style="color: #cfcfdd;">/ah</span> или <span class="u-num" style="color: #cfcfdd;">/b</span> — подсказка появится, как только предмет встретится.</div>
+
+        <div class="tip-sep"></div>
+
+        <div style="display: flex; align-items: center; gap: 18px;">
+          <div style="flex: 0 0 auto;">
+            <div class="u-num" style="font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1;">+27 %</div>
+            <div style="font-size: 12.5px; color: #b6bdc9; margin-top: 6px;">нести Скупцу</div>
+          </div>
+          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 9px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span class="u-lab" style="color: rgba(242,180,92,0.85);">Скупец</span>
+                <span class="u-num" style="font-size: 12px; color: #f2b45c;">5 980</span>
+              </div>
+              <div class="trk"><div style="width: 100%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.42), var(--accent));"></div></div>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span class="u-lab">Аукцион</span>
+                <span class="u-num" style="font-size: 12px; color: #8b93a1;">4 700</span>
+              </div>
+              <div class="trk"><div style="width: 79%; height: 100%; background: rgba(70,211,217,0.45);"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip-sep"></div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 20px;">
+          <div class="kv"><span class="u-lab">Базовая цена</span><span class="kv-v">5 200</span></div>
+          <div class="kv"><span class="u-lab">Множитель</span><span class="kv-v" style="color: var(--accent);">+15 % · Блоки</span></div>
+          <div class="kv"><span class="u-lab">Стак 64 шт</span><span class="kv-v">382 720</span></div>
+          <div class="kv">
+            <span class="u-lab">Лимит приёма</span>
+            <span style="display: flex; align-items: center; gap: 8px;">
+              <span class="trk" style="flex-grow: 1;"><span style="display: block; width: 75%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.42), var(--accent));"></span></span>
+              <span class="u-num" style="font-size: 11px; color: #8b93a1;">768</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="tip-sep"></div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <svg width="76" height="20" viewBox="0 0 76 20" fill="none">
+              <defs><linearGradient id="spk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="{{accent}}" stop-opacity="0.34"/><stop offset="100%" stop-color="{{accent}}" stop-opacity="0"/></linearGradient></defs>
+              <path d="M2 15 L13 13 L24 16 L35 9 L46 11 L57 5 L65 7 L74 3 L74 19 L2 19 Z" fill="url(#spk)"/>
+              <polyline points="2,15 13,13 24,16 35,9 46,11 57,5 65,7 74,3" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span style="font-size: 11px; color: #5d6472;">7 дней</span>
+          </div>
+          <span style="font-size: 11px; color: #5d6472;">6 минут назад</span>
+        </div>
+
       </div>
     </div>
   </div>
 
-  <div style="position: absolute; right: 56px; bottom: 44px; width: 330px; padding: 14px 16px; border-radius: 9px; background: rgba(18,22,30,0.72); border: 1px solid rgba(255,255,255,0.07); backdrop-filter: blur(8px);">
-    <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #626b7b; margin-bottom: 9px;">Три состояния</div>
-    <div style="display: flex; flex-direction: column; gap: 7px;">
-      <div style="display: flex; align-items: center; gap: 9px;"><span style="width: 7px; height: 7px; background: #f2b45c;"></span><span style="font-size: 12px; color: #b6bdc9;">выгоднее Скупцу</span></div>
-      <div style="display: flex; align-items: center; gap: 9px;"><span style="width: 7px; height: 7px; background: #46d3d9;"></span><span style="font-size: 12px; color: #b6bdc9;">выгоднее на аукционе</span></div>
-      <div style="display: flex; align-items: center; gap: 9px;"><span style="width: 7px; height: 7px; background: #4e4e60;"></span><span style="font-size: 12px; color: #b6bdc9;">данных ещё нет</span></div>
+  <div style="position: absolute; right: 54px; top: 92px; width: 330px;">
+    <div class="u-lab" style="margin-bottom: 10px;">Выгоднее на аукционе</div>
+    <div class="tip">
+      <div class="tip-top" style="background: linear-gradient(90deg, #46d3d9, rgba(70,211,217,0.18) 58%, transparent);"></div>
+      <div class="tip-in">
+        <div style="display: flex; align-items: center; gap: 11px;">
+          <div class="slot" style="width: 30px; height: 30px; border-radius: 4px;"><div style="width: 15px; height: 15px; background: #8c6aa0;"></div></div>
+          <div style="flex-grow: 1;">
+            <div style="font-size: 15px; color: #ffffff;">Панцирь шалкера</div>
+            <div style="font-size: 10.5px; color: #5d6472; margin-top: 2px;">Лут из враждебных мобов</div>
+          </div>
+          <span class="u-num" style="font-size: 10px; padding: 3px 7px; border-radius: 4px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); color: #8b93a1;">/ah</span>
+        </div>
+        <div class="tip-sep"></div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div style="flex: 0 0 auto;">
+            <div class="u-num" style="font-size: 26px; font-weight: 700; color: #46d3d9; line-height: 1;">+45 %</div>
+            <div style="font-size: 12px; color: #b6bdc9; margin-top: 5px;">на аукцион</div>
+          </div>
+          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span class="u-lab" style="color: rgba(70,211,217,0.85);">Аукцион</span><span class="u-num" style="font-size: 11.5px; color: #46d3d9;">61 000</span></div>
+              <div class="trk"><div style="width: 100%; height: 100%; background: linear-gradient(90deg, rgba(70,211,217,0.42), #46d3d9);"></div></div>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span class="u-lab">Скупец</span><span class="u-num" style="font-size: 11.5px; color: #8b93a1;">42 000</span></div>
+              <div class="trk"><div style="width: 69%; height: 100%; background: rgba(242,180,92,0.42);"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tip-sep"></div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 18px;">
+          <div class="kv"><span class="u-lab">Минимум сейчас</span><span class="kv-v" style="font-size: 12.5px;">58 000</span></div>
+          <div class="kv"><span class="u-lab">Лотов в продаже</span><span class="kv-v" style="font-size: 12.5px;">4</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position: absolute; right: 54px; top: 480px; width: 330px;">
+    <div class="u-lab" style="margin-bottom: 10px;">Данных ещё нет</div>
+    <div class="tip" style="box-shadow: 0 18px 44px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);">
+      <div class="tip-top" style="background: linear-gradient(90deg, rgba(255,255,255,0.16), transparent 60%);"></div>
+      <div class="tip-in">
+        <div style="display: flex; align-items: center; gap: 11px;">
+          <div class="slot" style="width: 30px; height: 30px; border-radius: 4px;"><div style="width: 15px; height: 15px; background: #3a3f4a;"></div></div>
+          <div style="flex-grow: 1;">
+            <div style="font-size: 15px; color: #ffffff;">Сомнительный разящий клинок</div>
+            <div style="font-size: 10.5px; color: #5d6472; margin-top: 2px;">Сомнительное зачарование</div>
+          </div>
+        </div>
+        <div class="tip-sep"></div>
+        <div style="font-size: 12.5px; color: #8b93a1; line-height: 1.55;">Цену этого предмета мод ещё не встречал. Откройте <span class="u-num" style="color: #cdd3dc;">/ah</span> или <span class="u-num" style="color: #cdd3dc;">/b</span> — подсказка появится сама.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 54px; bottom: 46px; width: 330px; padding: 15px 17px; border-radius: 10px; background: rgba(255,255,255,0.026); border: 1px solid rgba(255,255,255,0.065);">
+    <div class="u-lab" style="margin-bottom: 10px;">Что решает цвет</div>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 10px;"><span style="width: 22px; height: 3px; border-radius: 2px; background: #f2b45c;"></span><span style="font-size: 12px; color: #b6bdc9;">золото — выгоднее Скупцу</span></div>
+      <div style="display: flex; align-items: center; gap: 10px;"><span style="width: 22px; height: 3px; border-radius: 2px; background: #46d3d9;"></span><span style="font-size: 12px; color: #b6bdc9;">бирюза — выгоднее на аукционе</span></div>
+      <div style="display: flex; align-items: center; gap: 10px;"><span style="width: 22px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.2);"></span><span style="font-size: 12px; color: #b6bdc9;">серое — данных нет</span></div>
     </div>
   </div>
 
