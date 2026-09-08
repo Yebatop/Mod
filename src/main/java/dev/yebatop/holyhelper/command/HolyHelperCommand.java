@@ -9,6 +9,7 @@ import dev.yebatop.holyhelper.scan.BuyerParser;
 import dev.yebatop.holyhelper.scan.BuyerScanner;
 import dev.yebatop.holyhelper.scan.MarketParser;
 import dev.yebatop.holyhelper.scan.MarketScanner;
+import dev.yebatop.holyhelper.store.PriceStore;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.MutableText;
@@ -21,6 +22,9 @@ import java.util.List;
 
 /** Клиентская команда {@code /holyhelper}. На сервер ничего не уходит. */
 public final class HolyHelperCommand {
+
+    /** За какое время наблюдения Маркета ещё что-то значат. */
+    private static final Duration MARKET_MEMORY = Duration.ofHours(12);
 
     private HolyHelperCommand() {
     }
@@ -67,6 +71,11 @@ public final class HolyHelperCommand {
             line(source, "Из панели", (board.nick().isEmpty() ? "ник не найден" : board.nick())
                     + " · " + (board.server().isEmpty() ? "режим не найден" : board.server()));
         }
+
+        PriceStore prices = mod.prices();
+        line(source, "База цен", prices.itemCount() == 0
+                ? "пуста — откройте /ah, и мод запомнит увиденное"
+                : prices.observationCount() + " наблюдений по " + prices.itemCount() + " предметам");
 
         line(source, "Паттерны", "версия " + mod.patterns().version());
         return 1;
@@ -212,6 +221,7 @@ public final class HolyHelperCommand {
             if (offer.rotation() != null) {
                 row.append(Text.literal("  " + humanTime(offer.rotation())).formatted(Formatting.DARK_GRAY));
             }
+            appendMarketHint(row, offer);
             source.sendFeedback(row);
         }
         return 1;
@@ -291,6 +301,34 @@ public final class HolyHelperCommand {
     private static void line(FabricClientCommandSource source, String key, String value) {
         source.sendFeedback(Text.literal("  " + key + ": ").formatted(Formatting.GRAY)
                 .append(Text.literal(value).formatted(Formatting.WHITE)));
+    }
+
+    /**
+     * Дописывает к товару то, что мод видел на Маркете.
+     * <p>
+     * Сравнение намеренно осторожное. Мод знает не «цену рынка», а самое дешёвое
+     * из увиденного, и это оценка дна <b>сверху</b>: дешевле могло лежать там, куда
+     * игрок не дошёл. Поэтому вывод звучит как «на Маркете видел дешевле/дороже»,
+     * а не «выгоднее продать туда».
+     * <p>
+     * Вторая причина осторожности в том, что цены несопоставимы напрямую. Скупец
+     * платит сразу и сколько угодно раз в пределах остатка, а лот на Маркете надо
+     * выставить, дождаться покупателя и подвинуться ниже нынешнего дна.
+     */
+    private static void appendMarketHint(MutableText row, BuyerParser.Offer offer) {
+        PriceStore prices = HolyHelperClient.instance().prices();
+        PriceStore.Known known = prices.known(offer.itemId(), MARKET_MEMORY).orElse(null);
+        if (known == null) {
+            return;
+        }
+
+        double buyer = offer.unitPrice();
+        long market = known.cheapestUnitPrice();
+        // Разница меньше процента — это шум разбора и округления, а не сигнал.
+        boolean marketDearer = market > buyer * 1.01;
+
+        row.append(Text.literal("  Маркет от " + market)
+                .formatted(marketDearer ? Formatting.GREEN : Formatting.DARK_GRAY));
     }
 
     /** -1 — это «не нашли в панели», а не сумма. Печатать его как число нечестно. */

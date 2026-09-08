@@ -1,6 +1,7 @@
 package dev.yebatop.holyhelper.scan;
 
 import dev.yebatop.holyhelper.core.Patterns;
+import dev.yebatop.holyhelper.store.PriceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +29,10 @@ public final class MarketScanner {
 
     private final Patterns patterns;
     private final MarketParser parser;
+    private final PriceStore prices;
 
     private volatile Snapshot last = Snapshot.EMPTY;
+    private volatile String recordedSignature = "";
 
     public record Snapshot(
             boolean present,
@@ -43,9 +46,10 @@ public final class MarketScanner {
                 new Snapshot(false, null, "", "", List.of(), Instant.EPOCH);
     }
 
-    public MarketScanner(Patterns patterns) {
+    public MarketScanner(Patterns patterns, PriceStore prices) {
         this.patterns = patterns;
         this.parser = new MarketParser(patterns);
+        this.prices = prices;
     }
 
     public Snapshot last() {
@@ -55,9 +59,30 @@ public final class MarketScanner {
     /** Читает витрину, если она открыта. Зовётся из тика клиента. */
     public void tickScan() {
         Snapshot fresh = scan();
-        if (fresh.present()) {
-            last = fresh;
+        if (!fresh.present()) {
+            return;
         }
+        last = fresh;
+
+        // Витрину читаем дважды в секунду, но записываем только когда она изменилась.
+        // Иначе минута стояния на одной странице превратилась бы в сотню одинаковых
+        // наблюдений, из которых новой информации ровно на одно.
+        String signature = signatureOf(fresh);
+        if (signature.equals(recordedSignature)) {
+            return;
+        }
+        recordedSignature = signature;
+        for (MarketParser.Lot lot : fresh.lots()) {
+            prices.record(lot.itemId(), lot.name(), lot.unitPrice(), fresh.seenAt());
+        }
+    }
+
+    /** Дешёвый отпечаток страницы: меняется, когда лот купили или игрок пролистнул. */
+    private static String signatureOf(Snapshot snapshot) {
+        MarketParser.Lot first = snapshot.lots().isEmpty() ? null : snapshot.lots().get(0);
+        return snapshot.page().current() + "/" + snapshot.lots().size()
+                + ":" + (first == null ? "" : first.itemId() + "@" + first.unitPrice())
+                + ":" + snapshot.category() + ":" + snapshot.sort();
     }
 
     public Snapshot scan() {

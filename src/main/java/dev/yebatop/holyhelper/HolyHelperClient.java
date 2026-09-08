@@ -12,6 +12,7 @@ import dev.yebatop.holyhelper.liteapi.LiteApiChannel;
 import dev.yebatop.holyhelper.liteapi.LiteApiPayload;
 import dev.yebatop.holyhelper.scan.BuyerScanner;
 import dev.yebatop.holyhelper.scan.MarketScanner;
+import dev.yebatop.holyhelper.store.PriceStore;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -49,6 +50,7 @@ public final class HolyHelperClient implements ClientModInitializer {
     private BuyerScanner buyer;
     private MarketScanner market;
     private RotationTimer rotation;
+    private PriceStore prices;
 
     private int tickCounter;
     private int announceAtTick;
@@ -67,7 +69,9 @@ public final class HolyHelperClient implements ClientModInitializer {
         featureGate = new FeatureGate(channel);
         board = new ScoreboardWatcher(patterns);
         buyer = new BuyerScanner(patterns);
-        market = new MarketScanner(patterns);
+        prices = new PriceStore(HolyHelperConfig.directory().resolve("prices.json"));
+        prices.load();
+        market = new MarketScanner(patterns, prices);
         rotation = new RotationTimer();
 
         // Канал LiteAPI объявляется в обе стороны: без C2S нечем отправить,
@@ -106,6 +110,7 @@ public final class HolyHelperClient implements ClientModInitializer {
     }
 
     private void onDisconnect() {
+        prices.save();
         channel.reset();
         featureGate.reset();
         rotation.reset();
@@ -124,6 +129,12 @@ public final class HolyHelperClient implements ClientModInitializer {
         // Сайдбар перечитываем раз в секунду: чаще незачем, сервер обновляет его редко.
         if (tickCounter % 20 == 0) {
             board.refresh();
+        }
+
+        // Наблюдения сбрасываем на диск раз в минуту, а не при каждой записи:
+        // вылет клиента не должен стоить всего, что мод успел увидеть.
+        if (tickCounter % 1200 == 0) {
+            prices.save();
         }
 
         // Окно Скупца читаем дважды в секунду, пока оно открыто. Ждать команды нельзя:
@@ -202,5 +213,9 @@ public final class HolyHelperClient implements ClientModInitializer {
 
     public RotationTimer rotation() {
         return rotation;
+    }
+
+    public PriceStore prices() {
+        return prices;
     }
 }
