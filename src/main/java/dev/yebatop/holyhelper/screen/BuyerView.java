@@ -46,7 +46,27 @@ public final class BuyerView {
     private static final Duration STAGE_QUIET = Duration.ofMinutes(5);
 
     private static final int ROW = 12;
-    private static final int HERO = 36;
+
+    /**
+     * Высота карточек над таблицей.
+     * <p>
+     * Считана от строк, а не подобрана на глаз, и именно на этом я дважды
+     * ошибся. У вшитого шрифта клиента строка занимает семь пикселей над базовой,
+     * и отступы я расставлял по этой привычке. Гарнитуры мода выше: подпись — де­вять
+     * пикселей, текст — одиннадцать, крупное число Unbounded — почти двадцать.
+     * Тридцать шесть пикселей не вмещали подпись плюс такое число, и оно резалось
+     * кромкой.
+     * <p>
+     * Здесь заложено: отступ 6, подпись 10, число 16, вторая строка 10, отступ 5 —
+     * и сверх того запас, чтобы промах в пару пикселей ничего не портил.
+     */
+    private static final int HERO = 42;
+
+    /** Строки внутри карточки: подпись сверху, под ней крупное и мелкое. */
+    private static final int HERO_LABEL = 6;
+    private static final int HERO_MAIN = 16;
+    private static final int HERO_SIDE = 17;
+    private static final int HERO_UNDER = 27;
 
     private static final int ICON = 12;
 
@@ -138,41 +158,42 @@ public final class BuyerView {
         double first = Motion.reveal(elapsed, Card.REVEAL_STEP, Card.REVEAL_LENGTH) * alpha;
         Paint.panel(ctx, x, y, cell, HERO, 4, Theme.PANEL, first);
         Paint.accent(ctx, x, y, HERO, Theme.GOLD, first);
-        Fonts.label(ctx, font, "маркет видел дороже", x + 8, y + 5,
+        Fonts.label(ctx, font, "маркет видел дороже", x + 8, y + HERO_LABEL,
                 Motion.fade(Theme.TEXT_FAINT, first));
         // Число крупно слева, пояснения столбиком справа от него. Раньше они шли
         // в три этажа и упирались в нижнюю кромку карточки.
         int used = Fonts.draw(ctx, font, Integer.toString(countDearer(offers)), Fonts.DISPLAY,
-                x + 8, y + 13, Motion.fade(Theme.GOLD, first));
+                x + 8, y + HERO_MAIN, Motion.fade(Theme.GOLD, first));
         int side = x + 8 + used + 7;
 
-        Fonts.draw(ctx, font, "из " + offers.size(), Fonts.BODY, side, y + 14,
+        Fonts.draw(ctx, font, "из " + offers.size(), Fonts.BODY, side, y + HERO_SIDE,
                 Motion.fade(Theme.TEXT_DIM, first));
 
         // Сколько товаров мод про Маркет вообще не знает. Без этой строки «5 из 8»
         // читается увереннее, чем есть: часть восьми просто не проверена.
         int unknown = countUnknown(offers);
         Fonts.label(ctx, font, unknown == 0 ? "все проверены" : unknown + " без данных",
-                side, y + 24, Motion.fade(unknown == 0 ? Theme.GREEN : Theme.TEXT_FAINT, first));
+                side, y + HERO_UNDER, Motion.fade(unknown == 0 ? Theme.GREEN : Theme.TEXT_FAINT, first));
 
         double second = Motion.reveal(elapsed, Card.REVEAL_STEP * 2, Card.REVEAL_LENGTH) * alpha;
         int mx = x + cell + Card.GAP;
         Paint.panel(ctx, mx, y, cell, HERO, 4, Theme.PANEL, second);
         Paint.accent(ctx, mx, y, HERO, Theme.PURPLE, second);
-        Fonts.label(ctx, font, "множители", mx + 8, y + 5, Motion.fade(Theme.TEXT_FAINT, second));
+        Fonts.label(ctx, font, "множители", mx + 8, y + HERO_LABEL,
+                Motion.fade(Theme.TEXT_FAINT, second));
         List<BuyerParser.Multiplier> multipliers = mod.buyer().multipliers();
         if (multipliers.isEmpty()) {
-            Fonts.draw(ctx, font, "окно не открывали", Fonts.BODY, mx + 8, y + 15,
+            Fonts.draw(ctx, font, "окно не открывали", Fonts.BODY, mx + 8, y + HERO_SIDE,
                     Motion.fade(Theme.TEXT_FAINT, second));
         } else {
-            int row = y + 14;
+            int row = y + HERO_SIDE;
             for (int i = 0; i < Math.min(2, multipliers.size()); i++) {
                 BuyerParser.Multiplier multiplier = multipliers.get(i);
                 Fonts.draw(ctx, font, multiplier.category(), Fonts.BODY, mx + 8, row,
                         Motion.fade(Theme.TEXT_DIM, second));
                 Fonts.drawRight(ctx, font, multiplier.stacks() + " ст.", Fonts.NUM,
                         mx + cell - 8, row, Motion.fade(Theme.PURPLE, second));
-                row += Card.LINE + 1;
+                row += HERO_UNDER - HERO_SIDE;
             }
         }
 
@@ -183,8 +204,9 @@ public final class BuyerView {
         Paint.accent(ctx, sx, y, HERO, Theme.GREEN, third);
         BuyerParser.Stage stage = currentStage(mod);
         if (stage == null) {
-            Fonts.label(ctx, font, "этапы", sx + 8, y + 5, Motion.fade(Theme.TEXT_FAINT, third));
-            Fonts.draw(ctx, font, "окно не открывали", Fonts.BODY, sx + 8, y + 15,
+            Fonts.label(ctx, font, "этапы", sx + 8, y + HERO_LABEL,
+                    Motion.fade(Theme.TEXT_FAINT, third));
+            Fonts.draw(ctx, font, "окно не открывали", Fonts.BODY, sx + 8, y + HERO_SIDE,
                     Motion.fade(Theme.TEXT_FAINT, third));
         } else {
             // Возраст рядом с номером: прогресс этапа наращивает сервер, и без
@@ -194,12 +216,12 @@ public final class BuyerView {
             Fonts.label(ctx, font, stale.isEmpty()
                             ? "этап #" + stage.number()
                             : "этап #" + stage.number() + " · " + stale,
-                    sx + 8, y + 5, Motion.fade(Theme.TEXT_FAINT, third));
-            Fonts.draw(ctx, font, Card.money(stage.progress()), Fonts.NUM, sx + 8, y + 14,
+                    sx + 8, y + HERO_LABEL, Motion.fade(Theme.TEXT_FAINT, third));
+            Fonts.draw(ctx, font, Card.money(stage.progress()), Fonts.NUM, sx + 8, y + HERO_SIDE,
                     Motion.fade(Theme.GREEN, third));
             Fonts.drawRight(ctx, font, "из " + Card.money(stage.goal()), Fonts.NUM,
-                    sx + sw - 8, y + 14, Motion.fade(Theme.TEXT_FAINT, third));
-            Paint.bar(ctx, sx + 8, y + 29, sw - 16, 3, stage.completion(),
+                    sx + sw - 8, y + HERO_SIDE, Motion.fade(Theme.TEXT_FAINT, third));
+            Paint.bar(ctx, sx + 8, y + HERO - 9, sw - 16, 3, stage.completion(),
                     Theme.GREEN, Theme.TEAL, third);
         }
     }
