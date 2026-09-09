@@ -60,12 +60,18 @@ jobs:
               | sed 's/.*version "\(.*\)"/| loom_version | \1 |/' || true
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # Только сам мод. Рядом Gradle кладёт holyhelper-<версия>-sources.jar — он
+      # ничего не делает, но в архиве выглядит ровно так же, и положить в mods
+      # можно не тот. На телефоне, где файлы таскают вручную, это стоило игроку
+      # запуска: лоадер молча пропустил sources и показал список без мода.
       - name: Выложить jar
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: holyhelper
-          path: build/libs/*.jar
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
           if-no-files-found: error
 
       - name: Выложить отчёты тестов
