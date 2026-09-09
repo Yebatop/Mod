@@ -3,6 +3,7 @@ package dev.yebatop.holyhelper.command;
 import com.mojang.brigadier.CommandDispatcher;
 import dev.yebatop.holyhelper.HolyHelperClient;
 import dev.yebatop.holyhelper.board.ScoreboardWatcher;
+import dev.yebatop.holyhelper.core.Numbers;
 import dev.yebatop.holyhelper.core.ServerDetector;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.scan.BuyerParser;
@@ -427,9 +428,7 @@ public final class HolyHelperCommand {
                 : dearer ? Formatting.YELLOW
                 : Formatting.DARK_GRAY;
 
-        String samples = known.samples() == 1
-                ? "видел 1 раз"
-                : "видел " + known.samples() + " раз";
+        String samples = Numbers.counted(known.samples(), "лот", "лота", "лотов");
 
         return Optional.of(Text.literal("         Маркет от " + market + " · " + samples)
                 .formatted(color));

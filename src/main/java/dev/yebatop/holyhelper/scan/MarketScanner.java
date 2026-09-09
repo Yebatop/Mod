@@ -81,7 +81,7 @@ public final class MarketScanner {
                         lot.itemId(), lot.price(), lot.unitPrice(), lot.count());
                 continue;
             }
-            prices.record(lot.itemId(), lot.name(), lot.unitPrice(), fresh.seenAt());
+            prices.record(lot.itemId(), lot.name(), lot.unitPrice(), lot.seller(), fresh.seenAt());
         }
         return fresh;
     }

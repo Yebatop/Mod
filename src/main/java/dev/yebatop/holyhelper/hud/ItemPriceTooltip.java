@@ -1,6 +1,7 @@
 package dev.yebatop.holyhelper.hud;
 
 import dev.yebatop.holyhelper.HolyHelperClient;
+import dev.yebatop.holyhelper.core.Numbers;
 import dev.yebatop.holyhelper.core.ServerDetector;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.scan.BuyerParser;
@@ -106,7 +107,7 @@ public final class ItemPriceTooltip {
             return null;
         }
 
-        String samples = known.samples() == 1 ? "видел 1 раз" : "видел " + known.samples() + " раз";
+        String samples = Numbers.counted(known.samples(), "лот", "лота", "лотов");
         String text = "Маркет от " + known.cheapestUnitPrice() + " · " + samples;
 
         // Одно наблюдение весит меньше десяти, и цвет об этом говорит так же,

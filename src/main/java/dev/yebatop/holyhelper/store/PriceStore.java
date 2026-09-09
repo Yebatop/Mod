@@ -48,15 +48,35 @@ public final class PriceStore {
     /** Старше этого срока наблюдение — уже не про сегодняшний рынок. */
     private static final Duration KEEP = Duration.ofDays(7);
 
-    /** Одно наблюдение: цена за штуку и когда её видели. */
-    public record Observation(long unitPrice, long seenAtMillis) {
+    /**
+     * Одно наблюдение: чей лот, по какой цене за штуку и когда его видели.
+     * <p>
+     * Продавец здесь не для красоты. Без него одно и то же объявление, попавшееся
+     * при каждом перелистывании витрины, ложилось в базу заново, и счётчик
+     * наблюдений считал просмотры вместо разных лотов. А от этого счётчика
+     * зависит, показывает мод цену уверенно или с оговоркой.
+     * <p>
+     * Старые записи продавца не содержат: у них он пустой, и они по-прежнему
+     * читаются — база копилась неделями, выбрасывать её из-за нового поля нельзя.
+     */
+    public record Observation(long unitPrice, long seenAtMillis, String seller) {
 
         public Instant seenAt() {
             return Instant.ofEpochMilli(seenAtMillis);
         }
+
+        /** Тот же ли это лот: тот же продавец и та же цена за штуку. */
+        boolean sameLot(long otherPrice, String otherSeller) {
+            return unitPrice == otherPrice
+                    && (seller == null ? "" : seller).equals(otherSeller == null ? "" : otherSeller);
+        }
     }
 
-    /** Что мод знает про предмет. */
+    /**
+     * Что мод знает про предмет.
+     *
+     * @param samples сколько разных лотов он видел, а не сколько раз смотрел
+     */
     public record Known(String itemId, String name, long cheapestUnitPrice, Instant seenAt, int samples) {
     }
 
@@ -70,22 +90,35 @@ public final class PriceStore {
         this.file = file;
     }
 
-    /** Запоминает лот. Одинаковые наблюдения в одну секунду не плодятся. */
-    public void record(String itemId, String name, long unitPrice, Instant seenAt) {
+    /**
+     * Запоминает лот.
+     * <p>
+     * Тот же лот, увиденный снова, не удваивает счётчик: у него обновляется отметка
+     * времени, и всё. Иначе десять заходов на одну страницу превращали одно
+     * объявление в десять «наблюдений», и мод показывал цену одного человека так,
+     * будто её подтвердил рынок.
+     */
+    public void record(String itemId, String name, long unitPrice, String seller, Instant seenAt) {
         if (itemId == null || itemId.isBlank() || unitPrice <= 0) {
             return;
         }
         List<Observation> observations = byItem.computeIfAbsent(itemId, key -> new ArrayList<>());
-
         long millis = seenAt.toEpochMilli();
-        for (Observation existing : observations) {
-            if (existing.unitPrice() == unitPrice
-                    && Math.abs(existing.seenAtMillis() - millis) < 1000) {
+
+        for (int i = 0; i < observations.size(); i++) {
+            Observation existing = observations.get(i);
+            if (existing.sameLot(unitPrice, seller)) {
+                // Лот ещё висит — освежаем срок, чтобы он не выпал из окна памяти
+                // раньше времени, но новым наблюдением не считаем.
+                if (millis > existing.seenAtMillis()) {
+                    observations.set(i, new Observation(unitPrice, millis, existing.seller()));
+                    dirty = true;
+                }
                 return;
             }
         }
 
-        observations.add(new Observation(unitPrice, millis));
+        observations.add(new Observation(unitPrice, millis, seller == null ? "" : seller));
         names.put(itemId, name);
         prune(observations);
         dirty = true;

@@ -316,8 +316,9 @@ public final class BuyerView {
      * Что мод видел на Маркете по этому предмету.
      * <p>
      * Осторожно: это не «цена рынка», а самое дешёвое из увиденного, то есть оценка
-     * дна сверху. Число наблюдений печатается всегда, а цветом выделяется только то,
-     * что встречалось не один раз.
+     * дна сверху. Рядом стоит число разных лотов — именно разных, а не просмотров:
+     * одно объявление по дикой цене мод показывает жёлтым, потому что оно ничего
+     * не говорит о рынке.
      */
     private void market(DrawContext ctx, TextRenderer font, BuyerParser.Offer offer,
                         int right, int y, double alpha) {
@@ -381,7 +382,7 @@ public final class BuyerView {
                         double alpha) {
         int cursor = x;
         cursor += legend(ctx, font, cursor, y, Theme.GREEN, "на маркете дороже", alpha);
-        cursor += legend(ctx, font, cursor, y, Theme.WARN, "видел один раз", alpha);
+        cursor += legend(ctx, font, cursor, y, Theme.WARN, "один лот — не рынок", alpha);
         legend(ctx, font, cursor, y, Theme.PURPLE, "действует множитель", alpha);
 
         String hint = "колесо — прокрутка · " + Keys.buyerKeyName() + " — закрыть";
