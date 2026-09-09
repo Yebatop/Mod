@@ -126,12 +126,15 @@ class MarketParserTest {
                 "▌ Цена за 1 ед.: 300⛁")).orElseThrow();
         assertTrue(honest.consistent());
 
-        // Ровно та ошибка, ради которой проверка и заведена: цена лота попала
-        // в поле цены за штуку. Сравнение со Скупцом после такого врёт в разы.
-        MarketParser.Lot swapped = parser.parseLot("Coal", "minecraft:coal", 64, List.of(
+        // Случай, ради которого проверка заводилась, оказался не ошибкой разбора,
+        // а лотом «только целиком»: сервер пишет цену за единицу равной полной цене.
+        // Мод делит сам, и после этого числа сходятся — но признак остаётся, чтобы
+        // было видно, что цена посчитана, а не прочитана.
+        MarketParser.Lot whole = parser.parseLot("Coal", "minecraft:coal", 64, List.of(
                 "▌ Цена: 449⛁",
                 "▌ Цена за 1 ед.: 449⛁")).orElseThrow();
-        assertFalse(swapped.consistent());
+        assertTrue(whole.wholeOnly());
+        assertTrue(whole.consistent());
 
         // Сервер округляет цену за единицу, и на стопке накапливается расхождение.
         // Единица на предмет — это округление, а не ошибка разбора.
@@ -146,5 +149,53 @@ class MarketParserTest {
                 "▌ Цена: 2100⛁",
                 "▌ Цена за 1 ед.: 300⛁")).orElseThrow();
         assertFalse(unknown.consistent());
+    }
+
+    @Test
+    @DisplayName("Лот, который можно купить только целиком, считается сам")
+    void wholeOnlyLot() {
+        // Снято с живой витрины. Сервер пишет цену за единицу равной полной цене:
+        // раз единицу не купить, то и цены у неё как бы нет. Сравнивать со Скупцом
+        // надо настоящую, поэтому мод делит сам.
+        MarketParser.Lot lot = parser.parseLot("Packed Ice", "minecraft:packed_ice", 64, List.of(
+                "▍ Категория: Блоки, Все подряд",
+                "▍ Продавец: zzoile4",
+                "▍ Истекает через: 19ч. 35мин. 23сек.",
+                "▍ Цена: 94 222¤",
+                "▍ Цена за 1 ед.: 94 222¤",
+                "● Данный товар можно",
+                ".  купить только полностью.",
+                "▶ Нажмите ЛКМ, чтобы купить полностью")).orElseThrow();
+
+        assertTrue(lot.wholeOnly());
+        assertEquals(94222, lot.price());
+        assertEquals(1472, lot.unitPrice());
+        assertTrue(lot.consistent(), "после деления числа обязаны сойтись");
+    }
+
+    @Test
+    @DisplayName("Совпадение цен при стопке больше одной — тот же признак без подписи")
+    void wholeOnlyWithoutMarker() {
+        // Цена за штуку, равная цене за сорок восемь, не бывает правдой — значит
+        // это тот же случай, просто строку про «только полностью» не разобрали.
+        MarketParser.Lot lot = parser.parseLot("Ice", "minecraft:ice", 48, List.of(
+                "▍ Цена: 94 222¤",
+                "▍ Цена за 1 ед.: 94 222¤")).orElseThrow();
+
+        assertTrue(lot.wholeOnly());
+        assertEquals(1963, lot.unitPrice());
+    }
+
+    @Test
+    @DisplayName("Обычный лот из одного предмета признаком не считается")
+    void singleItemIsNotWholeOnly() {
+        // Тут цены совпадают законно: в лоте один предмет, и цена за него и есть
+        // цена лота. Делить нечего, и признак срабатывать не должен.
+        MarketParser.Lot lot = parser.parseLot("Gold Ingot", "minecraft:gold_ingot", 1, GOLD)
+                .orElseThrow();
+
+        assertFalse(lot.wholeOnly());
+        assertEquals(100, lot.unitPrice());
+        assertTrue(lot.consistent());
     }
 }

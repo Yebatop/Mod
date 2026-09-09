@@ -35,6 +35,8 @@ public final class MarketParser {
      * @param unitPrice  цена за штуку; сервер считает её сам, и это то, что сравнимо
      *                   с ценой Скупца
      * @param count      сколько предметов лежит в лоте — размер стопки в слоте
+     * @param wholeOnly  лот продаётся только целиком; тогда цену за штуку сервер
+     *                   не считает, и мод делит сам
      * @param expiresIn  сколько лоту осталось висеть; {@code null}, если не написано
      */
     public record Lot(
@@ -45,6 +47,7 @@ public final class MarketParser {
             long price,
             long unitPrice,
             int count,
+            boolean wholeOnly,
             Duration expiresIn) {
 
         /** Сколько штук в лоте, по отношению цены к цене за единицу. */
@@ -88,6 +91,20 @@ public final class MarketParser {
             return Optional.empty();
         }
 
+        long lotPrice = price.getAsLong();
+        long perUnit = unitPrice.getAsLong();
+
+        // Лот, который нельзя купить поштучно, сервер подписывает ценой за единицу,
+        // равной полной цене: раз единицу не купить, то и цены у неё как бы нет.
+        // Сравнивать со Скупцом надо настоящую, поэтому делим сами. Совпадение цен
+        // при стопке больше одной — тот же признак, только без подписи: цена за штуку,
+        // равная цене за шестьдесят четыре, не бывает правдой.
+        boolean wholeOnly = firstMatch("market.wholeOnly", lore).isPresent()
+                || (perUnit == lotPrice && count > 1);
+        if (wholeOnly && count > 0) {
+            perUnit = Math.round(lotPrice / (double) count);
+        }
+
         String seller = firstMatch("market.seller", lore).map(m -> m.group(1)).orElse("");
         List<String> categories = firstMatch("market.category", lore)
                 .map(m -> splitCategories(m.group(1)))
@@ -101,8 +118,7 @@ public final class MarketParser {
                 .orElse(null);
 
         return Optional.of(new Lot(
-                name, itemId, categories, seller,
-                price.getAsLong(), unitPrice.getAsLong(), count, expires));
+                name, itemId, categories, seller, lotPrice, perUnit, count, wholeOnly, expires));
     }
 
     /** Номер страницы из заголовка окна. Перечитывать при каждом заходе: всего страниц плавает. */

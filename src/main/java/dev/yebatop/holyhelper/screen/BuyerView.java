@@ -140,18 +140,20 @@ public final class BuyerView {
         Paint.accent(ctx, x, y, HERO, Theme.GOLD, first);
         Fonts.label(ctx, font, "маркет видел дороже", x + 8, y + 5,
                 Motion.fade(Theme.TEXT_FAINT, first));
+        // Число крупно слева, пояснения столбиком справа от него. Раньше они шли
+        // в три этажа и упирались в нижнюю кромку карточки.
         int used = Fonts.draw(ctx, font, Integer.toString(countDearer(offers)), Fonts.DISPLAY,
-                x + 8, y + 14, Motion.fade(Theme.GOLD, first));
-        Fonts.draw(ctx, font, "из " + offers.size(), Fonts.BODY, x + 12 + used, y + 18,
+                x + 8, y + 13, Motion.fade(Theme.GOLD, first));
+        int side = x + 8 + used + 7;
+
+        Fonts.draw(ctx, font, "из " + offers.size(), Fonts.BODY, side, y + 14,
                 Motion.fade(Theme.TEXT_DIM, first));
 
         // Сколько товаров мод про Маркет вообще не знает. Без этой строки «5 из 8»
         // читается увереннее, чем есть: часть восьми просто не проверена.
         int unknown = countUnknown(offers);
-        Fonts.label(ctx, font, unknown == 0
-                        ? "все проверены"
-                        : unknown + " без данных",
-                x + 8, y + 26, Motion.fade(unknown == 0 ? Theme.GREEN : Theme.TEXT_FAINT, first));
+        Fonts.label(ctx, font, unknown == 0 ? "все проверены" : unknown + " без данных",
+                side, y + 24, Motion.fade(unknown == 0 ? Theme.GREEN : Theme.TEXT_FAINT, first));
 
         double second = Motion.reveal(elapsed, Card.REVEAL_STEP * 2, Card.REVEAL_LENGTH) * alpha;
         int mx = x + cell + Card.GAP;
