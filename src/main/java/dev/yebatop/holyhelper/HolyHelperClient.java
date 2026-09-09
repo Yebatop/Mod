@@ -72,6 +72,10 @@ public final class HolyHelperClient implements ClientModInitializer {
     // а не тот же самый, перечитанный в двадцатый раз за десять секунд.
     private String lastBuyerMark = "";
     private String lastMarketMark = "";
+
+    // Совет про сортировку показываем один раз за сессию: он полезен, но повторённый
+    // на каждой странице превращается в надоеду.
+    private boolean sortHintShown;
     private int announceAtTick;
     private long nextRatePollAt;
 
@@ -145,6 +149,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         HudOverlay.resetAnimation();
         BootOverlay.hide();
         Toasts.clear();
+        sortHintShown = false;
         nextRatePollAt = 0;
         channel.reset();
         featureGate.reset();
@@ -244,8 +249,31 @@ public final class HolyHelperClient implements ClientModInitializer {
                 Toasts.push("Маркет " + fromMarket.page().current() + "/" + fromMarket.page().total(),
                         Numbers.counted(fromMarket.lots().size(), "лот", "лота", "лотов"),
                         Theme.TEAL);
+                hintSort(fromMarket);
             }
         }
+    }
+
+    /**
+     * Подсказывает, как не листать витрину вслепую.
+     * <p>
+     * Листать её мод не будет: автоматическое взаимодействие с хранилищем прямо
+     * запрещено правилами сервера. Зато можно сказать, куда нажать. Под сортировкой
+     * «сначала дешевые за ед. товара» первая страница категории и есть её дно —
+     * это шестнадцать заходов вместо трёх десятков страниц наугад.
+     */
+    private void hintSort(MarketScanner.Snapshot snapshot) {
+        if (sortHintShown || snapshot.sort().isEmpty()) {
+            return;
+        }
+        if (snapshot.sort().toLowerCase(java.util.Locale.ROOT).contains("за ед")) {
+            // Сортировка уже та, что нужно, — советовать нечего.
+            sortHintShown = true;
+            return;
+        }
+        sortHintShown = true;
+        Toasts.push("Как смотреть быстрее", "сортировка «за ед. товара» — дно на первой странице",
+                Theme.WARN);
     }
 
     /**
@@ -344,5 +372,20 @@ public final class HolyHelperClient implements ClientModInitializer {
 
     public CoinRateTracker rates() {
         return rates;
+    }
+
+    /**
+     * Сколько осталось до следующего опроса курса.
+     * <p>
+     * Это срок не курса, а мода: сделки на Бирже происходят когда попало, никакого
+     * расписания у них нет. Мод перечитывает историю раз в несколько минут, и
+     * показывать надо именно это — иначе получится обещание, которого сервер
+     * не давал.
+     */
+    public java.time.Duration untilRateRefresh() {
+        if (nextRatePollAt == 0) {
+            return java.time.Duration.ZERO;
+        }
+        return java.time.Duration.ofMillis(Math.max(0, nextRatePollAt - System.currentTimeMillis()));
     }
 }

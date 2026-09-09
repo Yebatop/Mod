@@ -208,6 +208,7 @@ public final class HudOverlay {
             List<Double> points = mod.rates().recentRates(SPARK_POINTS);
             boolean spark = points.size() >= 2;
             Optional<Double> deviation = mod.rates().deviationPercent(RATE_WINDOW);
+            Duration refresh = mod.untilRateRefresh();
             int height = CAP + 2 + LINE + (spark ? 2 + SPARK_HEIGHT : 0);
 
             sections.add(new Section(height, (ctx, f, x, y, w, alpha) -> {
@@ -222,6 +223,12 @@ public final class HudOverlay {
                 }
                 Fonts.draw(ctx, f, money(Math.round(rate.get())), Fonts.NUM, x, y + CAP + 2,
                         Motion.fade(Theme.TEXT, alpha));
+                // Срок не курса, а мода: сделки на Бирже идут когда попало, а мод
+                // перечитывает историю по своему расписанию. Подписано так и есть.
+                if (!refresh.isZero()) {
+                    Fonts.drawRight(ctx, f, "через " + clock(refresh), Fonts.NUM, x + w,
+                            y + CAP + 2, Motion.fade(Theme.TEXT_FAINT, alpha));
+                }
                 if (spark) {
                     Paint.line(ctx, x, y + CAP + 2 + LINE + 2, w, SPARK_HEIGHT, points,
                             Motion.fade(Theme.GOLD, alpha * 0.85), alpha);
@@ -308,6 +315,14 @@ public final class HudOverlay {
             }
         }
         return null;
+    }
+
+    /** Обратный отсчёт минутами и секундами: до опроса курса всегда меньше часа. */
+    private static String clock(Duration left) {
+        long minutes = left.toMinutes();
+        return minutes > 0
+                ? minutes + ":" + String.format(Locale.ROOT, "%02d", left.toSecondsPart())
+                : left.toSecondsPart() + " с";
     }
 
     /** Часы показываем только когда они есть, секунды — только на последних минутах. */

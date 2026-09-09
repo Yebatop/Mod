@@ -145,6 +145,14 @@ public final class BuyerView {
         Fonts.draw(ctx, font, "из " + offers.size(), Fonts.BODY, x + 12 + used, y + 18,
                 Motion.fade(Theme.TEXT_DIM, first));
 
+        // Сколько товаров мод про Маркет вообще не знает. Без этой строки «5 из 8»
+        // читается увереннее, чем есть: часть восьми просто не проверена.
+        int unknown = countUnknown(offers);
+        Fonts.label(ctx, font, unknown == 0
+                        ? "все проверены"
+                        : unknown + " без данных",
+                x + 8, y + 26, Motion.fade(unknown == 0 ? Theme.GREEN : Theme.TEXT_FAINT, first));
+
         double second = Motion.reveal(elapsed, Card.REVEAL_STEP * 2, Card.REVEAL_LENGTH) * alpha;
         int mx = x + cell + Card.GAP;
         Paint.panel(ctx, mx, y, cell, HERO, 4, Theme.PANEL, second);
@@ -363,6 +371,18 @@ public final class BuyerView {
         for (BuyerParser.Offer offer : offers) {
             PriceStore.Known known = prices.known(offer.itemId(), MARKET_MEMORY).orElse(null);
             if (known != null && known.cheapestUnitPrice() > offer.unitPrice() * 1.01) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /** По скольким товарам мод на Маркете ничего не видел. */
+    private static int countUnknown(List<BuyerParser.Offer> offers) {
+        PriceStore prices = HolyHelperClient.instance().prices();
+        int count = 0;
+        for (BuyerParser.Offer offer : offers) {
+            if (prices.known(offer.itemId(), MARKET_MEMORY).isEmpty()) {
                 count++;
             }
         }

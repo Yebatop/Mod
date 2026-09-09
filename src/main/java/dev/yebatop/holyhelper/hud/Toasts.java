@@ -37,7 +37,7 @@ public final class Toasts {
     private static final long LIFE = 3_200L;
     private static final long SLIDE = 260L;
 
-    private static final int WIDTH = 116;
+    private static final int WIDTH = 152;
     private static final int HEIGHT = 25;
     private static final int MARGIN = 4;
     private static final int GAP = 3;

@@ -321,7 +321,12 @@ public final class HolyHelperCommand {
             line(source, "Медиана за сутки", text + deviation);
         });
 
-        line(source, "Накоплено", rates.size() + " сделок");
+        line(source, "Накоплено", Numbers.counted(rates.size(), "сделка", "сделки", "сделок"));
+
+        Duration refresh = mod.untilRateRefresh();
+        if (!refresh.isZero()) {
+            line(source, "Перечитаю через", refresh.toMinutes() + " мин " + refresh.toSecondsPart() + " с");
+        }
         mod.api().lastError().ifPresent(error ->
                 line(source, "API молчит", error + ", следующая попытка через "
                         + mod.api().interval().toSeconds() + " с"));
