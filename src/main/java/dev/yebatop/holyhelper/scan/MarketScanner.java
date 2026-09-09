@@ -73,6 +73,14 @@ public final class MarketScanner {
         }
         recordedSignature = signature;
         for (MarketParser.Lot lot : fresh.lots()) {
+            // Три числа лота обязаны сходиться между собой. Не сошлись — значит
+            // разбор поехал, и записывать такую цену нельзя: колонка «Маркет»
+            // у Скупца сравнивает именно её, и врать она будет в разы.
+            if (!lot.consistent()) {
+                LOG.warn("Лот {} не сходится: цена {}, за единицу {}, в стопке {} — пропускаю",
+                        lot.itemId(), lot.price(), lot.unitPrice(), lot.count());
+                continue;
+            }
             prices.record(lot.itemId(), lot.name(), lot.unitPrice(), fresh.seenAt());
         }
         return fresh;
@@ -100,7 +108,7 @@ public final class MarketScanner {
         try {
             for (ScreenReader.Item item : ScreenReader.items()) {
                 List<String> lore = item.lore();
-                parser.parseLot(item.name(), item.id(), lore).ifPresent(lots::add);
+                parser.parseLot(item.name(), item.id(), item.count(), lore).ifPresent(lots::add);
 
                 // Меню сортировки и категорий отличаются заголовком предмета,
                 // а выбранный пункт в обоих помечен галочкой.

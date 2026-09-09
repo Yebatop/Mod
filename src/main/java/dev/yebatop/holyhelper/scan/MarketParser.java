@@ -34,6 +34,7 @@ public final class MarketParser {
      *                   может лежать сразу в нескольких
      * @param unitPrice  цена за штуку; сервер считает её сам, и это то, что сравнимо
      *                   с ценой Скупца
+     * @param count      сколько предметов лежит в лоте — размер стопки в слоте
      * @param expiresIn  сколько лоту осталось висеть; {@code null}, если не написано
      */
     public record Lot(
@@ -43,11 +44,31 @@ public final class MarketParser {
             String seller,
             long price,
             long unitPrice,
+            int count,
             Duration expiresIn) {
 
         /** Сколько штук в лоте, по отношению цены к цене за единицу. */
         public long quantity() {
             return unitPrice <= 0 ? 0 : price / unitPrice;
+        }
+
+        /**
+         * Сходятся ли три числа лота между собой.
+         * <p>
+         * Цена лота, цена за единицу и размер стопки связаны жёстко, и это
+         * бесплатная проверка разбора — та же, что уже стоит на Бирже. Если
+         * равенство не держится, значит одно из чисел прочитано не оттуда, и
+         * запись в базу цен пойдёт враньём: колонка «Маркет» у Скупца сравнивает
+         * именно цену за штуку.
+         * <p>
+         * Допуск — по единице на предмет: сервер округляет цену за единицу, и на
+         * стопке в 64 накопленная разница доходит до 64 монеток.
+         */
+        public boolean consistent() {
+            if (count <= 0 || unitPrice <= 0 || price <= 0) {
+                return false;
+            }
+            return Math.abs(price - unitPrice * (long) count) <= count;
         }
     }
 
@@ -59,7 +80,7 @@ public final class MarketParser {
      * Лот из подсказки. Пусто — значит это не лот: кнопка листания, меню категорий,
      * книга справки или стекло-разделитель.
      */
-    public Optional<Lot> parseLot(String name, String itemId, List<String> lore) {
+    public Optional<Lot> parseLot(String name, String itemId, int count, List<String> lore) {
         OptionalLong price = firstNumber("market.price", lore);
         OptionalLong unitPrice = firstNumber("market.unitPrice", lore);
         if (price.isEmpty() || unitPrice.isEmpty()) {
@@ -81,7 +102,7 @@ public final class MarketParser {
 
         return Optional.of(new Lot(
                 name, itemId, categories, seller,
-                price.getAsLong(), unitPrice.getAsLong(), expires));
+                price.getAsLong(), unitPrice.getAsLong(), count, expires));
     }
 
     /** Номер страницы из заголовка окна. Перечитывать при каждом заходе: всего страниц плавает. */

@@ -26,7 +26,13 @@ import java.util.Optional;
 public final class ScreenReader {
 
     /** Предмет в слоте: название, идентификатор и строки подсказки. */
-    public record Item(String name, String id, List<String> lore) {
+    /**
+     * Предмет в слоте.
+     *
+     * @param count размер стопки; для лота Маркета это количество в лоте, и по нему
+     *              проверяется, что цена за единицу разобрана верно
+     */
+    public record Item(String name, String id, int count, List<String> lore) {
     }
 
     private ScreenReader() {
@@ -62,6 +68,7 @@ public final class ScreenReader {
             items.add(new Item(
                     stack.getName().getString(),
                     Registries.ITEM.getId(stack.getItem()).toString(),
+                    stack.getCount(),
                     loreOf(stack)));
         }
         return items;
