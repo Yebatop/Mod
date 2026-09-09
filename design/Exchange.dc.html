@@ -20,7 +20,7 @@
     .grad { background: linear-gradient(135deg, #ffe2b6 0%, #f2b45c 46%, #c9862a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .facets { position: absolute; inset: 0; pointer-events: none; background-image: repeating-linear-gradient(114deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 148px), repeating-linear-gradient(-41deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 196px); }
     .pnl { position: relative; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)); border: 1px solid rgba(255,255,255,0.072); box-shadow: 0 26px 62px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.075); overflow: hidden; }
-    .pnl::after { content: ""; position: absolute; top: 0; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent); animation: hhSheen 8.5s ease-in-out infinite; }
+    .pnl::after { content: ""; position: absolute; top: 0; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent); animation: hhSheen 8s ease-in-out infinite; }
     .shaft { position: absolute; left: 40%; top: -320px; width: 520px; height: 1600px; transform: rotate(18deg); background: linear-gradient(90deg, transparent, rgba(255,225,180,0.045), transparent); filter: blur(32px); animation: hhShaft 11s ease-in-out infinite; pointer-events: none; }
     @keyframes hhSheen { 0% { left: -38%; } 44%, 100% { left: 138%; } }
     @keyframes hhShaft { 0%, 100% { opacity: 0.24; } 50% { opacity: 0.46; } }
@@ -36,7 +36,6 @@
     .u-row:nth-child(3) { animation-delay: 0.40s; }
     .u-row:nth-child(4) { animation-delay: 0.44s; }
     .u-row:nth-child(5) { animation-delay: 0.48s; }
-    .u-row:nth-child(6) { animation-delay: 0.52s; }
     .bar { transform-origin: left; animation: hhGrow 0.9s cubic-bezier(0.2,0.72,0.2,1) both; }
   </style>
 </helmet>
@@ -81,7 +80,7 @@
         <span style="width: 1px; height: 30px; background: rgba(255,255,255,0.08);"></span>
         <div>
           <div class="u-lab">Накоплено сделок</div>
-          <div class="u-num" style="font-size: 13px; color: var(--accent); margin-top: 4px;">1 284</div>
+          <div class="u-num" style="font-size: 13px; color: var(--accent); margin-top: 4px;">1 507</div>
         </div>
       </div>
     </div>
@@ -98,7 +97,7 @@
             </div>
             <div style="display: flex; align-items: center; gap: 14px; margin-top: 11px;">
               <span style="font-size: 12.5px; color: #7b8496;">медиана за сутки <span class="u-num" style="color: #cdd3dc;">10 840</span></span>
-              <span class="u-num" style="font-size: 12.5px; padding: 3px 9px; border-radius: 4px; background: rgba(95,209,139,0.14); border: 1px solid rgba(95,209,139,0.3); color: #7fdfa4;">+3,8%</span>
+              <span class="u-num" style="font-size: 12.5px; padding: 3px 9px; border-radius: 4px; background: rgba(95,209,139,0.14); border: 1px solid rgba(95,209,139,0.3); color: #5fd18b;">+3,8%</span>
               <span style="font-size: 12px; color: #59616f;">2 минуты назад</span>
             </div>
           </div>
@@ -124,8 +123,8 @@
 
       <div class="pnl" style="flex-grow: 1; display: flex; flex-direction: column; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.2s both;">
         <div style="display: flex; align-items: center; justify-content: space-between; padding: 13px 16px 11px; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.018);">
-          <span class="u-lab">Открытые заявки</span>
-          <span style="font-size: 11.5px; color: #59616f;">это не сделки — за столько кто-то только готов меняться</span>
+          <span class="u-lab">Открытые заявки — это не сделки</span>
+          <span style="font-size: 11.5px; color: #59616f;">длина полосы — курс относительно верхней заявки</span>
         </div>
 
         <div style="flex-grow: 1;">
@@ -141,11 +140,11 @@
               </div>
             </div>
             <div style="width: 132px; text-align: right;">
-              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">6 000 000</div>
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">5 626 000</div>
               <div class="u-lab" style="margin-top: 3px;">доступно</div>
             </div>
             <div style="width: 108px; text-align: right;">
-              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">533</div>
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">500</div>
               <div class="u-lab" style="margin-top: 3px;">ожидается</div>
             </div>
           </div>
@@ -158,7 +157,7 @@
                 <span style="font-size: 12px; color: #6f7889;">Tyler_D</span>
               </div>
               <div style="position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-top: 7px; overflow: hidden;">
-                <div class="bar" style="height: 100%; width: 93%; background: linear-gradient(90deg, rgba(242,180,92,0.28), rgba(242,180,92,0.66)); animation-delay: 0.56s;"></div>
+                <div class="bar" style="height: 100%; width: 97%; background: linear-gradient(90deg, rgba(242,180,92,0.28), rgba(242,180,92,0.66)); animation-delay: 0.56s;"></div>
               </div>
             </div>
             <div style="width: 132px; text-align: right;">
@@ -179,7 +178,7 @@
                 <span style="font-size: 12px; color: #6f7889;">Nefrit_</span>
               </div>
               <div style="position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-top: 7px; overflow: hidden;">
-                <div class="bar" style="height: 100%; width: 76%; background: linear-gradient(90deg, rgba(242,180,92,0.24), rgba(242,180,92,0.55)); animation-delay: 0.62s;"></div>
+                <div class="bar" style="height: 100%; width: 84%; background: linear-gradient(90deg, rgba(242,180,92,0.24), rgba(242,180,92,0.55)); animation-delay: 0.62s;"></div>
               </div>
             </div>
             <div style="width: 132px; text-align: right;">
@@ -200,7 +199,7 @@
                 <span style="font-size: 12px; color: #6f7889;">MrCube</span>
               </div>
               <div style="position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-top: 7px; overflow: hidden;">
-                <div class="bar" style="height: 100%; width: 61%; background: linear-gradient(90deg, rgba(242,180,92,0.22), rgba(242,180,92,0.48)); animation-delay: 0.68s;"></div>
+                <div class="bar" style="height: 100%; width: 74%; background: linear-gradient(90deg, rgba(242,180,92,0.22), rgba(242,180,92,0.48)); animation-delay: 0.68s;"></div>
               </div>
             </div>
             <div style="width: 132px; text-align: right;">
@@ -221,7 +220,7 @@
                 <span style="font-size: 12px; color: #6f7889;">Okokoy</span>
               </div>
               <div style="position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-top: 7px; overflow: hidden;">
-                <div class="bar" style="height: 100%; width: 42%; background: linear-gradient(90deg, rgba(242,180,92,0.2), rgba(242,180,92,0.4)); animation-delay: 0.74s;"></div>
+                <div class="bar" style="height: 100%; width: 53%; background: linear-gradient(90deg, rgba(242,180,92,0.2), rgba(242,180,92,0.4)); animation-delay: 0.74s;"></div>
               </div>
             </div>
             <div style="width: 132px; text-align: right;">
@@ -265,22 +264,22 @@
             <div style="margin-top: 14px; padding: 12px 14px; border-radius: 8px; background: linear-gradient(150deg, rgba(0,0,0,0.55), rgba(0,0,0,0.34)); border: 1px solid rgba(169,140,240,0.3); box-shadow: 0 14px 34px rgba(0,0,0,0.45);">
               <div class="u-px" style="font-size: 14px; color: #f2b45c;">HolyHelper</div>
               <div class="u-num" style="font-size: 12px; color: #dfe4ea; margin-top: 6px;">Ваш курс 11 251 · медиана суток 10 840</div>
-              <div class="u-num" style="font-size: 12px; color: #7fdfa4; margin-top: 4px;">+3,8% — выше рынка: заберут быстрее, но переплата</div>
+              <div class="u-num" style="font-size: 12px; color: #5fd18b; margin-top: 4px;">+3,8% — выше рынка: заберут быстрее, но переплата</div>
             </div>
             <div style="font-size: 11px; color: #59616f; margin-top: 9px; line-height: 1.5;">Подсказка рисуется поверх окна Биржи, пока оно открыто. Ни одного клика по слотам мод не делает.</div>
           </div>
         </div>
 
         <div class="pnl" style="flex-grow: 1; padding: 15px 18px 17px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.38s both;">
-          <div class="u-lab" style="color: rgba(95,209,139,0.8);">Бесплатная проверка разбора</div>
+          <div class="u-lab" style="color: rgba(95,209,139,0.8);">Сходимость чисел</div>
           <div style="margin-top: 11px; display: flex; flex-direction: column; gap: 9px;">
-            <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">6 000 000 ÷ 6 000 <span style="color: #5fd18b;">= 1 000</span></div>
+            <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">5 626 000 ÷ 11 252 <span style="color: #5fd18b;">= 500</span></div>
             <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">56 255 ÷ 5 <span style="color: #5fd18b;">= 11 251</span></div>
           </div>
           <div style="font-size: 11.5px; color: #6f7889; line-height: 1.55; margin-top: 11px;">Числа в окне связаны жёстко. Если после разбора равенство не сходится, значит сервер сменил формат — запись выбрасывается и уходит в лог, а не притворяется данными.</div>
           <div style="display: flex; align-items: center; gap: 9px; margin-top: 13px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
             <span style="width: 7px; height: 7px; border-radius: 50%; background: #5fd18b; box-shadow: 0 0 11px rgba(95,209,139,0.8);"></span>
-            <span style="font-size: 12px; color: #8b93a1;">оба равенства сошлись</span>
+            <span style="font-size: 12px; color: #8b93a1;">все пять заявок сошлись</span>
           </div>
         </div>
 
