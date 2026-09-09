@@ -1,0 +1,332 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@400..700&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
+    .u-disp { font-family: 'Unbounded', 'Onest', system-ui, sans-serif; letter-spacing: -0.03em; }
+    .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .u-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
+    .u-lab { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #626b7b; }
+    .facets { position: absolute; inset: 0; pointer-events: none; background-image: repeating-linear-gradient(114deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 148px), repeating-linear-gradient(-41deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 196px); }
+    .pnl { position: relative; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)); border: 1px solid rgba(255,255,255,0.072); box-shadow: 0 26px 62px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.075); overflow: hidden; }
+    .pnl::after { content: ""; position: absolute; top: 0; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent); animation: hhSheen 7.5s ease-in-out infinite; }
+    .sec { animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) both; }
+    .swatch { position: relative; height: 54px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.09); overflow: hidden; }
+    .swatch::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.14), transparent 46%); }
+    .cell { border-radius: 10px; border: 1px solid rgba(255,255,255,0.055); background: rgba(255,255,255,0.014); padding: 14px 16px 15px; }
+    .rule { height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02) 74%, transparent); }
+    .dim { color: #6f7889; }
+    .faint { color: #59616f; }
+    @keyframes hhSheen { 0% { left: -38%; } 44%, 100% { left: 138%; } }
+    @keyframes hhRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes hhGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes hhBreathe { 0%, 100% { opacity: 0.22; } 50% { opacity: 0.44; } }
+    @keyframes hhDemo { 0% { opacity: 0; transform: translateY(11px); } 26%, 74% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(11px); } }
+    @keyframes hhDemoBar { 0% { transform: scaleX(0); } 30%, 100% { transform: scaleX(1); } }
+    .demo > * { animation: hhDemo 3.6s cubic-bezier(0.2,0.72,0.2,1) infinite both; }
+    .demo > *:nth-child(1) { animation-delay: 0s; }
+    .demo > *:nth-child(2) { animation-delay: 0.055s; }
+    .demo > *:nth-child(3) { animation-delay: 0.11s; }
+    .demo > *:nth-child(4) { animation-delay: 0.165s; }
+  </style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 1180px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1;">
+
+  <div style="position: absolute; inset: 0; background: radial-gradient(820px 440px at 10% -8%, rgba(242,180,92,0.12), transparent 62%), radial-gradient(720px 420px at 94% 2%, rgba(70,211,217,0.075), transparent 60%), linear-gradient(180deg, #0e1118 0%, #0a0c11 48%, #090b0f 100%);"></div>
+  <div class="facets"></div>
+  <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none;"><filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainF)"/></svg>
+
+  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 26px 30px 20px; display: flex; flex-direction: column; gap: 15px;">
+
+    <!-- ── шапка ─────────────────────────────────────────────── -->
+    <div class="sec" style="display: flex; align-items: flex-end; justify-content: space-between; gap: 28px;">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="position: relative; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;">
+          <div style="position: absolute; inset: -7px; border-radius: 50%; background: {{accent}}; filter: blur(17px); animation: hhBreathe 4.4s ease-in-out infinite;"></div>
+          <svg width="44" height="44" viewBox="0 0 88 88" fill="none" style="position: relative;">
+            <defs><linearGradient id="markF" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe2b6"/><stop offset="52%" stop-color="{{accent}}"/><stop offset="100%" stop-color="#b9761f"/></linearGradient></defs>
+            <path d="M44 12 70 26v28L44 68 18 54V26L44 12Z" fill="rgba(242,180,92,0.07)" stroke="url(#markF)" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M18 26 44 40l26-14M44 40v28" stroke="url(#markF)" stroke-width="2" opacity="0.4"/>
+            <polyline points="27,52 38,44 49,49 62,32" stroke="#46d3d9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="u-disp" style="font-size: 25px; font-weight: 700; line-height: 1.05;">Основа</div>
+          <div style="font-size: 12px; color: #6f7889; margin-top: 5px;">Цвет, шрифт, сетка и движение — по одному разу на весь мод</div>
+        </div>
+      </div>
+      <div style="max-width: 660px; font-size: 12.5px; line-height: 1.62; color: #79828f; text-align: right;">
+        Всё на этом листе описано так, как мод это <span style="color: #cfd5de;">рисует на самом деле</span>: прямоугольниками,
+        линиями в один пиксель и текстом. Ни размытия, ни теней, ни градиента по тексту здесь нет — того, чего клиент не умеет,
+        нет и в правилах. Первые макеты этим и подвели: они обещали красоту, недостижимую в игре.
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; flex: 1; min-height: 0;">
+
+      <!-- ── левая колонка ──────────────────────────────────── -->
+      <div style="display: flex; flex-direction: column; gap: 15px; min-height: 0;">
+
+        <!-- палитра -->
+        <div class="pnl sec" style="animation-delay: 0.08s; padding: 17px 20px 19px;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <div class="u-lab">Палитра</div>
+            <div style="font-size: 11.5px;" class="faint">роль важнее оттенка</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 13px;">
+            <div>
+              <div class="swatch" style="background: #f2b45c;"></div>
+              <div style="margin-top: 7px; font-size: 12px; font-weight: 600;">Золото</div>
+              <div class="u-num faint" style="font-size: 10.5px; margin-top: 2px;">F2B45C</div>
+              <div class="faint" style="font-size: 11px; margin-top: 4px; line-height: 1.45;">Скупец. Величина, ради которой открыли экран</div>
+            </div>
+            <div>
+              <div class="swatch" style="background: #46d3d9;"></div>
+              <div style="margin-top: 7px; font-size: 12px; font-weight: 600;">Бирюза</div>
+              <div class="u-num faint" style="font-size: 10.5px; margin-top: 2px;">46D3D9</div>
+              <div class="faint" style="font-size: 11px; margin-top: 4px; line-height: 1.45;">Маркет и Биржа. Второй источник рядом с первым</div>
+            </div>
+            <div>
+              <div class="swatch" style="background: #5fd18b;"></div>
+              <div style="margin-top: 7px; font-size: 12px; font-weight: 600;">Зелёный</div>
+              <div class="u-num faint" style="font-size: 10.5px; margin-top: 2px;">5FD18B</div>
+              <div class="faint" style="font-size: 11px; margin-top: 4px; line-height: 1.45;">Проверено не раз. Не «выгодно» — «видел много»</div>
+            </div>
+            <div>
+              <div class="swatch" style="background: #c3adf6;"></div>
+              <div style="margin-top: 7px; font-size: 12px; font-weight: 600;">Сирень</div>
+              <div class="u-num faint" style="font-size: 10.5px; margin-top: 2px;">C3ADF6</div>
+              <div class="faint" style="font-size: 11px; margin-top: 4px; line-height: 1.45;">Множители — то, что игрок потратил сам</div>
+            </div>
+          </div>
+
+          <div class="rule" style="margin: 15px 0 13px;"></div>
+
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+            <div>
+              <div style="height: 26px; border-radius: 6px; background: #0a0c11; border: 1px solid rgba(255,255,255,0.30);"></div>
+              <div class="faint" style="font-size: 11px; margin-top: 6px;">Панель · <span class="u-num">0A0C11</span> при 94 %</div>
+            </div>
+            <div>
+              <div style="height: 26px; border-radius: 6px; background: #0a0c11; border: 1px solid rgba(255,255,255,0.12);"></div>
+              <div class="faint" style="font-size: 11px; margin-top: 6px;">Кромка · белый 12 % и 30 %</div>
+            </div>
+            <div>
+              <div style="height: 26px; border-radius: 6px; background: linear-gradient(90deg, #e9ecf1, #8a94a3 52%, #59616f);"></div>
+              <div class="faint" style="font-size: 11px; margin-top: 6px;">Текст · <span class="u-num">E9ECF1 · 8A94A3 · 59616F</span></div>
+            </div>
+            <div>
+              <div style="height: 26px; border-radius: 6px; background: #e2734f;"></div>
+              <div class="faint" style="font-size: 11px; margin-top: 6px;">Тревога · <span class="u-num">E2734F</span>, только про сломанное</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; padding: 11px 13px; border-radius: 8px; background: rgba(226,115,79,0.07); border: 1px solid rgba(226,115,79,0.18); font-size: 12px; line-height: 1.55; color: #d8b2a2;">
+            <b style="color: #f0a184;">Запрет.</b> Цвет никогда не говорит «выгодно». Мод не знает, что игрок собирается делать:
+            тому, кто отдаёт жетоны, выгоден верх стакана, тому, кто отдаёт монетки — низ. Зелёный означает
+            «наблюдений много», а не «бери».
+          </div>
+        </div>
+
+        <!-- панель в разрезе -->
+        <div class="pnl sec" style="animation-delay: 0.16s; padding: 17px 20px 19px; flex: 1; min-height: 0;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <div class="u-lab">Панель в разрезе</div>
+            <div style="font-size: 11.5px;" class="faint">увеличено вшестеро</div>
+          </div>
+
+          <div style="display: flex; gap: 22px; margin-top: 14px; align-items: flex-start;">
+            <svg width="330" height="190" viewBox="0 0 330 190" fill="none" style="flex: 0 0 auto;">
+              <!-- корпус -->
+              <path d="M30 24h270a12 12 0 0 1 12 12v118a12 12 0 0 1-12 12H30a12 12 0 0 1-12-12V36a12 12 0 0 1 12-12Z" fill="#0a0c11" stroke="rgba(255,255,255,0.30)" stroke-width="6"/>
+              <path d="M36 30h258a8 8 0 0 1 8 8v114a8 8 0 0 1-8 8H36a8 8 0 0 1-8-8V38a8 8 0 0 1 8-8Z" stroke="rgba(255,255,255,0.12)" stroke-width="6"/>
+              <!-- акцент -->
+              <path d="M30 24h12v142H30a12 12 0 0 1-12-12V36a12 12 0 0 1 12-12Z" fill="{{accent}}"/>
+              <!-- блик -->
+              <rect x="96" y="21" width="120" height="6" rx="3" fill="url(#sheenF)"/>
+              <defs><linearGradient id="sheenF" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="50%" stop-color="#fff" stop-opacity="0.75"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+              <!-- выноски -->
+              <path d="M312 36h12M306 30h18M42 95h-24M156 21v-14" stroke="rgba(255,255,255,0.22)" stroke-width="1.5" stroke-dasharray="3 3"/>
+            </svg>
+
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 11px; min-width: 0;">
+              <div style="display: flex; gap: 11px; align-items: flex-start;">
+                <span class="u-num" style="flex: 0 0 auto; font-size: 11px; color: {{accent}}; width: 58px;">radius 6</span>
+                <span style="font-size: 12px; line-height: 1.5;" class="dim">Скругление считается по окружности для каждой строки пикселей, с дробной прозрачностью на кромке. Вырез в один пиксель, который был раньше, читался как ванильная рамка.</span>
+              </div>
+              <div style="display: flex; gap: 11px; align-items: flex-start;">
+                <span class="u-num" style="flex: 0 0 auto; font-size: 11px; color: {{accent}}; width: 58px;">border 1</span>
+                <span style="font-size: 12px; line-height: 1.5;" class="dim">Рамка — отдельный скруглённый прямоугольник под корпусом, а не обводка. Внутри неё — кромка светлее на один пиксель: она и даёт объём.</span>
+              </div>
+              <div style="display: flex; gap: 11px; align-items: flex-start;">
+                <span class="u-num" style="flex: 0 0 auto; font-size: 11px; color: {{accent}}; width: 58px;">accent 2</span>
+                <span style="font-size: 12px; line-height: 1.5;" class="dim">Полоса слева в два пикселя. Она, а не цвет текста, говорит, к чему относится карточка.</span>
+              </div>
+              <div style="display: flex; gap: 11px; align-items: flex-start;">
+                <span class="u-num" style="flex: 0 0 auto; font-size: 11px; color: {{accent}}; width: 58px;">sheen 8s</span>
+                <span style="font-size: 12px; line-height: 1.5;" class="dim">Блик по верхней кромке раз в восемь секунд, с паузой между проходами. Пауза важнее самого блика: без неё панель мигает и мешает читать.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── правая колонка ─────────────────────────────────── -->
+      <div style="display: flex; flex-direction: column; gap: 15px; min-height: 0;">
+
+        <!-- шрифты -->
+        <div class="pnl sec" style="animation-delay: 0.12s; padding: 17px 20px 19px;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <div class="u-lab">Гарнитуры</div>
+            <div style="font-size: 11.5px;" class="faint">высота строки измерена, а не прикинута</div>
+          </div>
+
+          <div style="margin-top: 13px; display: flex; flex-direction: column; gap: 11px;">
+            <div style="display: flex; align-items: baseline; gap: 16px;">
+              <div class="u-disp" style="font-size: 30px; font-weight: 800; width: 210px; flex: 0 0 auto;">Скупец</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 12px; font-weight: 600;">Unbounded · <span class="u-num" style="color: {{accent}};">ui_display</span></div>
+                <div class="faint" style="font-size: 11.5px; margin-top: 3px;">кегль 15 · строка <span class="u-num">19 px</span> · только заголовки экранов и одно крупное число в карточке</div>
+              </div>
+            </div>
+            <div class="rule"></div>
+            <div style="display: flex; align-items: baseline; gap: 16px;">
+              <div style="font-size: 19px; font-weight: 500; width: 210px; flex: 0 0 auto;">Чародейский стол</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 12px; font-weight: 600;">Onest · <span class="u-num" style="color: {{accent}};">ui_body</span></div>
+                <div class="faint" style="font-size: 11.5px; margin-top: 3px;">кегль 9 · строка <span class="u-num">11 px</span> · названия предметов и всё, что читается словами</div>
+              </div>
+            </div>
+            <div class="rule"></div>
+            <div style="display: flex; align-items: baseline; gap: 16px;">
+              <div class="u-num" style="font-size: 19px; width: 210px; flex: 0 0 auto;">142.63 · 16 384</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 12px; font-weight: 600;">JetBrains Mono · <span class="u-num" style="color: {{accent}};">ui_num</span></div>
+                <div class="faint" style="font-size: 11.5px; margin-top: 3px;">кегль 9 · строка <span class="u-num">12 px</span> · все числа, табличными знаками — иначе колонка цен не встаёт ровно</div>
+              </div>
+            </div>
+            <div class="rule"></div>
+            <div style="display: flex; align-items: baseline; gap: 16px;">
+              <div class="u-lab" style="font-size: 13px; width: 210px; flex: 0 0 auto; color: #8a94a3;">Маркет видел дороже</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 12px; font-weight: 600;">Onest SemiBold · <span class="u-num" style="color: {{accent}};">ui_label</span></div>
+                <div class="faint" style="font-size: 11.5px; margin-top: 3px;">кегль 7 · строка <span class="u-num">9 px</span> · капс с разрядкой в пиксель, только подписи</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; padding: 11px 13px; border-radius: 8px; background: rgba(70,211,217,0.06); border: 1px solid rgba(70,211,217,0.16); font-size: 12px; line-height: 1.55; color: #a8c6cb;">
+            <b style="color: #7fdfe4;">Мера, которая дорого досталась.</b> У вшитого шрифта клиента строка занимает семь пикселей над базовой,
+            и по этой привычке я трижды ставил отступы. Подключённые гарнитуры выше — до девятнадцати пикселей — и трижды резались кромкой.
+            Числа выше сняты с самих файлов шрифтов, а не с глаза.
+          </div>
+        </div>
+
+        <!-- сетка -->
+        <div class="pnl sec" style="animation-delay: 0.2s; padding: 17px 20px 19px;">
+          <div class="u-lab">Сетка и отступы</div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 13px;">
+            <div class="cell">
+              <div class="u-num" style="font-size: 21px; color: {{accent}};">9</div>
+              <div style="font-size: 12px; font-weight: 600; margin-top: 4px;">Поле панели</div>
+              <div class="faint" style="font-size: 11px; margin-top: 3px; line-height: 1.45;">от рамки до содержимого, со всех сторон</div>
+            </div>
+            <div class="cell">
+              <div class="u-num" style="font-size: 21px; color: {{accent}};">6</div>
+              <div style="font-size: 12px; font-weight: 600; margin-top: 4px;">Зазор</div>
+              <div class="faint" style="font-size: 11px; margin-top: 3px; line-height: 1.45;">между соседними блоками одного уровня</div>
+            </div>
+            <div class="cell">
+              <div class="u-num" style="font-size: 21px; color: {{accent}};">12</div>
+              <div style="font-size: 12px; font-weight: 600; margin-top: 4px;">Строка таблицы</div>
+              <div class="faint" style="font-size: 11px; margin-top: 3px; line-height: 1.45;">одиннадцать под текст, один — воздух</div>
+            </div>
+            <div class="cell">
+              <div class="u-num" style="font-size: 21px; color: {{accent}};">8</div>
+              <div style="font-size: 12px; font-weight: 600; margin-top: 4px;">Подпись</div>
+              <div class="faint" style="font-size: 11px; margin-top: 3px; line-height: 1.45;">высота строки капсом плюс просвет под ней</div>
+            </div>
+            <div class="cell">
+              <div class="u-num" style="font-size: 21px; color: {{accent}};">26</div>
+              <div style="font-size: 12px; font-weight: 600; margin-top: 4px;">Шапка</div>
+              <div class="faint" style="font-size: 11px; margin-top: 3px; line-height: 1.45;">знак, заголовок и строка о свежести снимка</div>
+            </div>
+            <div class="cell">
+              <div class="u-num" style="font-size: 21px; color: {{accent}};">12</div>
+              <div style="font-size: 12px; font-weight: 600; margin-top: 4px;">Подвал</div>
+              <div class="faint" style="font-size: 11px; margin-top: 3px; line-height: 1.45;">легенда слева, клавиши справа, над ними черта</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- движение -->
+        <div class="pnl sec" style="animation-delay: 0.26s; padding: 17px 20px 19px; flex: 1; min-height: 0;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <div class="u-lab">Движение</div>
+            <div class="u-num faint" style="font-size: 11px;">cubic-bezier(0.2, 0.72, 0.2, 1)</div>
+          </div>
+
+          <div style="display: flex; gap: 20px; margin-top: 14px; align-items: center;">
+            <div class="demo" style="flex: 0 0 auto; width: 208px; display: flex; flex-direction: column; gap: 5px;">
+              <div style="height: 9px; border-radius: 3px; background: rgba(255,255,255,0.13);"></div>
+              <div style="height: 9px; border-radius: 3px; background: rgba(255,255,255,0.10); width: 84%;"></div>
+              <div style="height: 9px; border-radius: 3px; background: rgba(255,255,255,0.08); width: 66%;"></div>
+              <div style="height: 9px; border-radius: 3px; background: {{accent}}; opacity: 0.55; width: 44%;"></div>
+            </div>
+
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 9px;">
+              <div style="display: flex; gap: 11px;">
+                <span class="u-num" style="flex: 0 0 auto; font-size: 11px; color: {{accent}}; width: 62px;">380 мс</span>
+                <span style="font-size: 12px; line-height: 1.5;" class="dim">длина появления одного блока</span>
+              </div>
+              <div style="display: flex; gap: 11px;">
+                <span class="u-num" style="flex: 0 0 auto; font-size: 11px; color: {{accent}}; width: 62px;">55 мс</span>
+                <span style="font-size: 12px; line-height: 1.5;" class="dim">разбег между соседними блоками; у строк таблицы — 24 мс</span>
+              </div>
+              <div style="display: flex; gap: 11px;">
+                <span class="u-num" style="flex: 0 0 auto; font-size: 11px; color: {{accent}}; width: 62px;">12 px</span>
+                <span style="font-size: 12px; line-height: 1.5;" class="dim">сдвиг снизу, с которого блок приходит на место</span>
+              </div>
+              <div style="display: flex; gap: 11px;">
+                <span class="u-num" style="flex: 0 0 auto; font-size: 11px; color: #e2734f; width: 62px;">0</span>
+                <span style="font-size: 12px; line-height: 1.5;" class="dim">анимаций у чисел, которые сами меняются. Таймер, курс и остаток просто перерисовываются: движение на них читается как событие, которого не было</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── подвал ────────────────────────────────────────────── -->
+    <div class="sec" style="animation-delay: 0.32s; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 3px;">
+      <div style="font-size: 11.5px; color: #59616f;">
+        Всё, что здесь описано, живёт в коде тремя файлами: <span class="u-num" style="color: #8a94a3;">Theme</span> — цвета,
+        <span class="u-num" style="color: #8a94a3;">Paint</span> — панель, скругление и полосы,
+        <span class="u-num" style="color: #8a94a3;">Motion</span> — вся арифметика движения. Правка здесь — правка там же.
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px; font-size: 11.5px; color: #59616f;">
+        <span style="width: 6px; height: 6px; border-radius: 50%; background: #5fd18b; box-shadow: 0 0 10px rgba(95,209,139,0.8);"></span>
+        сверено с игрой 9 сентября
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#f2b45c","options":["#f2b45c","#46d3d9","#5fd18b","#c3adf6"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#f2b45c' };
+  }
+}
+</script>
+</body>
+</html>
