@@ -57,16 +57,18 @@ public final class BuyerView {
      * Тридцать шесть пикселей не вмещали подпись плюс такое число, и оно резалось
      * кромкой.
      * <p>
-     * Здесь заложено: отступ 6, подпись 10, число 16, вторая строка 10, отступ 5 —
-     * и сверх того запас, чтобы промах в пару пикселей ничего не портил.
+     * И ещё одно, замеренное уже по скриншоту: гарнитура рисует строку на пару
+     * пикселей выше той точки, которую ей задают. Четырёх пикселей отступа сверху
+     * не хватало, и подпись касалась кромки верхушками букв. Теперь отступ такой,
+     * что промах в пару пикселей в любую сторону ничего не задевает.
      */
-    private static final int HERO = 42;
+    private static final int HERO = 46;
 
     /** Строки внутри карточки: подпись сверху, под ней крупное и мелкое. */
-    private static final int HERO_LABEL = 6;
-    private static final int HERO_MAIN = 16;
-    private static final int HERO_SIDE = 17;
-    private static final int HERO_UNDER = 27;
+    private static final int HERO_LABEL = 9;
+    private static final int HERO_MAIN = 20;
+    private static final int HERO_SIDE = 21;
+    private static final int HERO_UNDER = 31;
 
     private static final int ICON = 12;
 
