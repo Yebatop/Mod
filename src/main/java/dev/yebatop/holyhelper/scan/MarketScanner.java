@@ -34,6 +34,9 @@ public final class MarketScanner {
     private volatile Snapshot last = Snapshot.EMPTY;
     private volatile String recordedSignature = "";
 
+    /** Лор несошедшегося лота печатаем один раз за запуск: витрину читаем дважды в секунду. */
+    private volatile boolean dumped;
+
     public record Snapshot(
             boolean present,
             MarketParser.Page page,
@@ -79,11 +82,48 @@ public final class MarketScanner {
             if (!lot.consistent()) {
                 LOG.warn("Лот {} не сходится: цена {}, за единицу {}, в стопке {} — пропускаю",
                         lot.itemId(), lot.price(), lot.unitPrice(), lot.count());
+                dumpOnce(lot, fresh);
                 continue;
             }
             prices.record(lot.itemId(), lot.name(), lot.unitPrice(), lot.seller(), fresh.seenAt());
         }
         return fresh;
+    }
+
+    /**
+     * Печатает подсказку первого несошедшегося лота целиком.
+     * <p>
+     * Три числа, которые не сходятся, говорят, что что-то не так, но не говорят
+     * что именно. Сами строки говорят: по ним сразу видно, читаю ли я не ту
+     * строку или сервер и правда пишет цену за единицу равной цене лота.
+     * <p>
+     * Один раз за сессию: витрина перечитывается дважды в секунду, и вываливать
+     * лор каждый раз значит утопить лог.
+     */
+    private void dumpOnce(MarketParser.Lot lot, Snapshot snapshot) {
+        if (dumped) {
+            return;
+        }
+        dumped = true;
+        LOG.warn("Подсказка этого лота целиком (страница {}, срез «{}» / «{}»):",
+                snapshot.page().current(), snapshot.category(), snapshot.sort());
+        for (String line : loreOf(lot)) {
+            LOG.warn("    {}", line);
+        }
+    }
+
+    /** Строки подсказки лота из открытого сейчас окна: ищем по имени и продавцу. */
+    private List<String> loreOf(MarketParser.Lot lot) {
+        try {
+            for (ScreenReader.Item item : ScreenReader.items()) {
+                if (item.name().equals(lot.name()) && item.count() == lot.count()) {
+                    return item.lore();
+                }
+            }
+        } catch (RuntimeException e) {
+            LOG.warn("Не удалось перечитать подсказку: {}", e.toString());
+        }
+        return List.of("подсказка уже недоступна");
     }
 
     /** Дешёвый отпечаток страницы: меняется, когда лот купили или игрок пролистнул. */

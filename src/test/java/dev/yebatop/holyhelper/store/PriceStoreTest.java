@@ -190,4 +190,49 @@ class PriceStoreTest {
         store.record("minecraft:coal", "Coal", 449, "", Instant.now().plusSeconds(120));
         assertEquals(1, store.observationCount(), "пустой продавец совпал с пустым");
     }
+
+    @Test
+    @DisplayName("Старые записи без продавца схлопываются при загрузке")
+    void collapsesLegacyOnLoad() throws IOException {
+        // Так выглядела база до того, как наблюдение стало помнить продавца:
+        // одна и та же цена записана семь раз, потому что игрок семь раз
+        // пролистнул мимо одного лота.
+        long now = Instant.now().toEpochMilli();
+        StringBuilder json = new StringBuilder("{\"items\":{\"minecraft:coal\":[");
+        for (int i = 0; i < 7; i++) {
+            json.append(i > 0 ? "," : "")
+                    .append("{\"unitPrice\":449,\"seenAtMillis\":").append(now - i * 60_000L).append("}");
+        }
+        json.append(",{\"unitPrice\":300,\"seenAtMillis\":").append(now).append("}");
+        json.append("]},\"names\":{\"minecraft:coal\":\"Coal\"}}");
+
+        Path file = dir.resolve("prices.json");
+        Files.writeString(file, json.toString(), StandardCharsets.UTF_8);
+
+        PriceStore store = new PriceStore(file);
+        store.load();
+
+        // Две разные цены — два наблюдения. Семь одинаковых были одним лотом.
+        assertEquals(2, store.observationCount());
+        PriceStore.Known known = store.known("minecraft:coal", Duration.ofHours(12)).orElseThrow();
+        assertEquals(2, known.samples());
+        assertEquals(300, known.cheapestUnitPrice());
+    }
+
+    @Test
+    @DisplayName("Записи с продавцом схлопывание не трогает")
+    void keepsRecordsWithSeller() {
+        PriceStore store = store();
+        Instant now = Instant.now();
+
+        // Три человека просят одинаково — это три лота, и схлопывать их нельзя.
+        store.record("minecraft:coal", "Coal", 449, "alfa", now);
+        store.record("minecraft:coal", "Coal", 449, "beta", now);
+        store.record("minecraft:coal", "Coal", 449, "gamma", now);
+        store.save();
+
+        PriceStore reloaded = store();
+        reloaded.load();
+        assertEquals(3, reloaded.known("minecraft:coal", Duration.ofHours(12)).orElseThrow().samples());
+    }
 }

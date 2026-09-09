@@ -177,6 +177,34 @@ public final class PriceStore {
         return byItem.values().stream().mapToInt(List::size).sum();
     }
 
+    /**
+     * Схлопывает записи без продавца, совпадающие по цене.
+     * <p>
+     * У них нет ничего, чем один лот отличается от другого, а появились они
+     * из-за того, что мод записывал каждую встречу с витриной заново. Оставляем
+     * самую свежую из каждой цены: это ровно то, что мод про них знает.
+     */
+    private static void collapseLegacy(List<Observation> observations) {
+        Map<Long, Observation> newest = new HashMap<>();
+        List<Observation> withSeller = new ArrayList<>();
+
+        for (Observation observation : observations) {
+            String seller = observation.seller();
+            if (seller != null && !seller.isEmpty()) {
+                withSeller.add(observation);
+                continue;
+            }
+            newest.merge(observation.unitPrice(), observation,
+                    (a, b) -> a.seenAtMillis() >= b.seenAtMillis() ? a : b);
+        }
+        if (newest.size() + withSeller.size() == observations.size()) {
+            return;
+        }
+        observations.clear();
+        observations.addAll(withSeller);
+        observations.addAll(newest.values());
+    }
+
     /** Выбрасывает лишнее: слишком старое и слишком многочисленное. */
     private static void prune(List<Observation> observations) {
         Instant since = Instant.now().minus(KEEP);
@@ -211,7 +239,22 @@ public final class PriceStore {
                 names.putAll(snapshot.names());
             }
             byItem.values().forEach(PriceStore::prune);
+
+            // Записи, накопленные до того, как наблюдение стало помнить продавца,
+            // считали просмотры вместо лотов: один и тот же лот при каждом
+            // перелистывании ложился заново. Отличить их друг от друга уже нельзя,
+            // поэтому одинаковые по цене схлопываем в одну — это честный минимум,
+            // а не ждать неделю, пока они истекут сами.
+            int before = observationCount();
+            byItem.values().forEach(PriceStore::collapseLegacy);
+            int collapsed = before - observationCount();
+
             LOG.info("Загружено наблюдений: {} по {} предметам", observationCount(), itemCount());
+            if (collapsed > 0) {
+                LOG.info("Схлопнуто старых записей без продавца: {} — они считали просмотры,"
+                        + " а не разные лоты", collapsed);
+                dirty = true;
+            }
         } catch (IOException | RuntimeException e) {
             // Битая база хуже пустой только если из-за неё падает мод. Не падаем.
             LOG.warn("База цен не прочиталась ({}), начинаю с пустой", e.getMessage());
