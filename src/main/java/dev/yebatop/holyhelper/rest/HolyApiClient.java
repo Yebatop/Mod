@@ -26,8 +26,15 @@ public final class HolyApiClient {
     private static final String BASE = "https://api.holyworld.me";
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
-    /** Обычная пауза между опросами. Рынок плотный, чаще незачем. */
-    public static final Duration NORMAL_INTERVAL = Duration.ofSeconds(60);
+    /**
+     * Обычная пауза между опросами.
+     * <p>
+     * Первая проверка на живом сервере показала, что рынок Прайма медленный:
+     * в ответе сто сделок, а самая свежая — сорокапятиминутной давности. Опрос раз
+     * в минуту бил бы по API примерно в шестьдесят раз чаще, чем там вообще
+     * что-то происходит. Пять минут ничего не теряют и никого не беспокоят.
+     */
+    public static final Duration NORMAL_INTERVAL = Duration.ofMinutes(5);
 
     /** Дальше выдержку не растим: сутки молчания и так означают, что чинить нечего. */
     private static final Duration MAX_INTERVAL = Duration.ofMinutes(30);

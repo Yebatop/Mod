@@ -6,6 +6,7 @@ import dev.yebatop.holyhelper.command.HolyHelperCommand;
 import dev.yebatop.holyhelper.core.HolyHelperConfig;
 import dev.yebatop.holyhelper.core.Patterns;
 import dev.yebatop.holyhelper.core.ServerDetector;
+import dev.yebatop.holyhelper.hud.ExchangeHint;
 import dev.yebatop.holyhelper.hud.HudOverlay;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.liteapi.LiteApiChannel;
@@ -13,6 +14,7 @@ import dev.yebatop.holyhelper.liteapi.LiteApiPayload;
 import dev.yebatop.holyhelper.rest.CoinRateTracker;
 import dev.yebatop.holyhelper.rest.HolyApiClient;
 import dev.yebatop.holyhelper.scan.BuyerScanner;
+import dev.yebatop.holyhelper.scan.ExchangeParser;
 import dev.yebatop.holyhelper.scan.MarketScanner;
 import dev.yebatop.holyhelper.store.PriceStore;
 import net.fabricmc.api.ClientModInitializer;
@@ -51,6 +53,7 @@ public final class HolyHelperClient implements ClientModInitializer {
     private ScoreboardWatcher board;
     private BuyerScanner buyer;
     private MarketScanner market;
+    private ExchangeParser exchange;
     private RotationTimer rotation;
     private PriceStore prices;
     private HolyApiClient api;
@@ -77,6 +80,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         prices = new PriceStore(HolyHelperConfig.directory().resolve("prices.json"));
         prices.load();
         market = new MarketScanner(patterns, prices);
+        exchange = new ExchangeParser(patterns);
         rotation = new RotationTimer();
         api = new HolyApiClient();
         rates = new CoinRateTracker();
@@ -87,6 +91,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         PayloadTypeRegistry.playS2C().register(LiteApiPayload.FEATURE_CONTROL, LiteApiPayload.CODEC);
         channel.registerReceiver();
         HudOverlay.register();
+        ExchangeHint.register();
 
         ClientCommandRegistrationCallback.EVENT.register(
                 (dispatcher, access) -> HolyHelperCommand.register(dispatcher));
@@ -244,6 +249,10 @@ public final class HolyHelperClient implements ClientModInitializer {
 
     public MarketScanner market() {
         return market;
+    }
+
+    public ExchangeParser exchange() {
+        return exchange;
     }
 
     public RotationTimer rotation() {
