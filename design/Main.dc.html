@@ -7,7 +7,7 @@
 <body>
 <x-dc>
 <helmet>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@400..700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@400..700&display=swap">
   <style>
     body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
     a { color: #f2b45c; } a:hover { color: #ffd79a; }
@@ -15,72 +15,81 @@
     .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
     .u-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
     .u-lab { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #626b7b; }
-    .u-slot { width: 26px; height: 26px; flex: 0 0 auto; background: #1a1f29; border: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; }
-    .u-row { display: flex; align-items: center; gap: 14px; padding: var(--row-pad) 14px; border-bottom: 1px solid rgba(255,255,255,0.045); }
-    .u-cell { flex: 0 0 auto; font-size: 13px; text-align: right; }
+    .u-slot { width: 26px; height: 26px; flex: 0 0 auto; background: #161b23; border: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+    .u-row { display: flex; align-items: center; gap: 12px; padding: var(--row-pad) 16px; border-bottom: 1px solid rgba(255,255,255,0.042); }
     .u-track { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.07); overflow: hidden; }
-    .u-pill { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 3px; box-shadow: 0 0 18px rgba(0,0,0,0.22); }
+    .u-track > div { transform-origin: left; animation: hhGrow 1s cubic-bezier(0.2,0.72,0.2,1) 0.6s both; }
     .grad { background: linear-gradient(135deg, #ffe2b6 0%, #f2b45c 46%, #c9862a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .grad-t { background: linear-gradient(135deg, #c2f6f8 0%, #46d3d9 48%, #1f9198 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .facets { position: absolute; inset: 0; pointer-events: none; background-image: repeating-linear-gradient(114deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 148px), repeating-linear-gradient(-41deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 196px); }
+    .pnl { position: relative; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)); border: 1px solid rgba(255,255,255,0.072); box-shadow: 0 26px 62px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.075); overflow: hidden; }
     .pnl::after { content: ""; position: absolute; top: 0; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent); animation: hhSheen 7.5s ease-in-out infinite; }
+    .shaft { position: absolute; left: -220px; top: -300px; width: 520px; height: 1600px; transform: rotate(22deg); background: linear-gradient(90deg, transparent, rgba(255,225,180,0.05), transparent); filter: blur(30px); animation: hhShaft 11s ease-in-out infinite; pointer-events: none; }
     @keyframes hhSheen { 0% { left: -38%; } 44%, 100% { left: 138%; } }
+    @keyframes hhShaft { 0%, 100% { opacity: 0.26; } 50% { opacity: 0.5; } }
     @keyframes hhRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes hhSlide { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
     @keyframes hhGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes hhDraw { to { stroke-dashoffset: 0; } }
+    @keyframes hhFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes hhBreathe { 0%, 100% { opacity: 0.22; } 50% { opacity: 0.44; } }
     @keyframes hhRingA { from { stroke-dashoffset: 113.1; } to { stroke-dashoffset: 41.8; } }
     @keyframes hhRingB { from { stroke-dashoffset: 113.1; } to { stroke-dashoffset: 71.3; } }
-    .ring-a { animation: hhRingA 1.25s cubic-bezier(0.2, 0.72, 0.2, 1) 0.25s both; }
-    .ring-b { animation: hhRingB 1.25s cubic-bezier(0.2, 0.72, 0.2, 1) 0.35s both; }
-    .u-track > div { transform-origin: left; animation: hhGrow 1s cubic-bezier(0.2, 0.72, 0.2, 1) 0.55s both; }
-    .hero-card { animation: hhRise 0.62s cubic-bezier(0.2, 0.72, 0.2, 1) both; }
-    .hero-card:nth-child(1) { animation-delay: 0.14s; }
-    .hero-card:nth-child(2) { animation-delay: 0.22s; }
-    .hero-card:nth-child(3) { animation-delay: 0.30s; }
-    .u-row { animation: hhRise 0.5s cubic-bezier(0.2, 0.72, 0.2, 1) both; }
-    .u-row:nth-child(2) { animation-delay: 0.34s; }
-    .u-row:nth-child(3) { animation-delay: 0.38s; }
-    .u-row:nth-child(4) { animation-delay: 0.41s; }
-    .u-row:nth-child(5) { animation-delay: 0.45s; }
-    .u-row:nth-child(6) { animation-delay: 0.48s; }
-    .u-row:nth-child(7) { animation-delay: 0.52s; }
-    .u-row:nth-child(8) { animation-delay: 0.55s; }
-    .u-row:nth-child(9) { animation-delay: 0.59s; }
-    .u-row:nth-child(10) { animation-delay: 0.62s; }
+    .ring-a { animation: hhRingA 1.3s cubic-bezier(0.2,0.72,0.2,1) 0.25s both; }
+    .ring-b { animation: hhRingB 1.3s cubic-bezier(0.2,0.72,0.2,1) 0.35s both; }
+    .hero { animation: hhRise 0.62s cubic-bezier(0.2,0.72,0.2,1) both; }
+    .u-row { animation: hhSlide 0.46s cubic-bezier(0.2,0.72,0.2,1) both; }
+    .u-row:nth-child(1) { animation-delay: 0.36s; }
+    .u-row:nth-child(2) { animation-delay: 0.39s; }
+    .u-row:nth-child(3) { animation-delay: 0.42s; }
+    .u-row:nth-child(4) { animation-delay: 0.45s; }
+    .u-row:nth-child(5) { animation-delay: 0.48s; }
+    .u-row:nth-child(6) { animation-delay: 0.51s; }
+    .u-row:nth-child(7) { animation-delay: 0.54s; }
+    .u-row:nth-child(8) { animation-delay: 0.57s; }
+    .u-row:nth-child(9) { animation-delay: 0.60s; }
+    .u-row:nth-child(10) { animation-delay: 0.63s; }
     .u-row:nth-child(11) { animation-delay: 0.66s; }
     .u-row:nth-child(12) { animation-delay: 0.69s; }
-    .u-row:nth-child(13) { animation-delay: 0.73s; }
-    .u-row:nth-child(14) { animation-delay: 0.76s; }
-    .u-row:nth-child(15) { animation-delay: 0.80s; }
-    .u-row:nth-child(16) { animation-delay: 0.83s; }
+    .u-row:nth-child(13) { animation-delay: 0.72s; }
+    .u-row:nth-child(14) { animation-delay: 0.75s; }
+    .u-row:nth-child(15) { animation-delay: 0.78s; }
   </style>
 </helmet>
 <div style="--accent: {{accent}}; --row-pad: {{rowPad}}; position: relative; width: 1360px; height: 1000px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1;">
 
-  <div style="position: absolute; inset: 0; background: radial-gradient(760px 420px at 12% -6%, rgba(242,180,92,0.13), transparent 62%), radial-gradient(680px 400px at 92% 4%, rgba(70,211,217,0.09), transparent 60%), linear-gradient(180deg, #0e1118 0%, #0a0c11 46%, #090b0f 100%);"></div>
+  <div style="position: absolute; inset: 0; background: radial-gradient(760px 420px at 12% -6%, rgba(242,180,92,0.13), transparent 62%), radial-gradient(680px 400px at 92% 4%, rgba(70,211,217,0.085), transparent 60%), linear-gradient(180deg, #0e1118 0%, #0a0c11 46%, #090b0f 100%);"></div>
   <div class="facets"></div>
-  <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none;"><filter id="grainA"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainA)"/></svg>
+  <div class="shaft"></div>
+  <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none;"><filter id="grainMain"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainMain)"/></svg>
 
-  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 26px 30px 20px; display: flex; flex-direction: column; gap: 16px;">
+  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 24px 28px 18px; display: flex; flex-direction: column; gap: 14px;">
 
-    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 24px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) both;">
       <div style="display: flex; align-items: center; gap: 15px;">
         <div style="position: relative; width: 46px; height: 46px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;">
-          <div style="position: absolute; inset: -6px; border-radius: 50%; background: var(--accent); filter: blur(16px); opacity: 0.26;"></div>
+          <div style="position: absolute; inset: -7px; border-radius: 50%; background: var(--accent); filter: blur(17px); animation: hhBreathe 4.4s ease-in-out infinite;"></div>
           <svg width="44" height="44" viewBox="0 0 88 88" fill="none" style="position: relative;">
-            <defs><linearGradient id="markA" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe2b6"/><stop offset="52%" stop-color="{{accent}}"/><stop offset="100%" stop-color="#b9761f"/></linearGradient></defs>
-            <path d="M44 12 70 26v28L44 68 18 54V26L44 12Z" fill="rgba(242,180,92,0.07)" stroke="url(#markA)" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M18 26 44 40l26-14M44 40v28" stroke="url(#markA)" stroke-width="2" opacity="0.4"/>
-            <polyline points="27,52 38,44 49,49 62,32" stroke="#46d3d9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs><linearGradient id="markMain" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe2b6"/><stop offset="52%" stop-color="{{accent}}"/><stop offset="100%" stop-color="#b9761f"/></linearGradient></defs>
+            <path d="M44 12 70 26v28L44 68 18 54V26L44 12Z" fill="rgba(242,180,92,0.07)" stroke="url(#markMain)" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M18 26 44 40l26-14M44 40v28" stroke="url(#markMain)" stroke-width="2" opacity="0.4"/>
+            <polyline points="27,52 38,44 49,49 62,32" stroke="#46d3d9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" style="animation: hhDraw 0.8s cubic-bezier(0.3,0,0.2,1) 0.5s forwards;"/>
           </svg>
         </div>
         <div>
           <div class="u-disp" style="font-size: 25px; font-weight: 700; line-height: 1.05;">Скупец</div>
-          <div style="font-size: 12px; color: #6f7889; margin-top: 4px;">Торговля и заработок · 15 позиций · данные 6 минут назад</div>
+          <div style="display: flex; align-items: center; gap: 9px; margin-top: 5px;">
+            <span style="font-size: 12px; color: #6f7889;">Торговля и заработок · 15 позиций</span>
+            <span style="width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.2);"></span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #5fd18b;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #5fd18b; box-shadow: 0 0 10px rgba(95,209,139,0.8); animation: hhBreathe 2.6s ease-in-out infinite;"></span>
+              снято 2 минуты назад
+            </span>
+          </div>
         </div>
       </div>
 
       <div style="display: flex; align-items: center; gap: 10px;">
-        <div style="display: flex; align-items: center; gap: 13px; padding: 11px 16px 11px 12px; border-radius: 8px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);">
+        <div class="pnl" style="display: flex; align-items: center; gap: 13px; padding: 10px 18px 10px 12px; border-radius: 10px;">
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
             <circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,0.09)" stroke-width="3.5"/>
             <circle class="ring-a" cx="22" cy="22" r="18" stroke="{{accent}}" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="41.8" transform="rotate(-90 22 22)"/>
@@ -90,7 +99,7 @@
             <div class="u-num" style="font-size: 18px; font-weight: 500; color: var(--accent); margin-top: 3px;">3:13:51</div>
           </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 13px; padding: 11px 16px 11px 12px; border-radius: 8px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);">
+        <div class="pnl" style="display: flex; align-items: center; gap: 13px; padding: 10px 18px 10px 12px; border-radius: 10px;">
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
             <circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,0.09)" stroke-width="3.5"/>
             <circle class="ring-b" cx="22" cy="22" r="18" stroke="#46d3d9" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="71.3" transform="rotate(-90 22 22)"/>
@@ -103,415 +112,253 @@
       </div>
     </div>
 
-    <div style="display: flex; align-items: stretch; gap: 14px;">
+    <div style="display: flex; align-items: stretch; gap: 12px;">
 
-      <div class="pnl" style="flex: 0 0 auto; width: 372px; padding: 16px 20px 18px; background: linear-gradient(150deg, rgba(242,180,92,0.15), rgba(255,255,255,0.012) 70%); border: 1px solid rgba(242,180,92,0.22); border-radius: 10px; box-shadow: 0 22px 54px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.09); overflow: hidden;">
-        <div class="u-lab" style="color: rgba(242,180,92,0.82);">Если разложить всё оптимально</div>
-        <div class="u-disp grad" style="font-size: 42px; font-weight: 800; line-height: 1; margin-top: 8px;">+48 600</div>
-        <div style="font-size: 12px; color: #7b8496; margin-top: 8px; line-height: 1.45;">монеток сверх того, что вышло бы, если сдать весь склад Скупцу не глядя</div>
+      <div class="pnl hero" style="animation-delay: 0.12s; flex: 0 0 auto; width: 330px; padding: 16px 20px 17px; background: linear-gradient(150deg, rgba(242,180,92,0.16), rgba(255,255,255,0.012) 72%); border: 1px solid rgba(242,180,92,0.22);">
+        <div class="u-lab" style="color: rgba(242,180,92,0.82);">Маркет видел дороже</div>
+        <div style="display: flex; align-items: baseline; gap: 10px; margin-top: 6px;">
+          <div class="u-disp grad" style="font-size: 44px; font-weight: 800; line-height: 1;">5</div>
+          <div class="u-num" style="font-size: 17px; color: #8b93a1;">из 15</div>
+        </div>
+        <div style="font-size: 11.5px; color: #7b8496; margin-top: 8px; line-height: 1.5;">По этим позициям мод встречал на Маркете лоты дороже, чем платит Скупец. Он знает только дно увиденного — дешевле могло лежать там, куда вы не дошли.</div>
       </div>
 
-      <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 9px;">
-        <div class="u-lab" style="color: var(--accent);">Нести сейчас</div>
-        <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
-          <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 9px; background: linear-gradient(140deg, rgba(242,180,92,0.15), rgba(242,180,92,0.02) 66%); border: 1px solid rgba(242,180,92,0.26); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="u-slot"><div style="width: 13px; height: 13px; background: #7a4a3c;"></div></div>
-              <div style="flex-grow: 1;">
-                <div style="font-size: 14px; font-weight: 500;">Гнилая плоть</div>
-                <div class="u-num" style="font-size: 11px; color: #7b8496; margin-top: 2px;">3,30 против 2</div>
-              </div>
-              <div style="text-align: right;">
-                <div class="u-num grad" style="font-size: 22px; font-weight: 800; line-height: 1;">+65 %</div>
-                <div class="u-lab" style="margin-top: 4px; color: rgba(242,180,92,0.75);">Скупец</div>
-              </div>
-            </div>
+      <div class="pnl hero" style="animation-delay: 0.2s; flex-grow: 1; padding: 14px 18px 15px;">
+        <div class="u-lab">Множители торговли</div>
+        <div style="display: flex; flex-direction: column; gap: 9px; margin-top: 11px;">
+          <div style="display: flex; align-items: center; gap: 11px;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 27px; height: 21px; border-radius: 4px; background: rgba(169,140,240,0.14); border: 1px solid rgba(169,140,240,0.3); color: #c3adf6; font-size: 11px; font-weight: 700;">I</span>
+            <span style="flex-grow: 1; font-size: 13px; color: #dfe4ea;">На всё</span>
+            <span class="u-num" style="font-size: 12.5px; color: #8b93a1;">100 стаков</span>
+            <span class="u-num" style="font-size: 13px; color: #c3adf6; width: 44px; text-align: right;">+5%</span>
           </div>
-          <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 9px; background: linear-gradient(140deg, rgba(70,211,217,0.15), rgba(70,211,217,0.02) 66%); border: 1px solid rgba(70,211,217,0.26); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="u-slot"><div style="width: 13px; height: 13px; background: #8c6aa0;"></div></div>
-              <div style="flex-grow: 1;">
-                <div style="font-size: 14px; font-weight: 500;">Панцирь шалкера</div>
-                <div class="u-num" style="font-size: 11px; color: #7b8496; margin-top: 2px;">2 100 против 1 450</div>
-              </div>
-              <div style="text-align: right;">
-                <div class="u-num grad-t" style="font-size: 22px; font-weight: 800; line-height: 1;">+45 %</div>
-                <div class="u-lab" style="margin-top: 4px; color: rgba(70,211,217,0.75);">Маркет</div>
-              </div>
-            </div>
-          </div>
-          <div class="hero-card" style="position: relative; overflow: hidden; padding: 14px 16px; border-radius: 9px; background: linear-gradient(140deg, rgba(70,211,217,0.15), rgba(70,211,217,0.02) 66%); border: 1px solid rgba(70,211,217,0.26); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="u-slot"><div style="width: 13px; height: 13px; background: #cfe6e6;"></div></div>
-              <div style="flex-grow: 1;">
-                <div style="font-size: 14px; font-weight: 500;">Слеза гаста</div>
-                <div class="u-num" style="font-size: 11px; color: #7b8496; margin-top: 2px;">1 040 против 740</div>
-              </div>
-              <div style="text-align: right;">
-                <div class="u-num grad-t" style="font-size: 22px; font-weight: 800; line-height: 1;">+41 %</div>
-                <div class="u-lab" style="margin-top: 4px; color: rgba(70,211,217,0.75);">Маркет</div>
-              </div>
-            </div>
+          <div style="height: 1px; background: rgba(255,255,255,0.05);"></div>
+          <div style="display: flex; align-items: center; gap: 11px;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 27px; height: 21px; border-radius: 4px; background: rgba(169,140,240,0.14); border: 1px solid rgba(169,140,240,0.3); color: #c3adf6; font-size: 11px; font-weight: 700;">II</span>
+            <span style="flex-grow: 1; font-size: 13px; color: #dfe4ea;">Блоки</span>
+            <span class="u-num" style="font-size: 12.5px; color: #8b93a1;">40 стаков</span>
+            <span class="u-num" style="font-size: 13px; color: #c3adf6; width: 44px; text-align: right;">+10%</span>
           </div>
         </div>
+        <div style="margin-top: 11px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 11.5px; color: #6f7889; line-height: 1.45;">Разные категории перемножаются: <span class="u-num" style="color: #c3adf6;">1,05 × 1,10 = 1,15</span>. Мод берёт надбавки у сервера, а не считает их сам.</div>
+      </div>
+
+      <div class="pnl hero" style="animation-delay: 0.28s; flex: 0 0 auto; width: 302px; padding: 14px 18px 15px;">
+        <div class="u-lab">Этапы</div>
+        <div style="margin-top: 11px;">
+          <div style="display: flex; align-items: baseline; gap: 8px;">
+            <span class="u-num" style="font-size: 13px; color: var(--accent);">Этап #1</span>
+            <span style="flex-grow: 1; font-size: 12px; color: #8b93a1;">1 000 монеток</span>
+            <span class="u-num" style="font-size: 13px; color: #5fd18b;">800 · 80%</span>
+          </div>
+          <div class="u-track" style="margin-top: 8px;"><div style="height: 100%; width: 80%; background: linear-gradient(90deg, rgba(95,209,139,0.4), #5fd18b);"></div></div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 13px;">
+          <span class="u-num" style="font-size: 13px; color: #59616f;">Этап #2</span>
+          <span style="flex-grow: 1; font-size: 12px; color: #59616f;">5 000 монеток</span>
+          <span style="font-size: 12px; color: #59616f;">закрыт</span>
+        </div>
+        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 11.5px; color: #6f7889;">Закрыто ячеек: <span class="u-num" style="color: #a8b0bd;">3</span> · ближайшая с <span class="u-num" style="color: #a8b0bd;">15</span> этапов</div>
+      </div>
+
+    </div>
+
+    <div class="pnl" style="flex-grow: 1; display: flex; flex-direction: column; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.3s both;">
+
+      <div style="display: flex; align-items: center; gap: 12px; padding: 11px 16px 10px; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.018);">
+        <span class="u-lab" style="width: 26px;"></span>
+        <span class="u-lab" style="flex-grow: 1;">Товар</span>
+        <span class="u-lab" style="width: 58px; text-align: right;">Множ.</span>
+        <span class="u-lab" style="width: 92px; text-align: right;">За 16 шт</span>
+        <span class="u-lab" style="width: 92px; text-align: right; color: rgba(242,180,92,0.75);">За штуку</span>
+        <span class="u-lab" style="width: 104px; text-align: right;">Осталось</span>
+        <span class="u-lab" style="width: 176px; text-align: right;">Маркет</span>
+      </div>
+
+      <div style="flex-grow: 1;">
+
+        <div class="u-row" style="background: linear-gradient(90deg, rgba(242,180,92,0.10), transparent 62%);">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #9be8ea, #4fbfc4);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Алмаз</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #c3adf6;">×1,15</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">8 512</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">532,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">2 048</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #5fd18b;">от 610 · видел 6 раз</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #e08b5e, #a9552c);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Медный блок</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #c3adf6;">×1,15</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">4 800</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">300,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">12 288</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #5a6472;">от 284 · видел 4 раза</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #ffe08a, #c9962c);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Золотой слиток</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #c3adf6;">×1,05</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">3 264</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">204,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">8 192</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #5fd18b;">от 231 · видел 3 раза</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #7ff0a8, #23a05c);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Изумруд <span style="color: #5fd18b; font-size: 12px;">✦</span></span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #c3adf6;">×1,05</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">2 976</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">186,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">4 096</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #e2c05a;">от 190 · видел 1 раз</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #dfe3e8, #93999f);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Железный блок</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #3f4653;">—</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">2 208</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">138,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">16 384</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #3f4653;">не встречался</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #ff6f6f, #a52222);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Красная пыль</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #c3adf6;">×1,05</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">1 264</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">79,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">32 768</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #5a6472;">от 74 · видел 3 раза</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #6f8cff, #26418f);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Лазурит</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #3f4653;">—</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">984</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">61,50</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">16 384</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #3f4653;">не встречался</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #4a4f57, #17191d);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Уголь</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #c3adf6;">×1,05</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">712</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">44,50</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">65 536</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #5fd18b;">от 51 · видел 5 раз</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #3c3550, #16121f);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Обсидиан <span style="color: #5fd18b; font-size: 12px;">✦</span></span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #3f4653;">—</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">596</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">37,25</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">8 192</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #3f4653;">не встречался</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #f4f0e6, #b9b0a0);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Кварц</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #c3adf6;">×1,10</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">512</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">32,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">12 288</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #5a6472;">от 30 · видел 2 раза</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #b9c0cc, #78808d);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Глина</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #3f4653;">—</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">346</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">21,62</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">24 576</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #5fd18b;">от 26 · видел 3 раза</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #9ada7a, #4f8a3a);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Слизь</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #3f4653;">—</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">288</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">18,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">6 144</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #3f4653;">не встречался</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #b98f5e, #6f5130);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Поводок</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #3f4653;">—</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">272</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">17,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">3 072</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #e2c05a;">от 19 · видел 1 раз</span>
+        </div>
+
+        <div class="u-row">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #4f8f6a, #23553d);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Ламинария</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #c3adf6;">×1,05</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">208</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">13,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">49 152</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #3f4653;">не встречался</span>
+        </div>
+
+        <div class="u-row" style="border-bottom: none;">
+          <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #e6cf7c, #a68a34);"></div></div>
+          <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Пшеница</span>
+          <span class="u-num" style="width: 58px; text-align: right; font-size: 12.5px; color: #3f4653;">—</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 13px; color: #a8b0bd;">176</span>
+          <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #f2b45c;">11,00</span>
+          <span class="u-num" style="width: 104px; text-align: right; font-size: 12.5px; color: #8b93a1;">32 768</span>
+          <span class="u-num" style="width: 176px; text-align: right; font-size: 12px; color: #5fd18b;">от 12 · видел 8 раз</span>
+        </div>
+
       </div>
     </div>
 
-    <div class="pnl" style="flex-grow: 1; display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)); border: 1px solid rgba(255,255,255,0.075); box-shadow: 0 26px 64px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.085);">
-
-      <div style="display: flex; align-items: flex-end; gap: 14px; padding: 11px 14px 9px; border-bottom: 1px solid rgba(255,255,255,0.075); background: rgba(255,255,255,0.02);">
-        <span style="width: 250px; flex: 0 0 auto; display: flex; align-items: center; gap: 6px;">
-          <span class="u-lab">Товар</span>
-          <svg width="8" height="11" viewBox="0 0 8 11" fill="none"><path d="M4 0.5 7 4H1z" fill="#39404c"/><path d="M4 10.5 1 7h6z" fill="#39404c"/></svg>
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; animation: hhFade 0.8s ease-out 0.9s both;">
+      <div style="display: flex; align-items: center; gap: 18px;">
+        <span style="display: flex; align-items: center; gap: 8px;">
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #5fd18b;"></span>
+          <span style="font-size: 11.5px; color: #6f7889;">на Маркете видел дороже</span>
         </span>
-        <span class="u-lab" style="width: 120px; flex: 0 0 auto; text-align: right;">Цена за 16 шт</span>
-        <span class="u-lab" style="width: 90px; flex: 0 0 auto; text-align: center;">Множитель</span>
-        <span class="u-lab" style="width: 130px; flex: 0 0 auto; text-align: right;">С множителями</span>
-        <span style="width: 110px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
-          <span style="display: flex; align-items: center; gap: 6px;">
-            <span class="u-lab">Скупец</span>
-            <svg width="8" height="11" viewBox="0 0 8 11" fill="none"><path d="M4 0.5 7 4H1z" fill="#39404c"/><path d="M4 10.5 1 7h6z" fill="#39404c"/></svg>
-          </span>
-          <span style="font-size: 9px; letter-spacing: 0.06em; color: #4d5563;">за штуку</span>
+        <span style="display: flex; align-items: center; gap: 8px;">
+          <span style="width: 8px; height: 8px; border-radius: 2px; background: #e2c05a;"></span>
+          <span style="font-size: 11.5px; color: #6f7889;">видел один раз — это ещё не рынок</span>
         </span>
-        <span style="width: 175px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 2px;">
-          <span class="u-lab">Доступно</span>
-          <span style="font-size: 9px; letter-spacing: 0.06em; color: #4d5563;">из замеченного максимума</span>
+        <span style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 12px; color: #5fd18b;">✦</span>
+          <span style="font-size: 11.5px; color: #6f7889;">особый товар, свои 8 часов</span>
         </span>
-        <span style="width: 110px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 3px 6px; margin: -3px -6px; border-radius: 5px; background: rgba(255,255,255,0.05);">
-          <span style="display: flex; align-items: center; gap: 6px;">
-            <span class="u-lab" style="color: #969fae;">Маркет</span>
-            <svg width="8" height="11" viewBox="0 0 8 11" fill="none"><path d="M4 0.5 7 4H1z" fill="#6f7889"/><path d="M4 10.5 1 7h6z" fill="#6f7889"/></svg>
-          </span>
-          <span style="font-size: 9px; letter-spacing: 0.06em; color: #5d6472;">медиана за шт</span>
-        </span>
-        <span style="width: 155px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
-          <span style="display: flex; align-items: center; gap: 6px;">
-            <span class="u-lab" style="color: var(--accent);">Выгоднее</span>
-            <svg width="8" height="11" viewBox="0 0 8 11" fill="none"><path d="M4 0.5 7 4H1z" fill="rgba(242,180,92,0.30)"/><path d="M4 10.5 1 7h6z" fill="{{accent}}"/></svg>
-          </span>
-          <span style="font-size: 9px; letter-spacing: 0.06em; color: rgba(242,180,92,0.58);">по убыванию</span>
-        </span>
-      </div>
-
-      <div class="u-row" style="background: rgba(242,180,92,0.055); box-shadow: inset 2px 0 0 var(--accent);">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #7a4a3c;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Гнилая плоть</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Лут из враждебных мобов</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">48</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: var(--accent);">+10 %</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: var(--accent);">52,80</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">3,30</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">4 992</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 8 192</span>
-          </div>
-          <div class="u-track"><div style="width: 61%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">2</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: var(--accent);">+65 %</span> <span class="u-pill" style="background: rgba(242,180,92,0.14); border: 1px solid rgba(242,180,92,0.34); color: #f2b45c;">СКУПЕЦ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #8c6aa0;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Панцирь шалкера</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Лут из враждебных мобов</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">23 200</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: #4d5563;">—</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: #cdd3dc;">23 200</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">1 450</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">116</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 128</span>
-          </div>
-          <div class="u-track"><div style="width: 91%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">2 100</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: #46d3d9;">+45 %</span> <span class="u-pill" style="background: rgba(70,211,217,0.13); border: 1px solid rgba(70,211,217,0.32); color: #46d3d9;">МАРКЕТ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #cfe6e6;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Слеза гаста</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Драгоценности</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">11 840</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: #4d5563;">—</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: #cdd3dc;">11 840</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">740</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">232</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 256</span>
-          </div>
-          <div class="u-track"><div style="width: 91%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">1 040</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: #46d3d9;">+41 %</span> <span class="u-pill" style="background: rgba(70,211,217,0.13); border: 1px solid rgba(70,211,217,0.32); color: #46d3d9;">МАРКЕТ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #e8e2cf;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Кость</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Лут из враждебных мобов</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">352</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: var(--accent);">+10 %</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: var(--accent);">387,20</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">24,20</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">3 072</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 4 096</span>
-          </div>
-          <div class="u-track"><div style="width: 75%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">33</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: #46d3d9;">+36 %</span> <span class="u-pill" style="background: rgba(70,211,217,0.13); border: 1px solid rgba(70,211,217,0.32); color: #46d3d9;">МАРКЕТ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #8a5f3a;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Кожа</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Лут из мирных мобов</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">704</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: #4d5563;">—</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: #cdd3dc;">704</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">44</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">1 216</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 1 536</span>
-          </div>
-          <div class="u-track"><div style="width: 79%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">60</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: #46d3d9;">+36 %</span> <span class="u-pill" style="background: rgba(70,211,217,0.13); border: 1px solid rgba(70,211,217,0.32); color: #46d3d9;">МАРКЕТ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #5b8a3c;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Мох</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Блоки</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">304</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: var(--accent);">+15 %</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: var(--accent);">349,60</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">21,85</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">1 024</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 1 024</span>
-          </div>
-          <div class="u-track"><div style="width: 100%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">16,50</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: var(--accent);">+32 %</span> <span class="u-pill" style="background: rgba(242,180,92,0.14); border: 1px solid rgba(242,180,92,0.34); color: #f2b45c;">СКУПЕЦ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #8c8c8c;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Порох</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Лут из враждебных мобов</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">1 392</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: var(--accent);">+10 %</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: var(--accent);">1 531,20</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">95,70</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">896</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 1 536</span>
-          </div>
-          <div class="u-track"><div style="width: 58%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">123</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: #46d3d9;">+29 %</span> <span class="u-pill" style="background: rgba(70,211,217,0.13); border: 1px solid rgba(70,211,217,0.32); color: #46d3d9;">МАРКЕТ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #2b2340;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Обсидиан</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Блоки</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">2 080</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: var(--accent);">+15 %</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: var(--accent);">2 392</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">149,50</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">768</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 1 024</span>
-          </div>
-          <div class="u-track"><div style="width: 75%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">118</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: var(--accent);">+27 %</span> <span class="u-pill" style="background: rgba(242,180,92,0.14); border: 1px solid rgba(242,180,92,0.34); color: #f2b45c;">СКУПЕЦ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #a3763f;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Поводок</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Разное</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">268</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: #4d5563;">—</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: #cdd3dc;">268</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">16,75</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">15 872</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 16 384</span>
-          </div>
-          <div class="u-track"><div style="width: 97%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">13,60</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: var(--accent);">+23 %</span> <span class="u-pill" style="background: rgba(242,180,92,0.14); border: 1px solid rgba(242,180,92,0.34); color: #f2b45c;">СКУПЕЦ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #23262c;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Уголь</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Драгоценности</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">320</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: var(--accent);">+15 %</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: var(--accent);">368</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">23</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">1 536</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 2 048</span>
-          </div>
-          <div class="u-track"><div style="width: 75%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">19</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: var(--accent);">+21 %</span> <span class="u-pill" style="background: rgba(242,180,92,0.14); border: 1px solid rgba(242,180,92,0.34); color: #f2b45c;">СКУПЕЦ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #eae3d8;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Кварц</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Драгоценности</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">1 120</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: #4d5563;">—</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: #cdd3dc;">1 120</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">70</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">1 536</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 2 048</span>
-          </div>
-          <div class="u-track"><div style="width: 75%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">75</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: #46d3d9;">+7 %</span> <span class="u-pill" style="background: rgba(70,211,217,0.13); border: 1px solid rgba(70,211,217,0.32); color: #46d3d9;">МАРКЕТ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #b7bcc9;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Глина</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Блоки</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">346</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: #4d5563;">—</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: #cdd3dc;">346</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">21,62</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">2 944</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 3 072</span>
-          </div>
-          <div class="u-track"><div style="width: 96%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">23</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: #46d3d9;">+6 %</span> <span class="u-pill" style="background: rgba(70,211,217,0.13); border: 1px solid rgba(70,211,217,0.32); color: #46d3d9;">МАРКЕТ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #1f7a6e;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Эндер-жемчуг</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Лут из враждебных мобов</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">5 120</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: var(--accent);">+10 %</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: var(--accent);">5 632</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">352</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">416</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 512</span>
-          </div>
-          <div class="u-track"><div style="width: 81%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">340</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: var(--accent);">+4 %</span> <span class="u-pill" style="background: rgba(242,180,92,0.14); border: 1px solid rgba(242,180,92,0.34); color: #f2b45c;">СКУПЕЦ</span></div>
-      </div>
-      <div class="u-row">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #d5d8dd;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Нить</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Лут из враждебных мобов</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">832</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: var(--accent);">+10 %</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: var(--accent);">915,20</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">57,20</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">2 048</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 2 048</span>
-          </div>
-          <div class="u-track"><div style="width: 100%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">55,50</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 700; color: var(--accent);">+3 %</span> <span class="u-pill" style="background: rgba(242,180,92,0.14); border: 1px solid rgba(242,180,92,0.34); color: #f2b45c;">СКУПЕЦ</span></div>
-      </div>
-      <div class="u-row" style="border-bottom: none;">
-        <div style="display: flex; align-items: center; gap: 11px; width: 250px; flex: 0 0 auto;">
-          <div class="u-slot"><div style="width: 13px; height: 13px; background: #d9a03a;"></div></div>
-          <div><div style="font-size: 13px; color: #eef1f5;">Пчелиные соты</div><div style="font-size: 10px; color: #626b7b; margin-top: 2px;">Лут из мирных мобов</div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 120px; color: #cdd3dc;">2 912</div>
-        <div style="width: 90px; flex: 0 0 auto; text-align: center;"><span class="u-num" style="font-size: 11px; color: #4d5563;">—</span></div>
-        <div class="u-cell u-num" style="width: 130px; color: #cdd3dc;">2 912</div>
-        <div class="u-cell u-num" style="width: 110px; color: #ffffff; font-weight: 500;">182</div>
-        <div style="width: 175px; flex: 0 0 auto;">
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px;">
-            <span class="u-num" style="font-size: 13px; color: #cdd3dc;">448</span>
-            <span class="u-num" style="font-size: 10px; color: #5d6472;">из 512</span>
-          </div>
-          <div class="u-track"><div style="width: 88%; height: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.45), var(--accent));"></div></div>
-        </div>
-        <div class="u-cell u-num" style="width: 110px; color: #8b93a1;">180</div>
-        <div style="width: 155px; flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-end; gap: 9px;"><span class="u-num" style="font-size: 14px; font-weight: 500; color: #6f7889;">1 %</span> <span class="u-pill" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: #8b93a1;">РАВНО</span></div>
-      </div>
-    </div>
-
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 18px;">
-      <div style="display: flex; align-items: center; gap: 11px;">
-        <span class="u-lab">Этап #1</span>
-        <span style="font-size: 12px; color: #b6bdc9;">торговать любыми предметами</span>
-        <div style="width: 90px;"><div class="u-track"><div style="width: 0%; height: 100%; background: var(--accent);"></div></div></div>
-        <span class="u-num" style="font-size: 12px; color: #8b93a1;">0 / 1 000</span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 11px;">
-        <span class="u-lab">Ежедневная сделка</span>
-        <span style="font-size: 12px; color: #b6bdc9;">выращенное</span>
-        <div style="width: 90px;"><div class="u-track"><div style="width: 0%; height: 100%; background: #5fd18b;"></div></div></div>
-        <span class="u-num" style="font-size: 12px; color: #8b93a1;">0 / 15 000</span>
-        <span class="u-num" style="font-size: 11px; padding: 3px 8px; border-radius: 3px; background: rgba(95,209,139,0.10); border: 1px solid rgba(95,209,139,0.24); color: #5fd18b;">показатель 0 %</span>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
-        <span class="u-num" style="font-size: 11px; padding: 3px 8px; border-radius: 3px; background: rgba(242,180,92,0.10); border: 1px solid rgba(242,180,92,0.24); color: #f2b45c;">Множитель I ур. на всё · 100 стаков</span>
-        <span style="font-size: 11px; color: #5d6472;">множители разных категорий перемножаются</span>
+        <span class="u-px" style="font-size: 15px; padding: 4px 10px; border-radius: 5px; background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03)); border: 1px solid rgba(255,255,255,0.10); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); color: #dfe4ea;">G</span>
+        <span style="font-size: 11.5px; color: #59616f;">открыть поверх окна Скупца</span>
       </div>
     </div>
 
   </div>
 </div>
 </x-dc>
-<script data-dc-script data-props='{"accent":{"editor":"color","default":"#f2b45c","options":["#f2b45c","#46d3d9","#5fd18b","#a98cf0"]},"density":{"editor":"enum","default":"comfortable","options":["comfortable","compact"]}}'>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#f2b45c","options":["#f2b45c","#46d3d9","#5fd18b","#a98cf0"]},"rowPad":{"editor":"range","default":8,"min":4,"max":14,"step":1,"unit":"px","section":"Плотность"}}'>
 class Component extends DCLogic {
   renderVals() {
-    const d = this.props.density ?? 'comfortable';
-    return {
-      accent: this.props.accent ?? '#f2b45c',
-      rowPad: d === 'compact' ? '5px' : '8px'
-    };
+    const pad = this.props.rowPad ?? 8;
+    return { accent: this.props.accent ?? '#f2b45c', rowPad: pad + 'px' };
   }
 }
 </script>
