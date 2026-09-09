@@ -19,8 +19,11 @@ public final class HolyHelperConfig {
     private static final Logger LOG = LoggerFactory.getLogger("holyhelper/config");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    /** Показывать оверлей. Сам оверлей появится в следующем этапе, флаг заведён заранее. */
+    /** Показывать панель в углу экрана. */
     public boolean hudEnabled = true;
+
+    /** Показывать экран запуска при входе на сервер. */
+    public boolean bootScreenEnabled = true;
 
     /** Писать в чат отчёт о состоянии при входе на сервер. */
     public boolean announceOnJoin = true;

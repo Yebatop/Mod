@@ -6,6 +6,7 @@ import dev.yebatop.holyhelper.board.ScoreboardWatcher;
 import dev.yebatop.holyhelper.core.ServerDetector;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.scan.BuyerParser;
+import dev.yebatop.holyhelper.ui.Fonts;
 import dev.yebatop.holyhelper.ui.Motion;
 import dev.yebatop.holyhelper.ui.Paint;
 import dev.yebatop.holyhelper.ui.Theme;
@@ -29,14 +30,12 @@ import java.util.Optional;
  * окном Скупца чат не открыть. Панель показывает то, что мод уже знает, и не требует
  * ничего набирать.
  * <p>
+ * Слева, а не справа, как было в макете. В макете нарисована сцена без сайдбара, а на
+ * Прайме сайдбар справа висит всегда — панель наезжала прямо на него, и не читались
+ * обе. Левый верх свободен.
+ * <p>
  * Рисуется только то, что действительно известно. Пустая строка вместо таймера хуже
  * отсутствия строки: она выглядит как поломка, хотя окно просто ещё не открывали.
- * <p>
- * От макета панель отличается ровно одним — шрифтом. В макете три гарнитуры и
- * мелкие подписи в разрядку; клиент рисует одним встроенным шрифтом одного кегля,
- * и подделывать иерархию нечем. Поэтому её несёт цвет и расположение: золото —
- * Скупец, бирюза — Маркет, приглушённый серый — подписи. Гарнитуры из макета можно
- * будет положить в мод отдельным шагом, это заметная работа и отдельный разговор.
  */
 public final class HudOverlay {
 
@@ -49,33 +48,35 @@ public final class HudOverlay {
     /** Отклонение меньше этого — шум, а не сигнал. */
     private static final double NOTABLE_PERCENT = 3;
 
-    private static final int WIDTH = 118;
+    private static final int WIDTH = 132;
     private static final int MARGIN = 4;
-    private static final int PAD = 5;
+    private static final int PAD = 7;
+    private static final int RADIUS = 5;
+
+    /** Высота строки текста и высота мелкой подписи. */
     private static final int LINE = 9;
-    private static final int GAP = 3;
-    private static final int BAR = 2;
+    private static final int CAP = 8;
+    private static final int BAR = 3;
 
-    /** Период пробега блика по кромке — как в макете. */
+    /** Отступ между секциями внутри карточки. */
+    private static final int GAP = 7;
+
     private static final long SHEEN_PERIOD = 8_000L;
-
-    /** Разбег появления панелей и длительность появления одной. */
-    private static final long REVEAL_STEP = 90L;
+    private static final long REVEAL_STEP = 80L;
     private static final long REVEAL_LENGTH = 420L;
 
-    /** Сколько сделок берём в линию курса. */
     private static final int SPARK_POINTS = 40;
+    private static final int SPARK_HEIGHT = 11;
 
     /** Когда панель впервые появилась. Отсюда считается разбег появления. */
     private static long shownSince;
 
-    /** Что рисуется внутри одной панели. */
     @FunctionalInterface
     private interface Body {
         void paint(DrawContext ctx, TextRenderer font, int x, int y, int width, double alpha);
     }
 
-    private record Block(int height, Body body) {
+    private record Section(int height, Body body) {
     }
 
     private HudOverlay() {
@@ -109,8 +110,8 @@ public final class HudOverlay {
             return;
         }
 
-        List<Block> blocks = compose(mod, client.textRenderer);
-        if (blocks.isEmpty()) {
+        List<Section> sections = compose(mod, client.textRenderer);
+        if (sections.isEmpty()) {
             shownSince = 0;
             return;
         }
@@ -121,29 +122,45 @@ public final class HudOverlay {
         }
         long elapsed = now - shownSince;
 
-        int x = ctx.getScaledWindowWidth() - WIDTH - MARGIN;
-        int y = MARGIN;
+        int height = PAD * 2 + (sections.size() - 1) * GAP;
+        for (Section section : sections) {
+            height += section.height();
+        }
 
-        for (int i = 0; i < blocks.size(); i++) {
-            Block block = blocks.get(i);
-            double reveal = Motion.reveal(elapsed, i * REVEAL_STEP, REVEAL_LENGTH);
+        double card = Motion.reveal(elapsed, 0, REVEAL_LENGTH);
+        if (card <= 0) {
+            return;
+        }
+        int x = MARGIN;
+        int y = MARGIN + Motion.rise(card, 10);
+
+        Paint.panel(ctx, x, y, WIDTH, height, RADIUS, Theme.PANEL, card);
+        Paint.sheen(ctx, x, y, WIDTH, RADIUS, now, SHEEN_PERIOD, card);
+
+        int inner = WIDTH - PAD * 2;
+        int cursor = y + PAD;
+
+        for (int i = 0; i < sections.size(); i++) {
+            Section section = sections.get(i);
+            double reveal = Motion.reveal(elapsed, REVEAL_STEP * (i + 1), REVEAL_LENGTH) * card;
             if (reveal > 0) {
-                int top = y + Motion.rise(reveal, 10);
-                Paint.panel(ctx, x, top, WIDTH, block.height(), Theme.PANEL, reveal);
-                Paint.sheen(ctx, x, top, WIDTH, now, SHEEN_PERIOD, reveal);
-                block.body().paint(ctx, client.textRenderer, x + PAD, top + PAD, WIDTH - PAD * 2, reveal);
+                section.body().paint(ctx, client.textRenderer, x + PAD, cursor, inner, reveal);
             }
-            y += block.height() + GAP;
+            cursor += section.height();
+            if (i < sections.size() - 1) {
+                Paint.separator(ctx, x + PAD, cursor + GAP / 2, inner, card * 0.7);
+                cursor += GAP;
+            }
         }
     }
 
     /**
-     * Собирает панели из того, что известно. Порядок один и тот же всегда:
-     * панель, которая переставляется от того, что мод чего-то не знает, читается
-     * хуже отсутствующей.
+     * Собирает секции из того, что известно. Порядок один и тот же всегда: панель,
+     * которая переставляется от того, что мод чего-то не знает, читается хуже
+     * отсутствующей.
      */
-    private static List<Block> compose(HolyHelperClient mod, TextRenderer font) {
-        List<Block> blocks = new ArrayList<>();
+    private static List<Section> compose(HolyHelperClient mod, TextRenderer font) {
+        List<Section> sections = new ArrayList<>();
 
         ScoreboardWatcher.Snapshot board = mod.board().snapshot();
         boolean hasBalance = board.present() && board.coins() >= 0;
@@ -156,89 +173,92 @@ public final class HudOverlay {
         BuyerParser.Stage stage = currentStage(mod);
 
         if (!hasBalance && regular.isEmpty() && special.isEmpty() && rate.isEmpty() && stage == null) {
-            return blocks;
+            return sections;
         }
 
-        blocks.add(new Block(PAD * 2 + LINE, (ctx, f, x, y, w, alpha) -> {
-            ctx.drawText(f, "HolyHelper", x, y, Motion.fade(Theme.GOLD, alpha), false);
+        sections.add(new Section(12, (ctx, f, x, y, w, alpha) -> {
+            Paint.mark(ctx, x, y, 11, Theme.GOLD, Theme.TEAL, alpha);
+            Fonts.draw(ctx, f, "HolyHelper", Fonts.BODY, x + 15, y + 1,
+                    Motion.fade(Theme.GOLD, alpha));
             int dot = board.present() ? Theme.GREEN : Theme.TEXT_FAINT;
-            ctx.fill(x + w - 5, y + 2, x + w, y + 7, Motion.fade(dot, alpha));
+            Paint.roundRect(ctx, x + w - 5, y + 3, 5, 5, 2, Motion.fade(dot, alpha));
         }));
 
         if (hasBalance) {
-            blocks.add(new Block(PAD * 2 + LINE, (ctx, f, x, y, w, alpha) ->
-                    balance(ctx, f, x, y, board, alpha)));
+            sections.add(new Section(CAP + 2 + LINE, (ctx, f, x, y, w, alpha) -> {
+                Fonts.label(ctx, f, "баланс", x, y, Motion.fade(Theme.TEXT_FAINT, alpha));
+                balance(ctx, f, x, y + CAP + 2, board, alpha);
+            }));
         }
 
-        if (regular.isPresent() || special.isPresent()) {
-            int entries = (regular.isPresent() ? 1 : 0) + (special.isPresent() ? 1 : 0);
-            int height = PAD * 2 + entries * (LINE + 1 + BAR) + (entries - 1) * 4;
-            blocks.add(new Block(height, (ctx, f, x, y, w, alpha) -> {
-                int row = y;
-                if (regular.isPresent()) {
-                    cycle(ctx, f, x, row, w, "Обычные торги", regular.get(),
-                            timer.remainingFraction(false), Theme.GOLD, Theme.GOLD_DEEP, alpha);
-                    row += LINE + 1 + BAR + 4;
-                }
-                if (special.isPresent()) {
-                    cycle(ctx, f, x, row, w, "Особые торги", special.get(),
-                            timer.remainingFraction(true), Theme.TEAL, Theme.TEAL_DEEP, alpha);
-                }
-            }));
+        if (regular.isPresent()) {
+            sections.add(cycle("обычные торги", regular.get(), timer.remainingFraction(false),
+                    Theme.GOLD, Theme.GOLD_DEEP));
+        }
+        if (special.isPresent()) {
+            sections.add(cycle("особые торги", special.get(), timer.remainingFraction(true),
+                    Theme.TEAL, Theme.TEAL_DEEP));
         }
 
         if (rate.isPresent()) {
             List<Double> points = mod.rates().recentRates(SPARK_POINTS);
             boolean spark = points.size() >= 2;
-            int height = PAD * 2 + LINE + (spark ? 3 + 14 : 0);
             Optional<Double> deviation = mod.rates().deviationPercent(RATE_WINDOW);
-            blocks.add(new Block(height, (ctx, f, x, y, w, alpha) -> {
-                ctx.drawText(f, "Курс", x, y, Motion.fade(Theme.TEXT_DIM, alpha), false);
-                String value = money(Math.round(rate.get()));
-                int valueWidth = f.getWidth(value);
-                ctx.drawText(f, value, x + w - valueWidth, y, Motion.fade(Theme.TEXT, alpha), false);
+            int height = CAP + 2 + LINE + (spark ? 2 + SPARK_HEIGHT : 0);
 
+            sections.add(new Section(height, (ctx, f, x, y, w, alpha) -> {
+                Fonts.label(ctx, f, "курс монеток", x, y, Motion.fade(Theme.TEXT_FAINT, alpha));
                 if (deviation.isPresent()) {
-                    String text = String.format(Locale.ROOT, "%+.1f%%", deviation.get());
                     // Цвет говорит только «обратите внимание». Что тут выгодно, зависит
                     // от того, что игрок собирается делать, и мод этого не знает.
                     int color = Math.abs(deviation.get()) >= NOTABLE_PERCENT
                             ? Theme.WARN : Theme.TEXT_FAINT;
-                    ctx.drawText(f, text, x + f.getWidth("Курс") + 4, y, Motion.fade(color, alpha), false);
+                    Fonts.drawRight(ctx, f, String.format(Locale.ROOT, "%+.1f%%", deviation.get()),
+                            Fonts.NUM, x + w, y, Motion.fade(color, alpha));
                 }
+                Fonts.draw(ctx, f, money(Math.round(rate.get())), Fonts.NUM, x, y + CAP + 2,
+                        Motion.fade(Theme.TEXT, alpha));
                 if (spark) {
-                    Paint.line(ctx, x, y + LINE + 3, w, 14, points,
-                            Motion.fade(Theme.GOLD, alpha * 0.9), alpha);
+                    Paint.line(ctx, x, y + CAP + 2 + LINE + 2, w, SPARK_HEIGHT, points,
+                            Motion.fade(Theme.GOLD, alpha * 0.85), alpha);
                 }
             }));
         }
 
         if (stage != null) {
-            blocks.add(new Block(PAD * 2 + LINE + 1 + BAR, (ctx, f, x, y, w, alpha) -> {
-                ctx.drawText(f, "Этап #" + stage.number(), x, y,
-                        Motion.fade(Theme.TEXT_DIM, alpha), false);
-                String value = money(stage.progress()) + " / " + money(stage.goal());
-                ctx.drawText(f, value, x + w - f.getWidth(value), y,
-                        Motion.fade(Theme.GREEN, alpha), false);
-                Paint.bar(ctx, x, y + LINE + 1, w, BAR, stage.completion(),
+            sections.add(new Section(CAP + 2 + LINE + 2 + BAR, (ctx, f, x, y, w, alpha) -> {
+                Fonts.label(ctx, f, "этап #" + stage.number(), x, y,
+                        Motion.fade(Theme.TEXT_FAINT, alpha));
+                Fonts.draw(ctx, f, money(stage.progress()), Fonts.NUM, x, y + CAP + 2,
+                        Motion.fade(Theme.GREEN, alpha));
+                Fonts.drawRight(ctx, f, "из " + money(stage.goal()), Fonts.NUM, x + w, y + CAP + 2,
+                        Motion.fade(Theme.TEXT_FAINT, alpha));
+                Paint.bar(ctx, x, y + CAP + 2 + LINE + 2, w, BAR, stage.completion(),
                         Theme.GREEN, Theme.TEAL, alpha);
             }));
         }
 
-        return blocks;
+        return sections;
     }
 
-    /** Строка цикла: подпись, остаток и полоса, если известна длина цикла. */
-    private static void cycle(DrawContext ctx, TextRenderer font, int x, int y, int w,
-                              String label, Duration left, Optional<Double> fraction,
-                              int from, int to, double alpha) {
-        ctx.drawText(font, label, x, y, Motion.fade(Theme.TEXT_DIM, alpha), false);
-        String value = human(left);
-        ctx.drawText(font, value, x + w - font.getWidth(value), y, Motion.fade(from, alpha), false);
-
-        // Без знаменателя полосу не рисуем: доля от неизвестного — это не «пусто»,
-        // это выдумка.
-        fraction.ifPresent(value2 -> Paint.bar(ctx, x, y + LINE + 1, w, BAR, value2, to, from, alpha));
+    /**
+     * Секция цикла: подпись, остаток и полоса.
+     * <p>
+     * Подпись и остаток стоят в одной строке — они помещаются рядом только потому,
+     * что подпись набрана мелким капсом. Прежняя раскладка мерилась на глаз обычным
+     * шрифтом, не влезала, и слова наезжали друг на друга.
+     */
+    private static Section cycle(String label, Duration left, Optional<Double> fraction,
+                                 int from, int to) {
+        boolean bar = fraction.isPresent();
+        return new Section(CAP + 2 + (bar ? BAR : 0), (ctx, f, x, y, w, alpha) -> {
+            Fonts.label(ctx, f, label, x, y, Motion.fade(Theme.TEXT_FAINT, alpha));
+            Fonts.drawRight(ctx, f, human(left), Fonts.NUM, x + w, y - 1, Motion.fade(from, alpha));
+            // Без знаменателя полосу не рисуем: доля от неизвестного — это не «пусто»,
+            // это выдумка.
+            fraction.ifPresent(value ->
+                    Paint.bar(ctx, x, y + CAP + 2, w, BAR, value, to, from, alpha));
+        });
     }
 
     private static void balance(DrawContext ctx, TextRenderer font, int x, int y,
@@ -261,9 +281,9 @@ public final class HudOverlay {
             case 1 -> Paint.gem(ctx, x, y + 2, tint);
             default -> Paint.token(ctx, x, y + 2, tint);
         }
-        String text = money(value);
-        ctx.drawText(font, text, x + 7, y, Motion.fade(Theme.TEXT, alpha), false);
-        return x + 7 + font.getWidth(text) + 7;
+        int width = Fonts.draw(ctx, font, money(value), Fonts.NUM, x + 7, y,
+                Motion.fade(Theme.TEXT, alpha));
+        return x + 7 + width + 6;
     }
 
     /**

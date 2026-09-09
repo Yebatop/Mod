@@ -21,6 +21,12 @@ public final class Theme {
 
     public static final int BORDER = 0x1FFFFFFF;
 
+    /**
+     * Рамка панели. Плотнее прозрачной {@link #BORDER}: она рисуется под телом
+     * панели и видна только на скруглении, а полупрозрачная там просто пропадает.
+     */
+    public static final int BORDER_SOLID = 0x4DFFFFFF;
+
     /** Внутренняя светлая кромка по верху — та самая «полированная» грань. */
     public static final int EDGE = 0x17FFFFFF;
 

@@ -1,0 +1,11 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "holyhelper:label.ttf",
+      "shift": [0.0, 0.0],
+      "size": 7.0,
+      "oversample": 4.0
+    }
+  ]
+}

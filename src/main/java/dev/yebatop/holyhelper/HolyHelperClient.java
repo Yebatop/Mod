@@ -6,6 +6,7 @@ import dev.yebatop.holyhelper.command.HolyHelperCommand;
 import dev.yebatop.holyhelper.core.HolyHelperConfig;
 import dev.yebatop.holyhelper.core.Patterns;
 import dev.yebatop.holyhelper.core.ServerDetector;
+import dev.yebatop.holyhelper.hud.BootOverlay;
 import dev.yebatop.holyhelper.hud.ExchangeHint;
 import dev.yebatop.holyhelper.hud.HudOverlay;
 import dev.yebatop.holyhelper.hud.ItemPriceTooltip;
@@ -92,6 +93,8 @@ public final class HolyHelperClient implements ClientModInitializer {
         PayloadTypeRegistry.playS2C().register(LiteApiPayload.FEATURE_CONTROL, LiteApiPayload.CODEC);
         channel.registerReceiver();
         HudOverlay.register();
+        // Экран запуска регистрируется после панели, чтобы лечь поверх неё.
+        BootOverlay.register();
         ExchangeHint.register();
         ItemPriceTooltip.register();
 
@@ -116,6 +119,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         // и сбрасывать уже полученный ответ на второй половине перехода незачем.
         // Полная очистка — при отключении.
         featureGate.armOnJoin();
+        BootOverlay.show();
 
         if (config.announceOnJoin) {
             // Исход выясняется асинхронно, поэтому отчёт откладываем.
@@ -126,6 +130,7 @@ public final class HolyHelperClient implements ClientModInitializer {
     private void onDisconnect() {
         prices.save();
         HudOverlay.resetAnimation();
+        BootOverlay.hide();
         nextRatePollAt = 0;
         channel.reset();
         featureGate.reset();
