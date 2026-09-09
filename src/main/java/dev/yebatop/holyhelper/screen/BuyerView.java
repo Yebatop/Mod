@@ -72,17 +72,6 @@ public final class BuyerView {
 
     private static final int ICON = 12;
 
-    /**
-     * Насколько широкой карточке позволено быть.
-     * <p>
-     * Раньше она занимала весь экран, и это было ошибкой: колонки разъезжались
-     * к краям, между названием товара и его ценой оставалась половина экрана
-     * пустоты, и глазу приходилось проделывать весь этот путь на каждой строке.
-     * Таблица из шести колонок читается тем лучше, чем она у́же — до предела,
-     * за которым колонки начинают наезжать друг на друга.
-     */
-    private static final int MAX_WIDTH = 620;
-
     /** Заголовок колонки и то, сколько места ей нужно под числа. */
     private record Column(String label, int minimum) {
     }
@@ -108,32 +97,20 @@ public final class BuyerView {
     }
 
     /**
-     * Рисует карточку по центру отведённого места, ужав её до нужного содержимому.
+     * Рисует карточку во всё отведённое место.
      * <p>
-     * Оба хозяина экрана — отдельный экран и слой поверх окна торговли — зовут
-     * именно это, чтобы размер считался в одном месте. Раньше каждый растягивал
-     * карточку на весь экран, и восемь строк товаров тонули в пустой панели
-     * высотой в семьсот пикселей.
-     */
-    public void renderCentred(DrawContext ctx, TextRenderer font, int screenWidth,
-                              int screenHeight, int margin) {
-        int width = Math.min(screenWidth - margin * 2, MAX_WIDTH);
-        int height = Math.min(screenHeight - margin * 2, preferredHeight());
-        render(ctx, font, (screenWidth - width) / 2, (screenHeight - height) / 2, width, height);
-    }
-
-    /**
-     * Сколько высоты содержимому нужно на самом деле: рама, карточки и ровно
-     * столько строк, сколько товаров прочитано.
+     * Зовут это оба хозяина экрана — отдельный экран и слой поверх окна торговли, —
+     * чтобы размер задавался в одном месте и они не разошлись.
      * <p>
-     * Считается из тех же слагаемых, из которых складывается разметка, — иначе
-     * при первой же правке отступов число разошлось бы с рисованием.
+     * Была попытка ужимать карточку до содержимого и ставить по центру: восемь
+     * товаров занимали верхнюю четверть, а ниже до самого низа шла пустая панель,
+     * и это выглядело незаполненным. Ужатая понравилась ещё меньше — вернул как
+     * было. Пустота под короткой таблицей остаётся, и решать её надо не размером
+     * рамы, а тем, что в этой раме стоит.
      */
-    private int preferredHeight() {
-        HolyHelperClient mod = HolyHelperClient.instance();
-        int rows = Math.max(1, mod.buyer().tradeOffers().size());
-        int table = Card.CAP + 3 + rows * ROW;
-        return Card.PAD * 2 + Card.HEADER + Card.GAP + HERO + Card.GAP + table + Card.FOOTER;
+    public void renderIn(DrawContext ctx, TextRenderer font, int screenWidth,
+                         int screenHeight, int margin) {
+        render(ctx, font, margin, margin, screenWidth - margin * 2, screenHeight - margin * 2);
     }
 
     public void render(DrawContext ctx, TextRenderer font, int x, int y, int width, int height) {
