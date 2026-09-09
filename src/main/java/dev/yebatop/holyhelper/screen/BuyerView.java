@@ -43,14 +43,19 @@ public final class BuyerView {
     private static final Duration MARKET_MEMORY = Duration.ofHours(12);
 
     private static final int ROW = 12;
-    private static final int HERO = 30;
+    private static final int HERO = 36;
 
-    private static final int COL_MULT = 32;
-    private static final int COL_BATCH = 40;
-    private static final int COL_UNIT = 46;
-    private static final int COL_LEFT = 44;
-    private static final int COL_MARKET = 88;
     private static final int ICON = 12;
+
+    /** Заголовок колонки и то, сколько места ей нужно под числа. */
+    private record Column(String label, int minimum) {
+    }
+
+    private static final Column COL_MULT = new Column("множ.", 30);
+    private static final Column COL_BATCH = new Column("за 16", 38);
+    private static final Column COL_UNIT = new Column("за штуку", 44);
+    private static final Column COL_LEFT = new Column("осталось", 42);
+    private static final Column COL_MARKET = new Column("маркет", 80);
 
     private long openedAt = System.currentTimeMillis();
     private int scroll;
@@ -175,27 +180,32 @@ public final class BuyerView {
                     Motion.fade(Theme.GREEN, third));
             Fonts.drawRight(ctx, font, "из " + Card.money(stage.goal()), Fonts.NUM,
                     sx + sw - 8, y + 14, Motion.fade(Theme.TEXT_FAINT, third));
-            Paint.bar(ctx, sx + 8, y + 24, sw - 16, 3, stage.completion(),
+            Paint.bar(ctx, sx + 8, y + 29, sw - 16, 3, stage.completion(),
                     Theme.GREEN, Theme.TEAL, third);
         }
     }
 
     private void table(DrawContext ctx, TextRenderer font, int x, int y, int width, int height,
                        List<BuyerParser.Offer> offers, double alpha) {
-        int nameWidth = width - COL_MULT - COL_BATCH - COL_UNIT - COL_LEFT - COL_MARKET - ICON - 10;
+        int mult = widthOf(font, COL_MULT);
+        int batch = widthOf(font, COL_BATCH);
+        int unit = widthOf(font, COL_UNIT);
+        int left = widthOf(font, COL_LEFT);
+        int market = widthOf(font, COL_MARKET);
+        int nameWidth = width - mult - batch - unit - left - market - ICON - 10;
 
         int cursor = x + ICON + 4;
         Fonts.label(ctx, font, "товар", cursor, y, Motion.fade(Theme.TEXT_FAINT, alpha));
         cursor += nameWidth;
-        headerCell(ctx, font, "множ.", cursor + COL_MULT, y, alpha, Theme.TEXT_FAINT);
-        cursor += COL_MULT;
-        headerCell(ctx, font, "за 16", cursor + COL_BATCH, y, alpha, Theme.TEXT_FAINT);
-        cursor += COL_BATCH;
-        headerCell(ctx, font, "за штуку", cursor + COL_UNIT, y, alpha, Theme.GOLD);
-        cursor += COL_UNIT;
-        headerCell(ctx, font, "осталось", cursor + COL_LEFT, y, alpha, Theme.TEXT_FAINT);
-        cursor += COL_LEFT;
-        headerCell(ctx, font, "маркет", cursor + COL_MARKET, y, alpha, Theme.TEXT_FAINT);
+        headerCell(ctx, font, COL_MULT.label(), cursor + mult, y, alpha, Theme.TEXT_FAINT);
+        cursor += mult;
+        headerCell(ctx, font, COL_BATCH.label(), cursor + batch, y, alpha, Theme.TEXT_FAINT);
+        cursor += batch;
+        headerCell(ctx, font, COL_UNIT.label(), cursor + unit, y, alpha, Theme.GOLD);
+        cursor += unit;
+        headerCell(ctx, font, COL_LEFT.label(), cursor + left, y, alpha, Theme.TEXT_FAINT);
+        cursor += left;
+        headerCell(ctx, font, COL_MARKET.label(), cursor + market, y, alpha, Theme.TEXT_FAINT);
 
         int listTop = y + Card.CAP + 3;
         int listHeight = height - Card.CAP - 3;
@@ -224,6 +234,17 @@ public final class BuyerView {
             Paint.roundRect(ctx, x + width - 2, listTop + offset, 2, thumb, 1,
                     Motion.fade(Theme.GOLD, alpha * 0.7));
         }
+    }
+
+    /**
+     * Ширина колонки: не уже своей подписи и не уже, чем нужно числам.
+     * <p>
+     * Раньше это были константы, и они врали: подпись капсом с разрядкой заметно
+     * шире, чем те же буквы строчными, по которым я их прикидывал. Заголовки
+     * наезжали друг на друга. Теперь ширина считается от того, что нарисуется.
+     */
+    private static int widthOf(TextRenderer font, Column column) {
+        return Math.max(column.minimum(), Fonts.labelWidth(font, column.label()) + 8);
     }
 
     private void headerCell(DrawContext ctx, TextRenderer font, String label, int right, int y,
@@ -258,16 +279,20 @@ public final class BuyerView {
         }
 
         cursor = x + ICON + 4 + nameWidth;
-        cell(ctx, font, multiplierText(offer), cursor + COL_MULT, y, alpha, Theme.PURPLE);
-        cursor += COL_MULT;
-        cell(ctx, font, Card.money(offer.batchPrice()), cursor + COL_BATCH, y, alpha, Theme.TEXT_DIM);
-        cursor += COL_BATCH;
+        int step = widthOf(font, COL_MULT);
+        cell(ctx, font, multiplierText(offer), cursor + step, y, alpha, Theme.PURPLE);
+        cursor += step;
+        step = widthOf(font, COL_BATCH);
+        cell(ctx, font, Card.money(offer.batchPrice()), cursor + step, y, alpha, Theme.TEXT_DIM);
+        cursor += step;
+        step = widthOf(font, COL_UNIT);
         cell(ctx, font, String.format(Locale.ROOT, "%.2f", offer.unitPrice()),
-                cursor + COL_UNIT, y, alpha, Theme.GOLD);
-        cursor += COL_UNIT;
-        cell(ctx, font, Card.money(offer.available()), cursor + COL_LEFT, y, alpha, Theme.TEXT_DIM);
-        cursor += COL_LEFT;
-        market(ctx, font, offer, cursor + COL_MARKET, y, alpha);
+                cursor + step, y, alpha, Theme.GOLD);
+        cursor += step;
+        step = widthOf(font, COL_LEFT);
+        cell(ctx, font, Card.money(offer.available()), cursor + step, y, alpha, Theme.TEXT_DIM);
+        cursor += step;
+        market(ctx, font, offer, cursor + widthOf(font, COL_MARKET), y, alpha);
     }
 
     private void cell(DrawContext ctx, TextRenderer font, String text, int right, int y,

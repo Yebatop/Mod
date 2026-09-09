@@ -242,22 +242,23 @@ public final class HudOverlay {
     }
 
     /**
-     * Секция цикла: подпись, остаток и полоса.
+     * Секция цикла: подпись, под ней остаток, под ним полоса.
      * <p>
-     * Подпись и остаток стоят в одной строке — они помещаются рядом только потому,
-     * что подпись набрана мелким капсом. Прежняя раскладка мерилась на глаз обычным
-     * шрифтом, не влезала, и слова наезжали друг на друга.
+     * Подпись и остаток стояли в одной строке и наезжали друг на друга: «ОБЫЧНЫЕ
+     * ТОРГИ» капсом с разрядкой шире, чем я прикинул по строчным буквам. У курса и
+     * этапа значение и так стоит под подписью, и там всё читается, — теперь везде
+     * одинаково.
      */
     private static Section cycle(String label, Duration left, Optional<Double> fraction,
                                  int from, int to) {
         boolean bar = fraction.isPresent();
-        return new Section(CAP + 2 + (bar ? BAR : 0), (ctx, f, x, y, w, alpha) -> {
+        return new Section(CAP + 2 + LINE + (bar ? 2 + BAR : 0), (ctx, f, x, y, w, alpha) -> {
             Fonts.label(ctx, f, label, x, y, Motion.fade(Theme.TEXT_FAINT, alpha));
-            Fonts.drawRight(ctx, f, human(left), Fonts.NUM, x + w, y - 1, Motion.fade(from, alpha));
+            Fonts.draw(ctx, f, human(left), Fonts.NUM, x, y + CAP + 2, Motion.fade(from, alpha));
             // Без знаменателя полосу не рисуем: доля от неизвестного — это не «пусто»,
             // это выдумка.
             fraction.ifPresent(value ->
-                    Paint.bar(ctx, x, y + CAP + 2, w, BAR, value, to, from, alpha));
+                    Paint.bar(ctx, x, y + CAP + 2 + LINE + 2, w, BAR, value, to, from, alpha));
         });
     }
 
