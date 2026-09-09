@@ -8,6 +8,7 @@ import dev.yebatop.holyhelper.core.Patterns;
 import dev.yebatop.holyhelper.core.ServerDetector;
 import dev.yebatop.holyhelper.hud.ExchangeHint;
 import dev.yebatop.holyhelper.hud.HudOverlay;
+import dev.yebatop.holyhelper.hud.ItemPriceTooltip;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.liteapi.LiteApiChannel;
 import dev.yebatop.holyhelper.liteapi.LiteApiPayload;
@@ -92,6 +93,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         channel.registerReceiver();
         HudOverlay.register();
         ExchangeHint.register();
+        ItemPriceTooltip.register();
 
         ClientCommandRegistrationCallback.EVENT.register(
                 (dispatcher, access) -> HolyHelperCommand.register(dispatcher));

@@ -7,7 +7,9 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -35,6 +37,8 @@ public final class BuyerScanner {
 
     private volatile Snapshot last = Snapshot.EMPTY;
     private volatile BuyerParser.Bonuses bonuses;
+    private volatile Map<String, BuyerParser.Offer> tradeOffers = Map.of();
+    private volatile Instant tradeSeenAt = Instant.EPOCH;
 
     public enum Kind {
         /** Открытого окна нет либо оно чужое. */
@@ -103,6 +107,29 @@ public final class BuyerScanner {
         if (fresh.bonuses() != null) {
             bonuses = fresh.bonuses();
         }
+
+        // Цены товаров нужны и вне окна Скупца — на подсказке предмета в инвентаре.
+        // Снимок к тому моменту давно перезаписан другим окном, поэтому храним
+        // их отдельно и вместе со временем: ассортимент меняется каждые несколько
+        // часов, и старая цена без отметки давности врала бы молча.
+        if (fresh.kind() == Kind.TRADE) {
+            Map<String, BuyerParser.Offer> byItem = new HashMap<>();
+            for (BuyerParser.Offer offer : fresh.offers()) {
+                byItem.put(offer.itemId(), offer);
+            }
+            tradeOffers = Map.copyOf(byItem);
+            tradeSeenAt = fresh.seenAt();
+        }
+    }
+
+    /** Цена товара у Скупца, если он попадался в последнем просмотре «Торговли». */
+    public Optional<BuyerParser.Offer> offerOf(String itemId) {
+        return Optional.ofNullable(tradeOffers.get(itemId));
+    }
+
+    /** Когда снят последний список товаров. Нужно, чтобы честно показать давность. */
+    public Instant tradeSeenAt() {
+        return tradeSeenAt;
     }
 
     /** Читает то окно, которое открыто прямо сейчас. */
