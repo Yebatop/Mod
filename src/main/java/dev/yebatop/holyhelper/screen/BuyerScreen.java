@@ -3,6 +3,7 @@ package dev.yebatop.holyhelper.screen;
 import dev.yebatop.holyhelper.ui.Motion;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 
 /**
@@ -60,13 +61,13 @@ public final class BuyerScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int key, int scancode, int modifiers) {
+    public boolean keyPressed(KeyInput input) {
         // Той же клавишей, что открыли. Иначе на телефоне, где Esc нарисован не
         // всегда, экран становится ловушкой.
-        if (Keys.matchesBuyer(key)) {
+        if (Keys.matchesBuyer(input.getKeycode())) {
             this.close();
             return true;
         }
-        return super.keyPressed(key, scancode, modifiers);
+        return super.keyPressed(input);
     }
 }

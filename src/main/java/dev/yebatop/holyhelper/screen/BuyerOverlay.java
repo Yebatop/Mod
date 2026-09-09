@@ -39,20 +39,23 @@ public final class BuyerOverlay {
             ScreenEvents.afterRender(screen).register((rendered, ctx, mouseX, mouseY, delta) ->
                     render(ctx, rendered.width, rendered.height));
 
-            ScreenKeyboardEvents.afterKeyPress(screen).register((target, key, scancode, modifiers) -> {
-                if (Keys.matchesBuyer(key) && ServerDetector.onHolyWorld()) {
+            ScreenKeyboardEvents.afterKeyPress(screen).register((target, input) -> {
+                if (Keys.matchesBuyer(input.getKeycode()) && ServerDetector.onHolyWorld()) {
                     toggle();
                 }
             });
 
-            ScreenMouseEvents.allowMouseClick(screen).register((target, mouseX, mouseY, button) ->
-                    !visible);
+            ScreenMouseEvents.allowMouseClick(screen).register((target, input) -> !visible);
 
-            ScreenMouseEvents.afterMouseScroll(screen).register(
+            // Прокрутку перехватываем до окна, а не после: иначе колесо успело бы
+            // пролистать что-нибудь под панелью.
+            ScreenMouseEvents.allowMouseScroll(screen).register(
                     (target, mouseX, mouseY, horizontal, vertical) -> {
-                        if (visible) {
-                            VIEW.scroll(vertical);
+                        if (!visible) {
+                            return true;
                         }
+                        VIEW.scroll(vertical);
+                        return false;
                     });
 
             ScreenEvents.remove(screen).register(removed -> visible = false);
