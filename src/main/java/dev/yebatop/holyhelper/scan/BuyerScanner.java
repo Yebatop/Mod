@@ -39,6 +39,8 @@ public final class BuyerScanner {
     private volatile BuyerParser.Bonuses bonuses;
     private volatile Map<String, BuyerParser.Offer> tradeOffers = Map.of();
     private volatile Instant tradeSeenAt = Instant.EPOCH;
+    private volatile List<BuyerParser.Stage> stages = List.of();
+    private volatile Instant stagesSeenAt = Instant.EPOCH;
 
     public enum Kind {
         /** Открытого окна нет либо оно чужое. */
@@ -108,6 +110,15 @@ public final class BuyerScanner {
             bonuses = fresh.bonuses();
         }
 
+        // Этапы держим по той же причине, что и надбавки: показывать прогресс надо
+        // в панели поверх игры, а лежат они в отдельном окне, которое к тому моменту
+        // давно закрыто. Время снимка нужно, потому что прогресс, в отличие от
+        // надбавок, меняется — и устаревшее число врало бы молча.
+        if (!fresh.stages().isEmpty()) {
+            stages = fresh.stages();
+            stagesSeenAt = fresh.seenAt();
+        }
+
         // Цены товаров нужны и вне окна Скупца — на подсказке предмета в инвентаре.
         // Снимок к тому моменту давно перезаписан другим окном, поэтому храним
         // их отдельно и вместе со временем: ассортимент меняется каждые несколько
@@ -120,6 +131,16 @@ public final class BuyerScanner {
             tradeOffers = Map.copyOf(byItem);
             tradeSeenAt = fresh.seenAt();
         }
+    }
+
+    /** Этапы из последнего просмотра окна «Этапы». */
+    public List<BuyerParser.Stage> stages() {
+        return stages;
+    }
+
+    /** Когда сняты этапы. Прогресс меняется, поэтому давность важна. */
+    public Instant stagesSeenAt() {
+        return stagesSeenAt;
     }
 
     /** Цена товара у Скупца, если он попадался в последнем просмотре «Торговли». */

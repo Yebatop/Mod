@@ -84,4 +84,84 @@ class RotationTimerTest {
 
         assertEquals(30 * 60, timer.remaining(false).orElseThrow().toSeconds(), 2);
     }
+
+    @Test
+    @DisplayName("Без длины цикла доли не бывает")
+    void noFractionWithoutSpan() {
+        RotationTimer timer = new RotationTimer();
+        assertTrue(timer.remainingFraction(false).isEmpty());
+        assertFalse(timer.periodExact(false));
+    }
+
+    @Test
+    @DisplayName("Пока справку не открыли, длина цикла — наибольший увиденный остаток")
+    void learnsSpanFromObservations() {
+        RotationTimer timer = new RotationTimer();
+        Instant seen = Instant.now();
+
+        timer.update(List.of(offer("Яблоко", false, Duration.ofHours(3))), seen);
+        // Три часа из трёх: пока это всё, что мод видел, полоса полна.
+        assertEquals(1.0, timer.remainingFraction(false).orElseThrow(), 0.01);
+
+        // Заглянули позже и увидели больший остаток — знаменатель подрос.
+        timer.update(List.of(offer("Яблоко", false, Duration.ofHours(6))), seen);
+        assertEquals(1.0, timer.remainingFraction(false).orElseThrow(), 0.01);
+
+        timer.update(List.of(offer("Яблоко", false, Duration.ofHours(3))), seen);
+        assertEquals(0.5, timer.remainingFraction(false).orElseThrow(), 0.01);
+        assertFalse(timer.periodExact(false));
+    }
+
+    @Test
+    @DisplayName("Точная длина из справки сильнее наблюдений")
+    void exactPeriodWins() {
+        RotationTimer timer = new RotationTimer();
+        Instant seen = Instant.now();
+
+        timer.learnPeriod(false, Duration.ofHours(6));
+        assertTrue(timer.periodExact(false));
+
+        // Наблюдение больше объявленного периода не должно раздувать знаменатель:
+        // справку пишет сервер, а наблюдение — это всего лишь «столько я видел».
+        timer.update(List.of(offer("Яблоко", false, Duration.ofHours(9))), seen);
+        assertEquals(1.0, timer.remainingFraction(false).orElseThrow(), 0.01);
+
+        timer.update(List.of(offer("Яблоко", false, Duration.ofHours(3))), seen);
+        assertEquals(0.5, timer.remainingFraction(false).orElseThrow(), 0.01);
+    }
+
+    @Test
+    @DisplayName("Мусорный период из справки не принимается")
+    void rejectsNonsensePeriod() {
+        RotationTimer timer = new RotationTimer();
+        timer.learnPeriod(false, null);
+        timer.learnPeriod(false, Duration.ZERO);
+        timer.learnPeriod(false, Duration.ofHours(-4));
+        assertFalse(timer.periodExact(false));
+        assertTrue(timer.remainingFraction(false).isEmpty());
+    }
+
+    @Test
+    @DisplayName("Циклы независимы")
+    void cyclesAreSeparate() {
+        RotationTimer timer = new RotationTimer();
+        timer.learnPeriod(true, Duration.ofHours(8));
+        timer.update(List.of(offer("Изумруд", true, Duration.ofHours(2))), Instant.now());
+
+        assertEquals(0.25, timer.remainingFraction(true).orElseThrow(), 0.01);
+        assertTrue(timer.remainingFraction(false).isEmpty());
+    }
+
+    @Test
+    @DisplayName("Сброс забывает и длину цикла")
+    void resetForgetsSpan() {
+        RotationTimer timer = new RotationTimer();
+        timer.learnPeriod(false, Duration.ofHours(6));
+        timer.update(List.of(offer("Яблоко", false, Duration.ofHours(3))), Instant.now());
+        timer.reset();
+
+        assertFalse(timer.known());
+        assertFalse(timer.periodExact(false));
+        assertTrue(timer.remainingFraction(false).isEmpty());
+    }
 }

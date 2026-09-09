@@ -125,6 +125,7 @@ public final class HolyHelperClient implements ClientModInitializer {
 
     private void onDisconnect() {
         prices.save();
+        HudOverlay.resetAnimation();
         nextRatePollAt = 0;
         channel.reset();
         featureGate.reset();
@@ -164,6 +165,12 @@ public final class HolyHelperClient implements ClientModInitializer {
             if (buyer.last().kind() == BuyerScanner.Kind.TRADE) {
                 rotation.update(buyer.last().offers(), buyer.last().seenAt());
             }
+            // Справка Скупца называет длину цикла прямым текстом. Пока игрок в неё
+            // не заглянул, длина берётся как наибольший увиденный остаток — этого
+            // хватает полосе, но точное значение всё равно лучше, поэтому спрашиваем
+            // при каждом заходе в окно. Без открытого окна вызов ничего не стоит.
+            buyer.rotationPeriod(false).ifPresent(period -> rotation.learnPeriod(false, period));
+            buyer.rotationPeriod(true).ifPresent(period -> rotation.learnPeriod(true, period));
         }
 
         // Отчитываемся, как только исход ясен, но не позже жёсткого срока: иначе на

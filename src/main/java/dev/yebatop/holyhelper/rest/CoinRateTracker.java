@@ -113,6 +113,22 @@ public final class CoinRateTracker {
         return Optional.of((last.get().rate() - median.get()) / median.get() * 100);
     }
 
+    /**
+     * Последние курсы по порядку времени, от старых к новым.
+     * <p>
+     * Нужны линии в панели: она рисуется слева направо, а история хранится
+     * новыми вперёд. Разворачивать её на месте нельзя — порядок хранения
+     * нужен всему остальному.
+     */
+    public synchronized List<Double> recentRates(int max) {
+        int count = Math.min(Math.max(0, max), history.size());
+        List<Double> rates = new ArrayList<>(count);
+        for (int i = count - 1; i >= 0; i--) {
+            rates.add(history.get(i).rate());
+        }
+        return rates;
+    }
+
     public synchronized int size() {
         return history.size();
     }

@@ -27,6 +27,16 @@ public final class RotationTimer {
     private volatile Instant regularAt;
     private volatile Instant specialAt;
 
+    // Длина цикла нужна только полосе в панели: чтобы показать остаток долей, надо
+    // знать, долей чего. Сервер называет периоды в справке, но справка лежит в
+    // отдельном окне и открыта не всегда, поэтому до неё длина берётся как
+    // наибольший остаток, который мод сам застал. Это оценка снизу: пока игрок не
+    // заглянул к Скупцу сразу после обновления, полоса покажет меньше правды.
+    private volatile Duration regularSpan;
+    private volatile Duration specialSpan;
+    private volatile boolean regularExact;
+    private volatile boolean specialExact;
+
     /**
      * Пересчитывает моменты обновления по товарам, прочитанным в момент {@code seenAt}.
      * Товары без таймера пропускаются, а не обнуляют уже известные часы.
@@ -42,8 +52,10 @@ public final class RotationTimer {
             Instant deadline = seenAt.plus(offer.rotation());
             if (offer.special()) {
                 special = later(special, deadline);
+                specialSpan = longer(specialSpan, offer.rotation(), specialExact);
             } else {
                 regular = later(regular, deadline);
+                regularSpan = longer(regularSpan, offer.rotation(), regularExact);
             }
         }
 
@@ -74,9 +86,61 @@ public final class RotationTimer {
         return regularAt != null || specialAt != null;
     }
 
+    /**
+     * Запоминает точный период из справки Скупца. Точное значение сильнее
+     * наблюдённого: справку пишет сервер, а наблюдение — это всего лишь «столько
+     * я однажды видел».
+     */
+    public void learnPeriod(boolean special, Duration period) {
+        if (period == null || period.isZero() || period.isNegative()) {
+            return;
+        }
+        if (special) {
+            specialSpan = period;
+            specialExact = true;
+        } else {
+            regularSpan = period;
+            regularExact = true;
+        }
+    }
+
+    /**
+     * Какая доля цикла ещё не прошла: 1 — только обновилось, 0 — вот-вот обновится.
+     * Пусто, пока длина цикла неизвестна, — рисовать полосу без знаменателя нельзя.
+     */
+    public Optional<Double> remainingFraction(boolean special) {
+        Duration span = special ? specialSpan : regularSpan;
+        Optional<Duration> left = remaining(special);
+        if (span == null || span.isZero() || left.isEmpty()) {
+            return Optional.empty();
+        }
+        double value = left.get().toMillis() / (double) span.toMillis();
+        return Optional.of(Math.max(0, Math.min(1, value)));
+    }
+
+    /** Взята ли длина цикла из справки, а не из наблюдений. */
+    public boolean periodExact(boolean special) {
+        return special ? specialExact : regularExact;
+    }
+
     public void reset() {
         regularAt = null;
         specialAt = null;
+        regularSpan = null;
+        specialSpan = null;
+        regularExact = false;
+        specialExact = false;
+    }
+
+    /**
+     * Наибольший из остатков. Точное значение из справки не перебивается
+     * наблюдением: иначе одна подсказка с большим остатком испортила бы знаменатель.
+     */
+    private static Duration longer(Duration current, Duration candidate, boolean exact) {
+        if (exact) {
+            return current;
+        }
+        return current == null || candidate.compareTo(current) > 0 ? candidate : current;
     }
 
     /**
