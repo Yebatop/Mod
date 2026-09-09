@@ -38,6 +38,57 @@ class RotationTimerTest {
     }
 
     @Test
+    @DisplayName("Разные сроки у групп — часов двое")
+    void separateClocksWhenDeadlinesDiffer() {
+        RotationTimer timer = new RotationTimer();
+        timer.update(List.of(
+                offer("Яблоко", false, Duration.ofMinutes(12)),
+                offer("Сноп сена", true, Duration.ofHours(6))), Instant.now());
+
+        assertFalse(timer.singleClock());
+    }
+
+    @Test
+    @DisplayName("Совпавшие сроки — это одни часы, а не двое")
+    void singleClockWhenDeadlinesMatch() {
+        RotationTimer timer = new RotationTimer();
+        // Так пришло из игры: обе группы показали один и тот же остаток. Значит
+        // наблюдение одно, и выдавать его за две проверенные величины нельзя.
+        timer.update(List.of(
+                offer("Уголь", false, Duration.ofHours(1).plusMinutes(32)),
+                offer("Кувшинница", true, Duration.ofHours(1).plusMinutes(32))), Instant.now());
+
+        assertTrue(timer.singleClock());
+    }
+
+    @Test
+    @DisplayName("Секунды разницы — всё ещё одни часы, минуты — уже разные")
+    void singleClockTolerance() {
+        Instant seen = Instant.now();
+
+        RotationTimer close = new RotationTimer();
+        close.update(List.of(
+                offer("Уголь", false, Duration.ofHours(1)),
+                offer("Кувшинница", true, Duration.ofHours(1).plusSeconds(40))), seen);
+        assertTrue(close.singleClock());
+
+        RotationTimer apart = new RotationTimer();
+        apart.update(List.of(
+                offer("Уголь", false, Duration.ofHours(1)),
+                offer("Кувшинница", true, Duration.ofHours(1).plusMinutes(9))), seen);
+        assertFalse(apart.singleClock());
+    }
+
+    @Test
+    @DisplayName("Одна известная группа — это ещё не одни часы")
+    void singleClockNeedsBothSides() {
+        RotationTimer timer = new RotationTimer();
+        timer.update(List.of(offer("Уголь", false, Duration.ofHours(1))), Instant.now());
+
+        assertFalse(timer.singleClock());
+    }
+
+    @Test
     @DisplayName("Пока окно не открывали, часы молчат")
     void silentUntilFirstSnapshot() {
         RotationTimer timer = new RotationTimer();

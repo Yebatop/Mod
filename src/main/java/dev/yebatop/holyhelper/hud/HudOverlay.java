@@ -195,13 +195,21 @@ public final class HudOverlay {
             }));
         }
 
-        if (regular.isPresent()) {
-            sections.add(cycle("обычные торги", regular.get(), timer.remainingFraction(false),
+        if (timer.singleClock() && regular.isPresent()) {
+            // Обе группы дали один и тот же срок — значит наблюдение одно, и строка
+            // тоже одна. Два заголовка над одинаковыми числами выглядели бы как две
+            // проверенные величины, которых у мода нет.
+            sections.add(cycle("обновление товаров", regular.get(), timer.remainingFraction(false),
                     Theme.GOLD, Theme.GOLD_DEEP));
-        }
-        if (special.isPresent()) {
-            sections.add(cycle("особые торги", special.get(), timer.remainingFraction(true),
-                    Theme.TEAL, Theme.TEAL_DEEP));
+        } else {
+            if (regular.isPresent()) {
+                sections.add(cycle("обычные торги", regular.get(), timer.remainingFraction(false),
+                        Theme.GOLD, Theme.GOLD_DEEP));
+            }
+            if (special.isPresent()) {
+                sections.add(cycle("особые торги", special.get(), timer.remainingFraction(true),
+                        Theme.TEAL, Theme.TEAL_DEEP));
+            }
         }
 
         if (rate.isPresent()) {

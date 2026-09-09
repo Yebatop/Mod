@@ -50,8 +50,7 @@ public final class BuyerScreen extends Screen {
     @Override
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
         ctx.fill(0, 0, this.width, this.height, Motion.fade(0xC8060810, 1));
-        view.render(ctx, this.textRenderer, MARGIN, MARGIN,
-                this.width - MARGIN * 2, this.height - MARGIN * 2);
+        view.renderCentred(ctx, this.textRenderer, this.width, this.height, MARGIN);
     }
 
     @Override

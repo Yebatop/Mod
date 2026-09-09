@@ -75,7 +75,7 @@ public final class BuyerOverlay {
         }
         int margin = 8;
         ctx.fill(0, 0, width, height, Motion.fade(0xD2060810, 1));
-        VIEW.render(ctx, net.minecraft.client.MinecraftClient.getInstance().textRenderer,
-                margin, margin, width - margin * 2, height - margin * 2);
+        VIEW.renderCentred(ctx, net.minecraft.client.MinecraftClient.getInstance().textRenderer,
+                width, height, margin);
     }
 }

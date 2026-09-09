@@ -52,7 +52,7 @@ public final class BuyerView {
      * <p>
      * Считана от строк, а не подобрана на глаз, и именно на этом я дважды
      * ошибся. У вшитого шрифта клиента строка занимает семь пикселей над базовой,
-     * и отступы я расставлял по этой привычке. Гарнитуры мода выше: подпись — де­вять
+     * и отступы я расставлял по этой привычке. Гарнитуры мода выше: подпись — девять
      * пикселей, текст — одиннадцать, крупное число Unbounded — почти двадцать.
      * Тридцать шесть пикселей не вмещали подпись плюс такое число, и оно резалось
      * кромкой.
@@ -71,6 +71,17 @@ public final class BuyerView {
     private static final int HERO_UNDER = 31;
 
     private static final int ICON = 12;
+
+    /**
+     * Насколько широкой карточке позволено быть.
+     * <p>
+     * Раньше она занимала весь экран, и это было ошибкой: колонки разъезжались
+     * к краям, между названием товара и его ценой оставалась половина экрана
+     * пустоты, и глазу приходилось проделывать весь этот путь на каждой строке.
+     * Таблица из шести колонок читается тем лучше, чем она у́же — до предела,
+     * за которым колонки начинают наезжать друг на друга.
+     */
+    private static final int MAX_WIDTH = 620;
 
     /** Заголовок колонки и то, сколько места ей нужно под числа. */
     private record Column(String label, int minimum) {
@@ -96,6 +107,35 @@ public final class BuyerView {
         scroll = Math.max(0, Math.min(maxScroll, scroll - (int) Math.signum(vertical)));
     }
 
+    /**
+     * Рисует карточку по центру отведённого места, ужав её до нужного содержимому.
+     * <p>
+     * Оба хозяина экрана — отдельный экран и слой поверх окна торговли — зовут
+     * именно это, чтобы размер считался в одном месте. Раньше каждый растягивал
+     * карточку на весь экран, и восемь строк товаров тонули в пустой панели
+     * высотой в семьсот пикселей.
+     */
+    public void renderCentred(DrawContext ctx, TextRenderer font, int screenWidth,
+                              int screenHeight, int margin) {
+        int width = Math.min(screenWidth - margin * 2, MAX_WIDTH);
+        int height = Math.min(screenHeight - margin * 2, preferredHeight());
+        render(ctx, font, (screenWidth - width) / 2, (screenHeight - height) / 2, width, height);
+    }
+
+    /**
+     * Сколько высоты содержимому нужно на самом деле: рама, карточки и ровно
+     * столько строк, сколько товаров прочитано.
+     * <p>
+     * Считается из тех же слагаемых, из которых складывается разметка, — иначе
+     * при первой же правке отступов число разошлось бы с рисованием.
+     */
+    private int preferredHeight() {
+        HolyHelperClient mod = HolyHelperClient.instance();
+        int rows = Math.max(1, mod.buyer().tradeOffers().size());
+        int table = Card.CAP + 3 + rows * ROW;
+        return Card.PAD * 2 + Card.HEADER + Card.GAP + HERO + Card.GAP + table + Card.FOOTER;
+    }
+
     public void render(DrawContext ctx, TextRenderer font, int x, int y, int width, int height) {
         HolyHelperClient mod = HolyHelperClient.instance();
         int count = mod.buyer().tradeOffers().size();
@@ -109,6 +149,13 @@ public final class BuyerView {
     private void header(DrawContext ctx, TextRenderer font, int x, int y, int width, int height,
                         double alpha) {
         RotationTimer timer = HolyHelperClient.instance().rotation();
+        if (timer.singleClock()) {
+            // Сроки у групп совпали — наблюдение одно, и часы одни. Подробнее в
+            // RotationTimer#singleClock.
+            chip(ctx, font, x + width, y, "обновление товаров", timer.remaining(false),
+                    timer.remainingFraction(false), Theme.GOLD, alpha);
+            return;
+        }
         int cursor = x + width;
         cursor = chip(ctx, font, cursor, y, "особые торги", timer.remaining(true),
                 timer.remainingFraction(true), Theme.TEAL, alpha);
