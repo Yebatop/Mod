@@ -15,8 +15,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Сборка публикует jar релизом, поэтому ей нужна запись в содержимое репозитория.
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -73,6 +74,36 @@ jobs:
             build/libs/*.jar
             !build/libs/*-sources.jar
           if-no-files-found: error
+
+      # Артефакт Actions отдаётся только zip-архивом, а браузеры такие архивы
+      # всё чаще блокируют наглухо («Dangerous download blocked»): снять
+      # блокировку можно лишь со страницы загрузок, из окна скачивания — нельзя.
+      # Релиз отдаёт сам jar по прямой и всегда одинаковой ссылке, без архива
+      # и без ручного снятия блокировки.
+      #
+      # Условия по ветке нет намеренно: в релизе всегда лежит последняя удачная
+      # сборка, с какой бы ветки она ни пришла. Тег остаётся на месте, меняется
+      # только файл и описание, поэтому ссылку достаточно сохранить один раз.
+      - name: Обновить jar в релизе
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # sed вместо head: head закрывает канал, ls получает SIGPIPE, и шаг
+          # падает на ровном месте — на этом уже спотыкался скрипт версий.
+          jar=$(ls build/libs/*.jar | grep -v -- '-sources.jar' | sed -n 1p)
+          # Имя без номера версии: иначе ссылка менялась бы при каждом её поднятии.
+          cp "$jar" holyhelper.jar
+          notes="Последняя удачная сборка ветки \`$GITHUB_REF_NAME\`, коммит $GITHUB_SHA."
+          if gh release view dev >/dev/null 2>&1; then
+            gh release upload dev holyhelper.jar --clobber
+            gh release edit dev --notes "$notes"
+          else
+            gh release create dev holyhelper.jar \
+              --prerelease \
+              --title "Свежая сборка" \
+              --notes "$notes"
+          fi
 
       - name: Выложить отчёты тестов
         if: failure()
