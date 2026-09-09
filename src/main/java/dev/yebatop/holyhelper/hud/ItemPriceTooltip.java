@@ -5,7 +5,10 @@ import dev.yebatop.holyhelper.core.Numbers;
 import dev.yebatop.holyhelper.core.ServerDetector;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.scan.BuyerParser;
+import dev.yebatop.holyhelper.scan.MarketParser;
+import dev.yebatop.holyhelper.scan.ScreenReader;
 import dev.yebatop.holyhelper.store.PriceStore;
+import dev.yebatop.holyhelper.ui.Fonts;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -27,6 +30,10 @@ import java.util.Locale;
  * Обе цифры сопровождаются давностью, если они не свежие. Ассортимент Скупца
  * меняется каждые несколько часов, а лоты Маркета раскупают, и цена без отметки
  * времени однажды соврала бы молча.
+ * <p>
+ * Строки мода набраны его же гарнитурой, а не вшитой в клиент: в подсказке они
+ * стоят вплотную к тексту сервера, и по шрифту сразу видно, где кончается одно
+ * и начинается другое.
  */
 public final class ItemPriceTooltip {
 
@@ -68,19 +75,46 @@ public final class ItemPriceTooltip {
             return;
         }
 
+        Text unit = unitLine(mod, stack, itemId);
         Text buyer = buyerLine(mod, itemId);
         Text market = marketLine(mod, itemId);
-        if (buyer == null && market == null) {
+        if (unit == null && buyer == null && market == null) {
             return;
         }
 
         lines.add(Text.empty());
+        if (unit != null) {
+            lines.add(unit);
+        }
         if (buyer != null) {
             lines.add(buyer);
         }
         if (market != null) {
             lines.add(market);
         }
+    }
+
+    /**
+     * Настоящая цена за штуку у лота, который продают только целиком.
+     * <p>
+     * Сервер в таком лоте пишет «Цена за 1 ед.» равной полной цене — раз единицу
+     * не купить, то и цены у неё как бы нет. Для решения это бесполезно: чтобы
+     * понять, дорого или дёшево, нужна цена за блок, и её приходится делить в уме
+     * прямо над окном. Мод делит сам.
+     */
+    private static Text unitLine(HolyHelperClient mod, ItemStack stack, String itemId) {
+        List<String> lore = ScreenReader.loreOf(stack);
+        if (lore.isEmpty()) {
+            return null;
+        }
+        MarketParser.Lot lot = mod.market().parser()
+                .parseLot(stack.getName().getString(), itemId, stack.getCount(), lore)
+                .orElse(null);
+        if (lot == null || !lot.wholeOnly() || lot.count() <= 1) {
+            return null;
+        }
+        return Text.literal("За штуку " + lot.unitPrice() + " · сервер этого не пишет")
+                .setStyle(Fonts.NUM.withColor(Formatting.GOLD));
     }
 
     private static Text buyerLine(HolyHelperClient mod, String itemId) {
@@ -98,7 +132,7 @@ public final class ItemPriceTooltip {
         if (offer.available() > 0) {
             text += " · осталось " + offer.available();
         }
-        return Text.literal(text + age(age)).formatted(Formatting.GOLD);
+        return Text.literal(text + age(age)).setStyle(Fonts.NUM.withColor(Formatting.GOLD));
     }
 
     private static Text marketLine(HolyHelperClient mod, String itemId) {
@@ -114,7 +148,7 @@ public final class ItemPriceTooltip {
         // как в списке товаров: жёлтое — «возможно», зелёное — «видел не раз».
         Formatting color = known.samples() > 1 ? Formatting.AQUA : Formatting.YELLOW;
         return Text.literal(text + age(Duration.between(known.seenAt(), Instant.now())))
-                .formatted(color);
+                .setStyle(Fonts.NUM.withColor(color));
     }
 
     /** Давность в скобках — только когда она уже что-то значит. */

@@ -59,6 +59,11 @@ public final class MarketScanner {
         return last;
     }
 
+    /** Разборщик витрины. Нужен подсказке: она читает лот прямо под курсором. */
+    public MarketParser parser() {
+        return parser;
+    }
+
     /** Читает витрину, если она открыта. Зовётся из тика клиента. */
     public Snapshot tickScan() {
         Snapshot fresh = scan();

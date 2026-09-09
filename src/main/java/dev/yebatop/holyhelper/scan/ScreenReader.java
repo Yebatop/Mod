@@ -75,7 +75,7 @@ public final class ScreenReader {
     }
 
     /** Строки подсказки. Форматирование отбрасываем — разбор идёт по тексту. */
-    private static List<String> loreOf(ItemStack stack) {
+    public static List<String> loreOf(ItemStack stack) {
         LoreComponent lore = stack.get(DataComponentTypes.LORE);
         if (lore == null) {
             return List.of();
