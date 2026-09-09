@@ -6,6 +6,7 @@ import dev.yebatop.holyhelper.board.ScoreboardWatcher;
 import dev.yebatop.holyhelper.core.ServerDetector;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.scan.BuyerParser;
+import dev.yebatop.holyhelper.ui.Card;
 import dev.yebatop.holyhelper.ui.Fonts;
 import dev.yebatop.holyhelper.ui.Motion;
 import dev.yebatop.holyhelper.ui.Paint;
@@ -47,6 +48,9 @@ public final class HudOverlay {
 
     /** Отклонение меньше этого — шум, а не сигнал. */
     private static final double NOTABLE_PERCENT = 3;
+
+    /** До этого возраста прогресс этапа считаем свежим и не подписываем. */
+    private static final Duration STAGE_QUIET = Duration.ofMinutes(5);
 
     private static final int WIDTH = 132;
     private static final int MARGIN = 4;
@@ -226,9 +230,15 @@ public final class HudOverlay {
         }
 
         if (stage != null) {
+            // Прогресс этапа не идёт сам: его наращивает сервер, а мод видит только
+            // то, что было в окне «Этапы». Поэтому у числа стоит возраст — иначе
+            // через час оно соврёт молча.
+            String stale = Card.staleness(mod.buyer().stagesSeenAt(), STAGE_QUIET);
             sections.add(new Section(CAP + 2 + LINE + 2 + BAR, (ctx, f, x, y, w, alpha) -> {
-                Fonts.label(ctx, f, "этап #" + stage.number(), x, y,
-                        Motion.fade(Theme.TEXT_FAINT, alpha));
+                String label = stale.isEmpty()
+                        ? "этап #" + stage.number()
+                        : "этап #" + stage.number() + " · " + stale;
+                Fonts.label(ctx, f, label, x, y, Motion.fade(Theme.TEXT_FAINT, alpha));
                 Fonts.draw(ctx, f, money(stage.progress()), Fonts.NUM, x, y + CAP + 2,
                         Motion.fade(Theme.GREEN, alpha));
                 Fonts.drawRight(ctx, f, "из " + money(stage.goal()), Fonts.NUM, x + w, y + CAP + 2,

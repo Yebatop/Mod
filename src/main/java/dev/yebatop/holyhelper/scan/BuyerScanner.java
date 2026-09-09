@@ -102,10 +102,10 @@ public final class BuyerScanner {
      * Чужие экраны и закрытый инвентарь снимок не затирают: иначе он пропадал бы
      * ровно в тот момент, когда игрок закрывает окно, чтобы посмотреть результат.
      */
-    public void tickScan() {
+    public Snapshot tickScan() {
         Snapshot fresh = scan();
         if (fresh.kind() == Kind.NONE) {
-            return;
+            return fresh;
         }
         last = fresh;
         if (fresh.bonuses() != null) {
@@ -143,6 +143,7 @@ public final class BuyerScanner {
             tradeList = List.copyOf(sorted);
             tradeSeenAt = fresh.seenAt();
         }
+        return fresh;
     }
 
     /** Товары из последнего просмотра «Торговли», дороже сверху. */

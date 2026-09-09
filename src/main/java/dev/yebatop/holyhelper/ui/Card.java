@@ -98,6 +98,28 @@ public final class Card {
         return "снято " + (minutes / 60) + " ч назад — числа устарели";
     }
 
+    /**
+     * Возраст коротко — и только когда он уже что-то значит.
+     * <p>
+     * Нужен там, где число не идёт само. Таймер ротации мод превращает в момент
+     * обновления, и часы дальше тикают сами; а прогресс этапа наращивает сервер,
+     * и мод его не видит — ни продаж, ни того, сколько за них засчитали. Значит
+     * число замерзает на последнем снимке, и без подписи оно однажды соврёт молча.
+     *
+     * @return пустая строка, пока свежо
+     */
+    public static String staleness(Instant seenAt, Duration quiet) {
+        if (seenAt == null || seenAt.equals(Instant.EPOCH)) {
+            return "";
+        }
+        Duration age = Duration.between(seenAt, Instant.now());
+        if (age.compareTo(quiet) < 0) {
+            return "";
+        }
+        long hours = age.toHours();
+        return hours > 0 ? hours + " ч назад" : age.toMinutes() + " мин назад";
+    }
+
     /** Разряды через пробел: без них шестизначные числа не читаются с одного взгляда. */
     public static String money(long value) {
         String digits = Long.toString(Math.abs(value));

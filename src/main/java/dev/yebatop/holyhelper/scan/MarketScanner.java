@@ -57,10 +57,10 @@ public final class MarketScanner {
     }
 
     /** Читает витрину, если она открыта. Зовётся из тика клиента. */
-    public void tickScan() {
+    public Snapshot tickScan() {
         Snapshot fresh = scan();
         if (!fresh.present()) {
-            return;
+            return fresh;
         }
         last = fresh;
 
@@ -69,12 +69,13 @@ public final class MarketScanner {
         // наблюдений, из которых новой информации ровно на одно.
         String signature = signatureOf(fresh);
         if (signature.equals(recordedSignature)) {
-            return;
+            return fresh;
         }
         recordedSignature = signature;
         for (MarketParser.Lot lot : fresh.lots()) {
             prices.record(lot.itemId(), lot.name(), lot.unitPrice(), fresh.seenAt());
         }
+        return fresh;
     }
 
     /** Дешёвый отпечаток страницы: меняется, когда лот купили или игрок пролистнул. */

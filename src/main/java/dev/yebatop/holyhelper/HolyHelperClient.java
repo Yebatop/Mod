@@ -10,6 +10,7 @@ import dev.yebatop.holyhelper.hud.BootOverlay;
 import dev.yebatop.holyhelper.hud.ExchangeHint;
 import dev.yebatop.holyhelper.hud.HudOverlay;
 import dev.yebatop.holyhelper.hud.ItemPriceTooltip;
+import dev.yebatop.holyhelper.hud.Toasts;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.liteapi.LiteApiChannel;
 import dev.yebatop.holyhelper.liteapi.LiteApiPayload;
@@ -20,7 +21,9 @@ import dev.yebatop.holyhelper.screen.BuyerOverlay;
 import dev.yebatop.holyhelper.screen.Keys;
 import dev.yebatop.holyhelper.scan.ExchangeParser;
 import dev.yebatop.holyhelper.scan.MarketScanner;
+import dev.yebatop.holyhelper.core.Numbers;
 import dev.yebatop.holyhelper.store.PriceStore;
+import dev.yebatop.holyhelper.ui.Theme;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -64,6 +67,11 @@ public final class HolyHelperClient implements ClientModInitializer {
     private CoinRateTracker rates;
 
     private int tickCounter;
+
+    // Отпечатки последних прочитанных окон: по ним видно, что снимок новый,
+    // а не тот же самый, перечитанный в двадцатый раз за десять секунд.
+    private String lastBuyerMark = "";
+    private String lastMarketMark = "";
     private int announceAtTick;
     private long nextRatePollAt;
 
@@ -97,6 +105,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         HudOverlay.register();
         // Экран запуска регистрируется после панели, чтобы лечь поверх неё.
         BootOverlay.register();
+        Toasts.register();
         ExchangeHint.register();
         ItemPriceTooltip.register();
         Keys.register();
@@ -135,6 +144,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         prices.save();
         HudOverlay.resetAnimation();
         BootOverlay.hide();
+        Toasts.clear();
         nextRatePollAt = 0;
         channel.reset();
         featureGate.reset();
@@ -168,8 +178,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         // Окно Скупца читаем дважды в секунду, пока оно открыто. Ждать команды нельзя:
         // с открытым окном чат не открыть, и набрать её игроку негде.
         if (tickCounter % 10 == 0) {
-            buyer.tickScan();
-            market.tickScan();
+            announceScan(buyer.tickScan(), market.tickScan());
             // Из остатка в подсказке считаем момент обновления: дальше часы идут сами,
             // и переоткрывать окно ради таймера не нужно.
             if (buyer.last().kind() == BuyerScanner.Kind.TRADE) {
@@ -189,6 +198,53 @@ public final class HolyHelperClient implements ClientModInitializer {
                 && (featureGate.status() != FeatureGate.Status.NOT_ASKED || tickCounter >= announceAtTick)) {
             announceAtTick = 0;
             announce(client);
+        }
+    }
+
+    /**
+     * Сообщает игроку, что мод прочитал окно.
+     * <p>
+     * Мод читает молча, и до этого понять, запомнил он что-нибудь или нет, было
+     * неоткуда. Сообщение показывается один раз на окно: витрина перечитывается
+     * дважды в секунду, и рассказывать об этом каждый раз — спам, а не подсказка.
+     */
+    private void announceScan(BuyerScanner.Snapshot fromBuyer, MarketScanner.Snapshot fromMarket) {
+        String buyerMark = switch (fromBuyer.kind()) {
+            case NONE -> "";
+            case TRADE -> "trade:" + fromBuyer.offers().size();
+            case MULTIPLIERS -> "mult:" + fromBuyer.multipliers().size();
+            case STAGES -> "stage:" + fromBuyer.stages().size();
+            case HUB -> "hub";
+        };
+        if (!buyerMark.equals(lastBuyerMark)) {
+            lastBuyerMark = buyerMark;
+            switch (fromBuyer.kind()) {
+                case TRADE -> Toasts.push("Скупец",
+                        Numbers.counted(fromBuyer.offers().size(), "товар", "товара", "товаров"),
+                        Theme.GOLD);
+                case MULTIPLIERS -> Toasts.push("Множители",
+                        Numbers.counted(fromBuyer.multipliers().size(),
+                                "категория", "категории", "категорий"),
+                        Theme.PURPLE);
+                case STAGES -> Toasts.push("Этапы",
+                        Numbers.counted(fromBuyer.stages().size(), "этап", "этапа", "этапов"),
+                        Theme.GREEN);
+                case HUB, NONE -> {
+                }
+            }
+        }
+
+        String marketMark = fromMarket.present()
+                ? fromMarket.page().current() + "/" + fromMarket.lots().size()
+                        + ":" + fromMarket.category()
+                : "";
+        if (!marketMark.equals(lastMarketMark)) {
+            lastMarketMark = marketMark;
+            if (fromMarket.present()) {
+                Toasts.push("Маркет " + fromMarket.page().current() + "/" + fromMarket.page().total(),
+                        Numbers.counted(fromMarket.lots().size(), "лот", "лота", "лотов"),
+                        Theme.TEAL);
+            }
         }
     }
 

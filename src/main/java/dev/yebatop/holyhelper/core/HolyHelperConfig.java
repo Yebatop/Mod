@@ -25,6 +25,9 @@ public final class HolyHelperConfig {
     /** Показывать экран запуска при входе на сервер. */
     public boolean bootScreenEnabled = true;
 
+    /** Показывать короткие сообщения о том, что мод прочитал окно. */
+    public boolean toastsEnabled = true;
+
     /** Писать в чат отчёт о состоянии при входе на сервер. */
     public boolean announceOnJoin = true;
 

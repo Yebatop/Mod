@@ -42,6 +42,9 @@ public final class BuyerView {
     /** За какое время наблюдения Маркета ещё что-то значат. */
     private static final Duration MARKET_MEMORY = Duration.ofHours(12);
 
+    /** До этого возраста прогресс этапа считаем свежим и не подписываем. */
+    private static final Duration STAGE_QUIET = Duration.ofMinutes(5);
+
     private static final int ROW = 12;
     private static final int HERO = 36;
 
@@ -174,8 +177,14 @@ public final class BuyerView {
             Fonts.draw(ctx, font, "окно не открывали", Fonts.BODY, sx + 8, y + 15,
                     Motion.fade(Theme.TEXT_FAINT, third));
         } else {
-            Fonts.label(ctx, font, "этап #" + stage.number(), sx + 8, y + 5,
-                    Motion.fade(Theme.TEXT_FAINT, third));
+            // Возраст рядом с номером: прогресс этапа наращивает сервер, и без
+            // нового захода в окно «Этапы» число стоит на месте, сколько бы вы
+            // ни продали.
+            String stale = Card.staleness(mod.buyer().stagesSeenAt(), STAGE_QUIET);
+            Fonts.label(ctx, font, stale.isEmpty()
+                            ? "этап #" + stage.number()
+                            : "этап #" + stage.number() + " · " + stale,
+                    sx + 8, y + 5, Motion.fade(Theme.TEXT_FAINT, third));
             Fonts.draw(ctx, font, Card.money(stage.progress()), Fonts.NUM, sx + 8, y + 14,
                     Motion.fade(Theme.GREEN, third));
             Fonts.drawRight(ctx, font, "из " + Card.money(stage.goal()), Fonts.NUM,
@@ -375,7 +384,7 @@ public final class BuyerView {
         cursor += legend(ctx, font, cursor, y, Theme.WARN, "видел один раз", alpha);
         legend(ctx, font, cursor, y, Theme.PURPLE, "действует множитель", alpha);
 
-        String hint = "колесо — прокрутка · g — закрыть";
+        String hint = "колесо — прокрутка · " + Keys.buyerKeyName() + " — закрыть";
         Fonts.label(ctx, font, hint, x + width - Fonts.labelWidth(font, hint), y,
                 Motion.fade(Theme.TEXT_FAINT, alpha));
     }

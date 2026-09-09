@@ -47,6 +47,29 @@ public final class Numbers {
      * {@code Вы отдадите / Вы получите = Курс}. Если не сходится — разобрали
      * неправильно, и запись надо выбросить, а не класть в базу.
      */
+    /**
+     * Русское окончание по числу: «1 позиция», «2 позиции», «8 позиций».
+     * <p>
+     * Мелочь, но её отсутствие видно сразу: «8 позиция» в подсказке читается как
+     * недоделка, а подсказок мод показывает много.
+     */
+    public static String plural(long value, String one, String few, String many) {
+        long tail = Math.abs(value) % 100;
+        long last = tail % 10;
+        if (tail >= 11 && tail <= 14) {
+            return many;
+        }
+        if (last == 1) {
+            return one;
+        }
+        return last >= 2 && last <= 4 ? few : many;
+    }
+
+    /** То же, но сразу с числом: {@code «8 позиций»}. */
+    public static String counted(long value, String one, String few, String many) {
+        return value + " " + plural(value, one, few, many);
+    }
+
     public static boolean divisionHolds(long dividend, long divisor, long expected) {
         if (divisor == 0) {
             return false;

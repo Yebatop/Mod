@@ -47,6 +47,19 @@ public final class Keys {
         return bound.getCategory() == InputUtil.Type.KEYSYM && bound.getCode() == keyCode;
     }
 
+    /**
+     * Как называется клавиша Скупца сейчас.
+     * <p>
+     * В подсказке на экране она была вписана буквой «g». Это враньё сразу после
+     * того, как игрок переназначит её в настройках, — а переназначает он её
+     * обязательно, если играет не с клавиатуры.
+     */
+    public static String buyerKeyName() {
+        return buyer == null
+                ? "?"
+                : KeyBindingHelper.getBoundKeyOf(buyer).getLocalizedText().getString();
+    }
+
     /** Зовётся из тика клиента. */
     public static void tick(MinecraftClient client) {
         if (buyer == null) {
