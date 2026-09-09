@@ -41,6 +41,8 @@ public final class BuyerScanner {
     private volatile Instant tradeSeenAt = Instant.EPOCH;
     private volatile List<BuyerParser.Stage> stages = List.of();
     private volatile Instant stagesSeenAt = Instant.EPOCH;
+    private volatile List<BuyerParser.Multiplier> multipliers = List.of();
+    private volatile List<BuyerParser.Offer> tradeList = List.of();
 
     public enum Kind {
         /** Открытого окна нет либо оно чужое. */
@@ -119,6 +121,12 @@ public final class BuyerScanner {
             stagesSeenAt = fresh.seenAt();
         }
 
+        // Множители лежат в своём окне и нужны на экране Скупца рядом с товарами.
+        // Расходуются они медленно, поэтому запомненного списка хватает.
+        if (!fresh.multipliers().isEmpty()) {
+            multipliers = fresh.multipliers();
+        }
+
         // Цены товаров нужны и вне окна Скупца — на подсказке предмета в инвентаре.
         // Снимок к тому моменту давно перезаписан другим окном, поэтому храним
         // их отдельно и вместе со временем: ассортимент меняется каждые несколько
@@ -129,8 +137,22 @@ public final class BuyerScanner {
                 byItem.put(offer.itemId(), offer);
             }
             tradeOffers = Map.copyOf(byItem);
+            // Порядок нужен экрану: дороже сверху. Карта его не хранит.
+            List<BuyerParser.Offer> sorted = new ArrayList<>(fresh.offers());
+            sorted.sort(Comparator.comparingDouble(BuyerParser.Offer::unitPrice).reversed());
+            tradeList = List.copyOf(sorted);
             tradeSeenAt = fresh.seenAt();
         }
+    }
+
+    /** Товары из последнего просмотра «Торговли», дороже сверху. */
+    public List<BuyerParser.Offer> tradeOffers() {
+        return tradeList;
+    }
+
+    /** Множители из последнего просмотра окна множителей. */
+    public List<BuyerParser.Multiplier> multipliers() {
+        return multipliers;
     }
 
     /** Этапы из последнего просмотра окна «Этапы». */

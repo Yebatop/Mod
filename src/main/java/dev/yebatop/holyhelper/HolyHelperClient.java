@@ -16,6 +16,8 @@ import dev.yebatop.holyhelper.liteapi.LiteApiPayload;
 import dev.yebatop.holyhelper.rest.CoinRateTracker;
 import dev.yebatop.holyhelper.rest.HolyApiClient;
 import dev.yebatop.holyhelper.scan.BuyerScanner;
+import dev.yebatop.holyhelper.screen.BuyerOverlay;
+import dev.yebatop.holyhelper.screen.Keys;
 import dev.yebatop.holyhelper.scan.ExchangeParser;
 import dev.yebatop.holyhelper.scan.MarketScanner;
 import dev.yebatop.holyhelper.store.PriceStore;
@@ -97,6 +99,8 @@ public final class HolyHelperClient implements ClientModInitializer {
         BootOverlay.register();
         ExchangeHint.register();
         ItemPriceTooltip.register();
+        Keys.register();
+        BuyerOverlay.register();
 
         ClientCommandRegistrationCallback.EVENT.register(
                 (dispatcher, access) -> HolyHelperCommand.register(dispatcher));
@@ -142,6 +146,7 @@ public final class HolyHelperClient implements ClientModInitializer {
         if (client.world == null || !ServerDetector.onHolyWorld()) {
             return;
         }
+        Keys.tick(client);
         tickCounter++;
 
         // Ждём, пока сервер объявит канал LiteAPI. Пока не объявил — не шлём ничего.
