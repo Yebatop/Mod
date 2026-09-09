@@ -150,9 +150,9 @@ public final class BuyerView {
                         double alpha) {
         RotationTimer timer = HolyHelperClient.instance().rotation();
         if (timer.singleClock()) {
-            // Сроки у групп совпали — наблюдение одно, и часы одни. Подробнее в
-            // RotationTimer#singleClock.
-            chip(ctx, font, x + width, y, "обновление товаров", timer.remaining(false),
+            // Сроки у групп совпали — часы одни, но подпись называет обе.
+            // Подробнее в RotationTimer#singleClock.
+            chip(ctx, font, x + width, y, "обычные и особые", timer.remaining(false),
                     timer.remainingFraction(false), Theme.GOLD, alpha);
             return;
         }

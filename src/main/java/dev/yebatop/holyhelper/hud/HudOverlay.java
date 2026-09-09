@@ -196,10 +196,9 @@ public final class HudOverlay {
         }
 
         if (timer.singleClock() && regular.isPresent()) {
-            // Обе группы дали один и тот же срок — значит наблюдение одно, и строка
-            // тоже одна. Два заголовка над одинаковыми числами выглядели бы как две
-            // проверенные величины, которых у мода нет.
-            sections.add(cycle("обновление товаров", regular.get(), timer.remainingFraction(false),
+            // Обе группы дали один и тот же срок — строка одна, но подпись называет
+            // обе: групп по-прежнему две, просто сейчас они обновятся разом.
+            sections.add(cycle("обычные и особые", regular.get(), timer.remainingFraction(false),
                     Theme.GOLD, Theme.GOLD_DEEP));
         } else {
             if (regular.isPresent()) {
