@@ -10,6 +10,7 @@ import dev.yebatop.holyhelper.ui.Card;
 import dev.yebatop.holyhelper.ui.Fonts;
 import dev.yebatop.holyhelper.ui.Motion;
 import dev.yebatop.holyhelper.ui.Paint;
+import dev.yebatop.holyhelper.ui.Sprites;
 import dev.yebatop.holyhelper.ui.Theme;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -181,7 +182,7 @@ public final class HudOverlay {
         }
 
         sections.add(new Section(12, (ctx, f, x, y, w, alpha) -> {
-            Paint.mark(ctx, x, y, 11, Theme.GOLD, Theme.TEAL, alpha);
+            Sprites.mark(ctx, x, y, 11, alpha);
             Fonts.draw(ctx, f, "HolyHelper", Fonts.BODY, x + 15, y + 1,
                     Motion.fade(Theme.GOLD, alpha));
             int dot = board.present() ? Theme.GREEN : Theme.TEXT_FAINT;

@@ -66,6 +66,33 @@ public final class Fonts {
     }
 
     /** То же, но строка прижата к правому краю отрезка. */
+    /**
+     * Дробное число, у которого целая часть светлая, а дробная приглушена:
+     * <code>8<span style="opacity:.6">.44</span></code>.
+     * <p>
+     * Колонка цен читается по целым — они и решают, дорого или дёшево. Копейки
+     * нужны только чтобы сравнение не врало, и держать их той же яркостью
+     * значит заставлять глаз каждый раз отделять важное от точного. Правая
+     * граница при этом не сдвигается, так что колонка остаётся выровненной.
+     *
+     * @return ширина всей записи
+     */
+    public static int split(DrawContext ctx, TextRenderer renderer, String value,
+                            int x, int y, int color, int fraction) {
+        int dot = value.indexOf('.');
+        if (dot < 0) {
+            return draw(ctx, renderer, value, NUM, x, y, color);
+        }
+        int used = draw(ctx, renderer, value.substring(0, dot), NUM, x, y, color);
+        return used + draw(ctx, renderer, value.substring(dot), NUM, x + used, y, fraction);
+    }
+
+    /** Та же запись, но прижатая правым краем — как и все числа в таблицах. */
+    public static void splitRight(DrawContext ctx, TextRenderer renderer, String value,
+                                  int right, int y, int color, int fraction) {
+        split(ctx, renderer, value, right - width(renderer, value, NUM), y, color, fraction);
+    }
+
     public static void drawRight(DrawContext ctx, TextRenderer renderer, String value, Style font,
                                  int right, int y, int color) {
         Text prepared = text(value, font);

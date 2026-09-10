@@ -30,6 +30,9 @@ public final class Theme {
     /** Внутренняя светлая кромка по верху — та самая «полированная» грань. */
     public static final int EDGE = 0x17FFFFFF;
 
+    /** Насколько верх панели светлее низа. Больше — и подложка начинает мутнеть. */
+    public static final double LIT_SHARE = 0.045;
+
     /** Бегущий блик. Альфа задаётся при рисовании, здесь только цвет. */
     public static final int SHEEN = 0xFFFFFFFF;
 
@@ -43,6 +46,20 @@ public final class Theme {
     public static final int GREEN = 0xFF5FD18B;
     public static final int PURPLE = 0xFFC3ADF6;
     public static final int WARN = 0xFFE2C05A;
+
+    /**
+     * Дробная часть цены. Не приглушённое золото, а нейтральный серый: копейки
+     * не «менее важное золото», а другая по назначению величина — они нужны,
+     * только чтобы сравнение не врало.
+     */
+    public static final int FRACTION = 0xFF7B8494;
+
+    /**
+     * Подложка колонки, по которой отсортирован список. Настолько слабая, что
+     * порознь её не заметишь, — но полосу во всю высоту таблицы глаз ловит
+     * сразу, и заголовок читать не приходится.
+     */
+    public static final int SORTED = 0x14F2B45C;
 
     public static final int TEXT = 0xFFE8EAED;
     public static final int TEXT_DIM = 0xFF8B93A1;

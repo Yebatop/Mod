@@ -261,6 +261,20 @@ public final class BuyerView {
         int market = widthOf(font, COL_MARKET);
         int nameWidth = width - mult - batch - unit - left - market - ICON - 10;
 
+        int listTop = y + Card.CAP + 3;
+        int listHeight = height - Card.CAP - 3;
+        int visible = Math.max(1, listHeight / ROW);
+
+        // Подложка под колонкой, по которой отсортирован список. Заголовок про это
+        // тоже говорит — золотом, — но заголовок надо прочитать, а полосу глаз
+        // ловит сразу. Кончается она на последней строке, а не на дне отведённого
+        // места: полоса, уходящая в пустоту, показывает границу таблицы там, где
+        // таблицы уже нет.
+        int sortedRight = x + ICON + 4 + nameWidth + mult + batch + unit;
+        int sortedBottom = listTop + Math.min(visible, offers.size()) * ROW;
+        ctx.fill(sortedRight - unit - 3, y - 3, sortedRight + 3, sortedBottom,
+                Motion.fade(Theme.SORTED, alpha));
+
         int cursor = x + ICON + 4;
         Fonts.label(ctx, font, "товар", cursor, y, Motion.fade(Theme.TEXT_FAINT, alpha));
         cursor += nameWidth;
@@ -274,9 +288,6 @@ public final class BuyerView {
         cursor += left;
         headerCell(ctx, font, COL_MARKET.label(), cursor + market, y, alpha, Theme.TEXT_FAINT);
 
-        int listTop = y + Card.CAP + 3;
-        int listHeight = height - Card.CAP - 3;
-        int visible = Math.max(1, listHeight / ROW);
         maxScroll = Math.max(0, offers.size() - visible);
         scroll = Math.min(scroll, maxScroll);
 
@@ -353,8 +364,11 @@ public final class BuyerView {
         cell(ctx, font, Card.money(offer.batchPrice()), cursor + step, y, alpha, Theme.TEXT_DIM);
         cursor += step;
         step = widthOf(font, COL_UNIT);
-        cell(ctx, font, String.format(Locale.ROOT, "%.2f", offer.unitPrice()),
-                cursor + step, y, alpha, Theme.GOLD);
+        // Целая часть решает, дорого или дёшево; копейки нужны только чтобы
+        // сравнение не врало. Разной яркостью это видно без чтения.
+        Fonts.splitRight(ctx, font, String.format(Locale.ROOT, "%.2f", offer.unitPrice()),
+                cursor + step, y + 1, Motion.fade(Theme.GOLD, alpha),
+                Motion.fade(Theme.FRACTION, alpha));
         cursor += step;
         step = widthOf(font, COL_LEFT);
         cell(ctx, font, Card.money(offer.available()), cursor + step, y, alpha, Theme.TEXT_DIM);
@@ -453,10 +467,19 @@ public final class BuyerView {
         int cursor = x;
         cursor += legend(ctx, font, cursor, y, Theme.GREEN, "на маркете дороже", alpha);
         cursor += legend(ctx, font, cursor, y, Theme.WARN, "один лот — не рынок", alpha);
-        legend(ctx, font, cursor, y, Theme.PURPLE, "действует множитель", alpha);
+        cursor += legend(ctx, font, cursor, y, Theme.PURPLE, "действует множитель", alpha);
+        // Искру в списке рисует row(), а объяснить её было негде: подвал
+        // перечислял три цвета и молчал про единственный значок на экране.
+        Paint.spark(ctx, cursor, y + 1, Motion.fade(Theme.GREEN, alpha));
+        Fonts.label(ctx, font, "особое предложение", cursor + 9, y,
+                Motion.fade(Theme.TEXT_FAINT, alpha));
 
-        String hint = "колесо — прокрутка · " + Keys.buyerKeyName() + " — закрыть";
-        Fonts.label(ctx, font, hint, x + width - Fonts.labelWidth(font, hint), y,
+        // Клавиша прижата к правому краю, подпись — левее неё.
+        String key = Keys.buyerKeyName();
+        int keyWidth = Card.keyWidth(font, key);
+        Card.key(ctx, font, key, x + width - keyWidth, y - 2, alpha);
+        String hint = "колесо — прокрутка · закрыть";
+        Fonts.label(ctx, font, hint, x + width - keyWidth - 6 - Fonts.labelWidth(font, hint), y,
                 Motion.fade(Theme.TEXT_FAINT, alpha));
     }
 

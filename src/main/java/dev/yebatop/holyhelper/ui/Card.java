@@ -29,6 +29,9 @@ public final class Card {
     public static final int CAP = 8;
     public static final int GAP = 6;
 
+    /** Поле по бокам буквы на клавише. */
+    private static final int KEY_PAD = 4;
+
     public static final long REVEAL_STEP = 55L;
     public static final long REVEAL_LENGTH = 380L;
 
@@ -63,7 +66,7 @@ public final class Card {
         int inner = width - PAD * 2;
         int left = x + PAD;
 
-        Paint.mark(ctx, left, top + PAD + 2, 18, accent, Theme.TEAL, reveal);
+        Sprites.mark(ctx, left, top + PAD + 2, 18, reveal);
         Fonts.draw(ctx, font, title, Fonts.DISPLAY, left + 24, top + PAD, Motion.fade(Theme.TEXT, reveal));
         Fonts.label(ctx, font, subtitle, left + 24, top + PAD + 17, Motion.fade(Theme.TEXT_FAINT, reveal));
         if (header != null) {
@@ -80,6 +83,37 @@ public final class Card {
         if (footer != null) {
             footer.paint(ctx, font, left, top + height - PAD - FOOTER + 7, inner, FOOTER, reveal);
         }
+    }
+
+    /** Сколько места займёт клавиша. Нужно тем, кто прижимает её к правому краю. */
+    public static int keyWidth(TextRenderer font, String name) {
+        return Fonts.width(font, name, Fonts.NUM) + KEY_PAD * 2;
+    }
+
+    /**
+     * Название клавиши в виде самой клавиши: скруглённая площадка со светлой
+     * кромкой по верху.
+     * <p>
+     * Написанное просто буквой, оно теряется в строке подсказок и читается как
+     * часть фразы. Площадка отделяет «что нажать» от «что при этом будет» без
+     * единого лишнего слова.
+     *
+     * @return сколько места заняла клавиша
+     */
+    public static int key(DrawContext ctx, TextRenderer font, String name, int x, int y,
+                          double alpha) {
+        int width = keyWidth(font, name);
+        int height = LINE + 3;
+
+        Paint.roundRect(ctx, x, y, width, height, 2, Motion.fade(Theme.BORDER_SOLID, alpha));
+        Paint.roundRect(ctx, x + 1, y + 1, width - 2, height - 2, 2,
+                Motion.fade(Motion.lighten(Theme.PANEL_SOLID, 0.09), alpha),
+                Motion.fade(Theme.PANEL_SOLID, alpha));
+        ctx.fill(x + 2, y + 1, x + width - 2, y + 2, Motion.fade(Theme.EDGE, alpha));
+
+        Fonts.draw(ctx, font, name, Fonts.NUM, x + KEY_PAD, y + 2,
+                Motion.fade(Theme.TEXT, alpha));
+        return width;
     }
 
     /** Возраст снимка словами. Секунды важнее всего: остатки меняются быстро. */

@@ -86,6 +86,19 @@ public final class Motion {
     }
 
     /** Смешивает два цвета покомпонентно, включая альфу. */
+    /**
+     * Подмешивает к цвету свет, не трогая прозрачность.
+     * <p>
+     * Отличается от {@link #mix} ровно этим, и отличие существенное: у панели
+     * мода тело полупрозрачное, и обычное смешение с белым сделало бы её верх
+     * заодно и плотнее нижнего края. Свет по верхней грани — это про цвет,
+     * а не про то, насколько сквозь панель виден мир.
+     */
+    public static int lighten(int argb, double share) {
+        int lit = mix(argb | 0xFF000000, 0xFFFFFFFF, share);
+        return (argb & 0xFF000000) | (lit & 0x00FFFFFF);
+    }
+
     public static int mix(int from, int to, double t) {
         double k = clamp(t);
         int out = 0;

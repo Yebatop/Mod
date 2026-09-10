@@ -6,6 +6,7 @@ import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.ui.Fonts;
 import dev.yebatop.holyhelper.ui.Motion;
 import dev.yebatop.holyhelper.ui.Paint;
+import dev.yebatop.holyhelper.ui.Sprites;
 import dev.yebatop.holyhelper.ui.Theme;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -109,8 +110,8 @@ public final class BootOverlay {
 
         double markReveal = Motion.reveal(elapsed, 0, REVEAL_LENGTH);
         if (markReveal > 0) {
-            Paint.mark(ctx, left + (PANEL_WIDTH - MARK) / 2, top + Motion.rise(markReveal, 8),
-                    MARK, Theme.GOLD, Theme.TEAL, markReveal * alpha);
+            Sprites.mark(ctx, left + (PANEL_WIDTH - MARK) / 2, top + Motion.rise(markReveal, 8),
+                    MARK, markReveal * alpha);
         }
 
         double titleReveal = Motion.reveal(elapsed, REVEAL_STEP, REVEAL_LENGTH);

@@ -89,4 +89,24 @@ class MotionTest {
         // Отрицательное время встречается: панель могла появиться раньше отсчёта.
         assertFalse(Double.isNaN(Motion.sheen(-7000, 8000)));
     }
+
+    @Test
+    void светПоВерхуНеТрогаетПрозрачность() {
+        // Тело панели полупрозрачное: сквозь него виден мир, и подсветка верхней
+        // грани не должна этого менять.
+        int body = 0xB80A0C11;
+        int lit = Motion.lighten(body, 0.045);
+        assertEquals(0xB8, (lit >>> 24) & 0xFF, "прозрачность обязана остаться прежней");
+        assertTrue((lit & 0xFF) > (body & 0xFF), "цвет обязан стать светлее");
+    }
+
+    @Test
+    void светНольОставляетЦветКакБыл() {
+        assertEquals(0xB80A0C11, Motion.lighten(0xB80A0C11, 0));
+    }
+
+    @Test
+    void светДоУпораДаётБелыйТойЖеПрозрачности() {
+        assertEquals(0xB8FFFFFF, Motion.lighten(0xB80A0C11, 1));
+    }
 }

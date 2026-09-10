@@ -32,12 +32,27 @@ public final class Paint {
      * это и даёт мягкий угол вместо ступенек.
      */
     public static void roundRect(DrawContext ctx, int x, int y, int w, int h, int radius, int color) {
+        roundRect(ctx, x, y, w, h, radius, color, color);
+    }
+
+    /**
+     * То же скругление, но тело залито сверху вниз от одного цвета к другому.
+     * <p>
+     * Ровная заливка читается как бумага: у неё нет верха и низа. Панель в макете
+     * чуть светлее по верхнему краю — этого хватает, чтобы она читалась телом, на
+     * которое падает свет, а не вырезанным прямоугольником.
+     */
+    public static void roundRect(DrawContext ctx, int x, int y, int w, int h, int radius,
+                                 int top, int bottom) {
         if (w <= 0 || h <= 0) {
             return;
         }
         int r = Math.max(0, Math.min(radius, Math.min(w, h) / 2));
 
         for (int row = 0; row < h; row++) {
+            int color = top == bottom
+                    ? top
+                    : Motion.mix(top, bottom, h == 1 ? 0 : row / (double) (h - 1));
             double inset = insetAt(row, h, r);
             int whole = (int) Math.floor(inset);
             double frac = inset - whole;
@@ -91,7 +106,9 @@ public final class Paint {
             return;
         }
         roundRect(ctx, x, y, w, h, radius, Motion.fade(Theme.BORDER_SOLID, alpha));
-        roundRect(ctx, x + 1, y + 1, w - 2, h - 2, Math.max(0, radius - 1), Motion.fade(body, alpha));
+        roundRect(ctx, x + 1, y + 1, w - 2, h - 2, Math.max(0, radius - 1),
+                Motion.fade(Motion.lighten(body, Theme.LIT_SHARE), alpha),
+                Motion.fade(body, alpha));
 
         // Кромка идёт внутри тела и не доходит до углов: свет по грани, а не вторая
         // линия обводки.
@@ -104,7 +121,7 @@ public final class Paint {
      * золото у Скупца, бирюза у Маркета.
      */
     public static void accent(DrawContext ctx, int x, int y, int h, int color, double alpha) {
-        roundRect(ctx, x + 1, y + 2, 2, h - 4, 1, Motion.fade(color, alpha));
+        roundRect(ctx, x + 1, y + 2, 3, h - 4, 1, Motion.fade(color, alpha));
     }
 
     /**
@@ -177,31 +194,6 @@ public final class Paint {
         }
     }
 
-    /** Отрезок между двумя точками. Брезенхэм: без него косые линии рассыпаются. */
-    public static void stroke(DrawContext ctx, int x0, int y0, int x1, int y1, int color) {
-        int dx = Math.abs(x1 - x0);
-        int dy = -Math.abs(y1 - y0);
-        int sx = x0 < x1 ? 1 : -1;
-        int sy = y0 < y1 ? 1 : -1;
-        int error = dx + dy;
-        int guard = dx - dy + 4;
-
-        while (guard-- > 0) {
-            ctx.fill(x0, y0, x0 + 1, y0 + 1, color);
-            if (x0 == x1 && y0 == y1) {
-                return;
-            }
-            int doubled = error * 2;
-            if (doubled >= dy) {
-                error += dy;
-                x0 += sx;
-            }
-            if (doubled <= dx) {
-                error += dx;
-                y0 += sy;
-            }
-        }
-    }
 
     /**
      * Линия по точкам, вписанная в прямоугольник.
@@ -246,39 +238,6 @@ public final class Paint {
     /** Разделитель между секциями панели. */
     public static void separator(DrawContext ctx, int x, int y, int w, double alpha) {
         ctx.fill(x, y, x + w, y + 1, Motion.fade(Theme.BORDER, alpha));
-    }
-
-    /**
-     * Знак мода: изометрический блок с растущей линией внутри.
-     * <p>
-     * Задан долями квадрата и рисуется отрезками, поэтому одинаково собирается
-     * и на двенадцати пикселях в панели, и на полусотне на экране запуска.
-     */
-    public static void mark(DrawContext ctx, int x, int y, int size, int edge, int accent, double alpha) {
-        int gold = Motion.fade(edge, alpha);
-        int teal = Motion.fade(accent, alpha);
-
-        double[][] hex = {{0.50, 0.04}, {0.96, 0.29}, {0.96, 0.71},
-                          {0.50, 0.96}, {0.04, 0.71}, {0.04, 0.29}};
-        for (int i = 0; i < hex.length; i++) {
-            double[] a = hex[i];
-            double[] b = hex[(i + 1) % hex.length];
-            stroke(ctx, px(x, size, a[0]), px(y, size, a[1]), px(x, size, b[0]), px(y, size, b[1]), gold);
-        }
-        // Три ребра внутрь — от них блок читается объёмным, а не шестиугольником.
-        stroke(ctx, px(x, size, 0.04), px(y, size, 0.29), px(x, size, 0.50), px(y, size, 0.52), gold);
-        stroke(ctx, px(x, size, 0.96), px(y, size, 0.29), px(x, size, 0.50), px(y, size, 0.52), gold);
-        stroke(ctx, px(x, size, 0.50), px(y, size, 0.52), px(x, size, 0.50), px(y, size, 0.96), gold);
-
-        double[][] chart = {{0.24, 0.64}, {0.42, 0.50}, {0.58, 0.58}, {0.80, 0.34}};
-        for (int i = 0; i < chart.length - 1; i++) {
-            stroke(ctx, px(x, size, chart[i][0]), px(y, size, chart[i][1]),
-                    px(x, size, chart[i + 1][0]), px(y, size, chart[i + 1][1]), teal);
-        }
-    }
-
-    private static int px(int origin, int size, double fraction) {
-        return origin + (int) Math.round(fraction * (size - 1));
     }
 
     /** Метка особого товара: четырёхлучевая искра. В шрифтах такого знака нет. */
