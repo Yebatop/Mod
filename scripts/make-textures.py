@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Рисует фирменный знак мода в текстуры, из которых его берёт клиент.
+"""Рисует картинки мода — всё, что клиент не умеет сложить из прямоугольников.
 
 Знак раньше складывался в игре из прямоугольников — иначе было нечем, — и
 выглядел он именно так: блочно. Гладкой диагонали из прямоугольников не
@@ -14,7 +14,7 @@
 мылит. Мелкий вариант обслуживает шапки карточек и панель, крупный — экран
 запуска, где знак занимает почти сотню пикселей.
 
-Запуск: python3 scripts/make-mark.py
+Запуск: python3 scripts/make-textures.py
 """
 
 from __future__ import annotations
@@ -47,6 +47,34 @@ CHART = (70, 211, 217)
 FACE = (242, 180, 92, 18)
 
 OUT = pathlib.Path(__file__).resolve().parent.parent / "src/main/resources/assets/holyhelper/textures/gui"
+
+
+# ── тень ────────────────────────────────────────────────────────────────
+# Тень режется на девять кусков: четыре угла рисуются как есть, четыре края
+# и середина растягиваются. Иначе одна картинка на панель любой формы
+# растянула бы и размытие в углах, и тень поехала бы вслед за пропорциями.
+SHADOW = 128
+SHADOW_INSET = 32      # поле под размытие, наружу от панели
+SHADOW_RADIUS = 16     # скругление самой панели в координатах картинки
+SHADOW_BLUR = 12
+SHADOW_ALPHA = 195
+
+
+def shadow() -> Image.Image:
+    """Мягкая тень под панель: скруглённый прямоугольник, размытый наружу."""
+    work = SHADOW * SUPERSAMPLE
+    inset = SHADOW_INSET * SUPERSAMPLE
+    mask = Image.new("L", (work, work), 0)
+    ImageDraw.Draw(mask).rounded_rectangle(
+        [inset, inset, work - inset, work - inset],
+        radius=SHADOW_RADIUS * SUPERSAMPLE,
+        fill=SHADOW_ALPHA,
+    )
+    mask = mask.filter(ImageFilter.GaussianBlur(radius=SHADOW_BLUR * SUPERSAMPLE))
+
+    canvas = Image.new("RGBA", (work, work), (0, 0, 0, 0))
+    canvas.paste(Image.new("RGBA", (work, work), (0, 0, 0, 255)), (0, 0), mask)
+    return canvas.resize((SHADOW, SHADOW), Image.LANCZOS)
 
 
 def gradient_image(size: int) -> Image.Image:
@@ -133,9 +161,10 @@ def render(size: int) -> Image.Image:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    for name, size in (("mark", 96), ("mark_large", 256)):
+    pictures = {"mark": render(96), "mark_large": render(256), "shadow": shadow()}
+    for name, image in pictures.items():
         path = OUT / f"{name}.png"
-        render(size).save(path)
+        image.save(path)
         # blur — билинейная фильтрация: без неё клиент растянул бы текстуру
         # соседним пикселем, и вся затея потеряла бы смысл.
         # clamp — не тянуть края по кругу: у знака прозрачное поле.
@@ -143,7 +172,7 @@ def main() -> None:
             '{\n  "texture": {\n    "blur": true,\n    "clamp": true\n  }\n}\n',
             encoding="utf-8",
         )
-        print(f"{path.relative_to(OUT.parents[4])} — {size}×{size}")
+        print(f"{path.relative_to(OUT.parents[4])} — {image.width}×{image.height}")
 
 
 if __name__ == "__main__":

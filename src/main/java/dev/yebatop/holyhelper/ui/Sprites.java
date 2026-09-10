@@ -12,10 +12,13 @@ import net.minecraft.util.Identifier;
  * Пока знак складывался в игре из отрезков, он выглядел ровно так, как и был
  * сделан: блочно. Дело не в старании — знак почти весь состоит из диагоналей,
  * а диагональ из прямоугольников гладкой не бывает. Текстура снимает это
- * ограничение целиком, и заодно приносит то, чего у клиента нет вовсе:
- * свечение вокруг знака запечено в саму картинку.
+ * ограничение целиком.
  * <p>
- * Рисуются картинки из {@code scripts/make-mark.py} — исходником считается
+ * Здесь же живёт то, чего клиент не умеет в принципе: размытие. Свечение вокруг
+ * знака и тень под панелью в макете дают размытием, а у клиента его нет —
+ * поэтому и то и другое нарисовано заранее.
+ * <p>
+ * Рисуются картинки из {@code scripts/make-textures.py} — исходником считается
  * скрипт, а не png. Поправить знак значит поправить скрипт и перегенерировать,
  * иначе через месяц никто не вспомнит, откуда взялись эти пиксели.
  */
@@ -49,7 +52,77 @@ public final class Sprites {
      */
     private static final float CANVAS = 256f / 208f;
 
+    private static final Identifier SHADOW =
+            Identifier.of(HolyHelperClient.MOD_ID, "textures/gui/shadow.png");
+
+    private static final int SHADOW_SIZE = 128;
+
+    /**
+     * Кусок картинки тени, который не растягивается: в нём лежит и размытие
+     * наружу, и скругление угла самой панели.
+     */
+    private static final int SHADOW_CORNER = 56;
+
+    /** Тот же кусок на экране. Вчетверо меньше — отсюда и все остальные размеры. */
+    private static final int SHADOW_CORNER_ON_SCREEN = 14;
+
+    /** Насколько тень выходит за панель. Ровно поле размытия из картинки. */
+    public static final int SHADOW_SPREAD = 8;
+
     private Sprites() {
+    }
+
+    /**
+     * Мягкая тень под панель.
+     * <p>
+     * В макете тень есть у каждой панели, и именно она отделяет её от того, что
+     * лежит под ней. В игре её не было вовсе: клиент умеет заливку и текст, а
+     * размытия у него нет. Нарисованная заранее — есть.
+     * <p>
+     * Одной картинкой на панель любой формы не обойтись: растянув её, растянули бы
+     * и размытие в углах, и тень поехала бы вслед за пропорциями. Поэтому картинка
+     * режется на девять кусков — четыре угла ложатся как есть, четыре края и
+     * середина тянутся. Середина однородна, тянуть её безопасно.
+     */
+    public static void shadow(DrawContext ctx, int x, int y, int w, int h, double alpha) {
+        int outer = SHADOW_CORNER_ON_SCREEN;
+        int left = x - SHADOW_SPREAD;
+        int top = y - SHADOW_SPREAD;
+        int width = w + SHADOW_SPREAD * 2;
+        int height = h + SHADOW_SPREAD * 2;
+
+        int midWidth = width - outer * 2;
+        int midHeight = height - outer * 2;
+        if (midWidth <= 0 || midHeight <= 0) {
+            // Панель уже своей же тени — рисовать нечего, и растягивать в минус
+            // клиент не станет.
+            return;
+        }
+        int far = SHADOW_SIZE - SHADOW_CORNER;
+        int midSource = SHADOW_SIZE - SHADOW_CORNER * 2;
+        int color = Motion.fade(0xFFFFFFFF, alpha);
+
+        piece(ctx, 0, 0, SHADOW_CORNER, SHADOW_CORNER, left, top, outer, outer, color);
+        piece(ctx, far, 0, SHADOW_CORNER, SHADOW_CORNER, left + width - outer, top, outer, outer, color);
+        piece(ctx, 0, far, SHADOW_CORNER, SHADOW_CORNER, left, top + height - outer, outer, outer, color);
+        piece(ctx, far, far, SHADOW_CORNER, SHADOW_CORNER,
+                left + width - outer, top + height - outer, outer, outer, color);
+
+        piece(ctx, SHADOW_CORNER, 0, midSource, SHADOW_CORNER, left + outer, top, midWidth, outer, color);
+        piece(ctx, SHADOW_CORNER, far, midSource, SHADOW_CORNER,
+                left + outer, top + height - outer, midWidth, outer, color);
+        piece(ctx, 0, SHADOW_CORNER, SHADOW_CORNER, midSource, left, top + outer, outer, midHeight, color);
+        piece(ctx, far, SHADOW_CORNER, SHADOW_CORNER, midSource,
+                left + width - outer, top + outer, outer, midHeight, color);
+
+        piece(ctx, SHADOW_CORNER, SHADOW_CORNER, midSource, midSource,
+                left + outer, top + outer, midWidth, midHeight, color);
+    }
+
+    private static void piece(DrawContext ctx, int u, int v, int sourceWidth, int sourceHeight,
+                              int x, int y, int width, int height, int color) {
+        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, SHADOW, x, y, u, v, width, height,
+                sourceWidth, sourceHeight, SHADOW_SIZE, SHADOW_SIZE, color);
     }
 
     /**

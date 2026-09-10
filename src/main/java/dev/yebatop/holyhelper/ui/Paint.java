@@ -105,6 +105,10 @@ public final class Paint {
         if (w <= 2 || h <= 2) {
             return;
         }
+        // Тень рисуется первой и из картинки: без неё панель лежит на подложке
+        // вплотную, и в макете именно тень отделяет одно от другого.
+        Sprites.shadow(ctx, x, y, w, h, alpha);
+
         roundRect(ctx, x, y, w, h, radius, Motion.fade(Theme.BORDER_SOLID, alpha));
         roundRect(ctx, x + 1, y + 1, w - 2, h - 2, Math.max(0, radius - 1),
                 Motion.fade(Motion.lighten(body, Theme.LIT_SHARE), alpha),
@@ -151,16 +155,6 @@ public final class Paint {
         }
     }
 
-    /** Горизонтальный градиент столбцами: у клиента градиент только сверху вниз. */
-    public static void gradient(DrawContext ctx, int x, int y, int w, int h, int from, int to) {
-        if (w <= 0 || h <= 0) {
-            return;
-        }
-        for (int i = 0; i < w; i++) {
-            ctx.fill(x + i, y, x + i + 1, y + h,
-                    Motion.mix(from, to, w == 1 ? 1 : i / (double) (w - 1)));
-        }
-    }
 
     /**
      * Полоса заполнения со скруглёнными концами. Подложка рисуется всегда: пустая
@@ -211,7 +205,7 @@ public final class Paint {
         double span = max - min;
 
         int columns = (int) Math.round(w * Math.max(0, Math.min(1, reveal)));
-        int previous = Integer.MIN_VALUE;
+        double previous = Double.NaN;
 
         for (int i = 0; i < columns; i++) {
             double at = i / (double) (w - 1) * (values.size() - 1);
@@ -224,15 +218,42 @@ public final class Paint {
             // Плоский участок истории рисуем по середине, а не по нижней кромке:
             // прижатая ко дну прямая читается как «курс упал в ноль».
             double norm = span <= 0 ? 0.5 : (value - min) / span;
-            int py = y + h - 1 - (int) Math.round(norm * (h - 1));
+            // Дробную высоту не округляем: округление и делало из линии лесенку.
+            double py = y + h - 1 - norm * (h - 1);
 
-            if (previous != Integer.MIN_VALUE && Math.abs(py - previous) > 1) {
-                ctx.fill(x + i, Math.min(py, previous), x + i + 1, Math.max(py, previous) + 1, color);
-            } else {
-                ctx.fill(x + i, py, x + i + 1, py + 1, color);
-            }
+            column(ctx, x + i, Double.isNaN(previous) ? py : previous, py, color);
             previous = py;
         }
+    }
+
+    /**
+     * Столбец линии между двумя высотами, со сглаженными концами.
+     * <p>
+     * Целые строки заливаются полностью, а крайние — по доле, на которую линия
+     * в них заходит. Это то же самое, чем держится скругление панели, и по той же
+     * причине: без дробной кромки пологий график распадается на ступеньки, а
+     * ступеньки на графике читаются как скачки курса, которых не было.
+     */
+    private static void column(DrawContext ctx, int x, double from, double to, int color) {
+        double lo = Math.min(from, to);
+        double hi = Math.max(from, to);
+
+        int first = (int) Math.floor(lo);
+        int last = (int) Math.floor(hi);
+
+        if (first == last) {
+            // Линия целиком внутри одной строки: чернила делятся между ней и
+            // соседней по тому, насколько линия смещена от центра.
+            double shift = lo - first;
+            ctx.fill(x, first, x + 1, first + 1, Motion.fade(color, 1 - shift));
+            ctx.fill(x, first + 1, x + 1, first + 2, Motion.fade(color, shift));
+            return;
+        }
+        ctx.fill(x, first, x + 1, first + 1, Motion.fade(color, 1 - (lo - first)));
+        if (last > first + 1) {
+            ctx.fill(x, first + 1, x + 1, last, color);
+        }
+        ctx.fill(x, last, x + 1, last + 1, Motion.fade(color, hi - last));
     }
 
     /** Разделитель между секциями панели. */
