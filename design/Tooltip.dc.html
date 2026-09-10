@@ -7,139 +7,174 @@
 <body>
 <x-dc>
 <helmet>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@400..700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@400..700&display=swap">
   <style>
     body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
-    a { color: #f2b45c; } a:hover { color: #ffd79a; }
     .u-disp { font-family: 'Unbounded', 'Onest', system-ui, sans-serif; letter-spacing: -0.03em; }
     .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
     .u-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
     .u-lab { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #626b7b; }
     .facets { position: absolute; inset: 0; pointer-events: none; background-image: repeating-linear-gradient(114deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 148px), repeating-linear-gradient(-41deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 196px); }
-    .slot { width: 44px; height: 44px; background: #2a2a2a; border-top: 2px solid #1c1c1c; border-left: 2px solid #1c1c1c; border-right: 2px solid #5c5c5c; border-bottom: 2px solid #5c5c5c; display: flex; align-items: center; justify-content: center; }
-    .tip { position: relative; background: rgba(16,0,16,0.94); padding: 9px 11px; box-shadow: 0 22px 52px rgba(0,0,0,0.6); animation: hhTip 0.44s cubic-bezier(0.2,0.72,0.2,1) both; }
-    .tip::before { content: ""; position: absolute; inset: -2px; background: linear-gradient(180deg, #5000ff, #28007f); z-index: -1; }
-    .tip-line { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; font-size: 16px; line-height: 1.5; text-shadow: 1.5px 1.5px 0 rgba(0,0,0,0.7); }
-    .hh-line { animation: hhReveal 0.4s cubic-bezier(0.2,0.72,0.2,1) both; }
-    @keyframes hhTip { from { opacity: 0; transform: translateY(10px) scale(0.985); } to { opacity: 1; transform: none; } }
-    @keyframes hhReveal { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
-    @keyframes hhRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-    @keyframes hhFade { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes hhDraw { to { stroke-dashoffset: 0; } }
-    @keyframes hhBreathe { 0%, 100% { opacity: 0.22; } 50% { opacity: 0.44; } }
-    @keyframes hhSheen { 0% { left: -38%; } 44%, 100% { left: 138%; } }
-    .pnl { position: relative; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)); border: 1px solid rgba(255,255,255,0.072); box-shadow: 0 26px 62px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.075); overflow: hidden; }
-    .pnl::after { content: ""; position: absolute; top: 0; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent); animation: hhSheen 8s ease-in-out infinite; }
+    .dim { color: #8a94a3; }
+    .faint { color: #59616f; }
+    .card { position: relative; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.038), rgba(255,255,255,0.009)); border: 1px solid rgba(255,255,255,0.065); padding: 15px 18px 17px; }
+    .rule { height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02) 74%, transparent); }
+
+    /* рамка ванильной подсказки: её мод не трогает */
+    .tip { position: relative; display: inline-block; padding: 9px 11px; background: #100010; border: 2px solid transparent;
+           border-image: linear-gradient(180deg, #4b2a8c, #27134a) 1; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+           animation: hhRise 0.5s cubic-bezier(0.2,0.72,0.2,1) both; }
+    .tip-line { font-family: 'Pixelify Sans', system-ui, sans-serif; font-size: 15px; line-height: 1.5; white-space: nowrap; }
+    /* строки мода набраны его собственной гарнитурой — по ним и видно границу */
+    .mod-line { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.62; white-space: nowrap; }
+    .slot { width: 34px; height: 34px; border-radius: 3px; background: #161b23; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+
+    @keyframes hhRise { from { opacity: 0; transform: translateY(11px); } to { opacity: 1; transform: none; } }
   </style>
 </helmet>
-<div style="--accent: {{accent}}; position: relative; width: 1240px; height: 820px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1;">
+<div style="--accent: {{accent}}; position: relative; width: 1240px; height: 880px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1;">
 
-  <div style="position: absolute; inset: 0; background: radial-gradient(700px 400px at 20% -6%, rgba(169,140,240,0.11), transparent 62%), radial-gradient(620px 380px at 88% 8%, rgba(242,180,92,0.09), transparent 60%), linear-gradient(180deg, #0e1118 0%, #0a0c11 48%, #090b0f 100%);"></div>
+  <div style="position: absolute; inset: 0; background: radial-gradient(720px 420px at 16% -6%, rgba(242,180,92,0.12), transparent 62%), radial-gradient(640px 380px at 92% 6%, rgba(70,211,217,0.08), transparent 60%), linear-gradient(180deg, #0e1118 0%, #0a0c11 48%, #090b0f 100%);"></div>
   <div class="facets"></div>
   <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none;"><filter id="grainTip"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainTip)"/></svg>
 
-  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 26px 30px 22px; display: flex; flex-direction: column; gap: 20px;">
+  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 26px 30px 22px; display: flex; flex-direction: column; gap: 18px;">
 
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 24px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) both;">
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <div style="position: relative; width: 46px; height: 46px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;">
-          <div style="position: absolute; inset: -7px; border-radius: 50%; background: var(--accent); filter: blur(17px); animation: hhBreathe 4.4s ease-in-out infinite;"></div>
-          <svg width="44" height="44" viewBox="0 0 88 88" fill="none" style="position: relative;">
-            <defs><linearGradient id="markTip" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe2b6"/><stop offset="52%" stop-color="{{accent}}"/><stop offset="100%" stop-color="#b9761f"/></linearGradient></defs>
-            <path d="M44 12 70 26v28L44 68 18 54V26L44 12Z" fill="rgba(242,180,92,0.07)" stroke="url(#markTip)" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M18 26 44 40l26-14M44 40v28" stroke="url(#markTip)" stroke-width="2" opacity="0.4"/>
-            <polyline points="27,52 38,44 49,49 62,32" stroke="#46d3d9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" style="animation: hhDraw 0.8s cubic-bezier(0.3,0,0.2,1) 0.5s forwards;"/>
-          </svg>
-        </div>
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) both;">
+      <div>
+        <div class="u-disp" style="font-size: 24px; font-weight: 700;">Подсказка на предмете</div>
+        <div style="font-size: 12px; color: #6f7889; margin-top: 5px;">Единственное место, где ответ появляется там же, где вопрос</div>
+      </div>
+      <div style="max-width: 560px; font-size: 12px; line-height: 1.6; color: #79828f; text-align: right;">
+        Игрок держит предмет в инвентаре и решает, нести его Скупцу или выставлять на Маркет.
+        За тем же самым иначе пришлось бы закрыть окно и набрать команду.
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px;">
+
+      <!-- ── знает обе стороны ── -->
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="u-lab">Знает обе стороны</div>
         <div>
-          <div class="u-disp" style="font-size: 25px; font-weight: 700; line-height: 1.05;">Подсказка на предмете</div>
-          <div style="font-size: 12px; color: #6f7889; margin-top: 5px;">две строки в конце обычной подсказки — там, где вы и так смотрите на предмет</div>
+          <div class="tip" style="animation-delay: 0.1s;">
+            <div class="tip-line" style="color: #ffffff;">Уголь</div>
+            <div class="tip-line" style="color: #55ffff;">Категория: Разное</div>
+            <div class="tip-line" style="color: #aaaaaa;">Продавец: Kirito_2012</div>
+            <div class="tip-line" style="color: #aaaaaa;">Осталось времени: 23ч. 20мин.</div>
+            <div class="tip-line" style="color: #ffff55;">Цена: 28 736</div>
+            <div class="tip-line" style="color: #ffff55;">Цена за 1 ед.: 28 736</div>
+            <div style="height: 12px;"></div>
+            <div class="mod-line" style="color: #ffaa00;">За штуку 449 · сервер этого не пишет</div>
+            <div class="mod-line" style="color: #ffaa00;">Скупец 8.44 за шт · осталось 16384</div>
+            <div class="mod-line" style="color: #55ffff;">Маркет от 449 · 3 лота</div>
+          </div>
+        </div>
+        <div class="faint" style="font-size: 11.5px; line-height: 1.55;">
+          Три строки мода отделены пустой: выше — сервер, ниже — мод. Гарнитура разная, и границу видно,
+          не вчитываясь.
         </div>
       </div>
-      <div class="pnl" style="padding: 11px 18px; border-radius: 10px;">
-        <div class="u-lab">Опознание</div>
-        <div class="u-num" style="font-size: 12.5px; color: #dfe4ea; margin-top: 4px;">по id предмета, не по подписи</div>
+
+      <!-- ── видел один раз ── -->
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="u-lab">Видел один раз</div>
+        <div>
+          <div class="tip" style="animation-delay: 0.18s;">
+            <div class="tip-line" style="color: #ffffff;">Мангровые корни</div>
+            <div style="height: 12px;"></div>
+            <div class="mod-line" style="color: #ffaa00;">Скупец 9.44 за шт · осталось 16384</div>
+            <div class="mod-line" style="color: #ffff55;">Маркет от 2191 · 1 лот (5 ч назад)</div>
+          </div>
+        </div>
+        <div class="faint" style="font-size: 11.5px; line-height: 1.55;">
+          Жёлтым, а не бирюзовым: одно наблюдение — это ещё не рынок. Тот же цвет стоит в колонке
+          «Маркет» на экране Скупца, и значит он там ровно то же самое.
+          <div style="margin-top: 7px;">Возраст в скобках появляется после пятнадцати минут — раньше он ничего не меняет и только шумит.</div>
+        </div>
+      </div>
+
+      <!-- ── не знает ничего ── -->
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="u-lab">Не знает ничего</div>
+        <div>
+          <div class="tip" style="animation-delay: 0.26s;">
+            <div class="tip-line" style="color: #ffffff;">Незеритовая мотыга</div>
+            <div class="tip-line" style="color: #aaaaaa;">Прочность: 2029 / 2031</div>
+          </div>
+        </div>
+        <div class="faint" style="font-size: 11.5px; line-height: 1.55;">
+          Мод не добавляет <i>ничего</i> — ни строки «нет данных», ни прочерка. Подсказка предмета
+          в инвентаре открывается сотни раз за вечер, и строка, которая никогда ничего не сообщает,
+          за вечер обходится дороже, чем стоит.
+        </div>
       </div>
     </div>
 
-    <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; min-height: 0;">
 
-      <div style="display: flex; flex-direction: column; gap: 14px;">
-        <div class="u-lab" style="color: rgba(95,209,139,0.8);">Знает обе стороны</div>
-        <div class="pnl" style="flex-grow: 1; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; background: linear-gradient(170deg, rgba(255,255,255,0.05), rgba(255,255,255,0.008));">
-          <div style="display: flex; gap: 4px;">
-            <div class="slot"></div>
-            <div class="slot" style="border-color: #8a8a8a #8a8a8a #d0d0d0 #d0d0d0; background: #3a3a3a;"><div style="width: 24px; height: 24px; background: linear-gradient(135deg, #b9c0cc, #78808d);"></div></div>
-            <div class="slot"></div>
+      <div class="card" style="animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.3s both; display: flex; flex-direction: column;">
+        <div class="u-lab">Строка, которой у сервера нет</div>
+
+        <div style="margin-top: 13px; display: flex; align-items: center; gap: 16px;">
+          <div class="slot"><svg width="22" height="22" viewBox="0 0 16 16"><rect x="2" y="4" width="12" height="9" rx="1" fill="#2b2b2b"/><rect x="2" y="2" width="12" height="3" rx="1" fill="#c0392b"/><rect x="6" y="6" width="4" height="4" fill="#7a5cff"/></svg></div>
+          <div style="flex: 1; min-width: 0;">
+            <div class="u-num" style="font-size: 13px;"><span class="faint">Цена:</span> 28 736</div>
+            <div class="u-num" style="font-size: 13px; margin-top: 4px;"><span class="faint">Цена за 1 ед.:</span> 28 736</div>
           </div>
+          <div class="u-lab" style="font-size: 9px; text-align: right;">лот из 64<br>штук</div>
+        </div>
 
-          <div class="tip" style="animation-delay: 0.28s;">
-            <div class="tip-line" style="color: #ffffff;">Глина</div>
-            <div class="tip-line" style="color: #aaaaaa;">Блок</div>
-            <div style="height: 7px;"></div>
-            <div class="tip-line hh-line" style="color: #ffaa00; animation-delay: 0.5s;">Скупец 21,63 за шт · осталось 24 576</div>
-            <div class="tip-line hh-line" style="color: #55ffff; animation-delay: 0.62s;">Маркет от 26 · видел 3 раза</div>
+        <div class="rule" style="margin: 14px 0 12px;"></div>
+
+        <div style="font-size: 12px; line-height: 1.62; color: #79828f;">
+          У лота, который продают только целиком, сервер пишет «Цена за 1 ед.» <b style="color: #cfd5de;">равной полной цене</b> —
+          раз единицу не купить, то и цены у неё как бы нет. Для решения это бесполезно: чтобы понять, дорого или дёшево,
+          нужна цена за штуку, и её приходилось делить в уме прямо над окном.
+          <div style="margin-top: 9px;">
+            Мод делит сам и подписывает <span class="u-num" style="color: {{accent}};">сервер этого не пишет</span> — чтобы
+            цифру не спутали с серверной.
           </div>
+        </div>
 
-          <div style="font-size: 11.5px; color: #6f7889; text-align: center; line-height: 1.5;">Золотая строка — что платит Скупец прямо сейчас. Бирюзовая — самое дешёвое, что мод видел на Маркете.</div>
+        <div style="margin-top: auto; padding-top: 13px; display: flex; align-items: center; gap: 10px;">
+          <span class="u-num" style="font-size: 15px; color: {{accent}};">28 736 ÷ 64 = 449</span>
+          <span class="faint" style="font-size: 11.5px;">вся арифметика целиком</span>
         </div>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 14px;">
-        <div class="u-lab" style="color: rgba(226,192,90,0.8);">Видел один раз</div>
-        <div class="pnl" style="flex-grow: 1; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; background: linear-gradient(170deg, rgba(255,255,255,0.05), rgba(255,255,255,0.008));">
-          <div style="display: flex; gap: 4px;">
-            <div class="slot"></div>
-            <div class="slot" style="border-color: #8a8a8a #8a8a8a #d0d0d0 #d0d0d0; background: #3a3a3a;"><div style="width: 24px; height: 24px; background: linear-gradient(135deg, #b98f5e, #6f5130);"></div></div>
-            <div class="slot"></div>
+      <div class="card" style="animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.36s both; display: flex; flex-direction: column;">
+        <div class="u-lab">Правила подсказки</div>
+
+        <div style="margin-top: 13px; display: flex; flex-direction: column; gap: 11px;">
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <span style="flex: 0 0 auto; width: 16px; height: 16px; border-radius: 4px; background: rgba(95,209,139,0.14); border: 1px solid rgba(95,209,139,0.3); color: #5fd18b; font-size: 10px; line-height: 14px; text-align: center;">✓</span>
+            <span style="font-size: 12px; line-height: 1.5;" class="dim">Рамка остаётся ванильной. Подсказка живёт внутри инвентаря, и своя рамка вырвала бы её из него.</span>
           </div>
-
-          <div class="tip" style="animation-delay: 0.36s;">
-            <div class="tip-line" style="color: #ffffff;">Поводок</div>
-            <div style="height: 7px;"></div>
-            <div class="tip-line hh-line" style="color: #ffaa00; animation-delay: 0.58s;">Скупец 17,00 за шт · осталось 3 072</div>
-            <div class="tip-line hh-line" style="color: #ffff55; animation-delay: 0.7s;">Маркет от 19 · видел 1 раз (2 ч назад)</div>
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <span style="flex: 0 0 auto; width: 16px; height: 16px; border-radius: 4px; background: rgba(95,209,139,0.14); border: 1px solid rgba(95,209,139,0.3); color: #5fd18b; font-size: 10px; line-height: 14px; text-align: center;">✓</span>
+            <span style="font-size: 12px; line-height: 1.5;" class="dim">Строки мода — его гарнитурой. Они стоят вплотную к тексту сервера, и по шрифту сразу видно, где кончается одно и начинается другое.</span>
           </div>
-
-          <div style="font-size: 11.5px; color: #6f7889; text-align: center; line-height: 1.5;">Жёлтым — то, что встретилось единственный раз. Один лот по дикой цене мог висеть и никогда не продаться.</div>
-        </div>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 14px;">
-        <div class="u-lab" style="color: #5a6472;">Не знает ничего</div>
-        <div class="pnl" style="flex-grow: 1; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; background: linear-gradient(170deg, rgba(255,255,255,0.032), rgba(255,255,255,0.006));">
-          <div style="display: flex; gap: 4px;">
-            <div class="slot"></div>
-            <div class="slot" style="border-color: #8a8a8a #8a8a8a #d0d0d0 #d0d0d0; background: #3a3a3a;"><div style="width: 24px; height: 24px; background: linear-gradient(135deg, #6b6058, #37312c);"></div></div>
-            <div class="slot"></div>
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <span style="flex: 0 0 auto; width: 16px; height: 16px; border-radius: 4px; background: rgba(226,115,79,0.14); border: 1px solid rgba(226,115,79,0.3); color: #e2734f; font-size: 11px; line-height: 14px; text-align: center;">×</span>
+            <span style="font-size: 12px; line-height: 1.5;" class="dim">Ни одна строка сервера не переписывается и не прячется. Мод только дописывает снизу.</span>
           </div>
-
-          <div class="tip" style="animation-delay: 0.44s;">
-            <div class="tip-line" style="color: #ffffff;">Незеритовый слиток</div>
-            <div class="tip-line" style="color: #aaaaaa;">Материал</div>
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <span style="flex: 0 0 auto; width: 16px; height: 16px; border-radius: 4px; background: rgba(226,115,79,0.14); border: 1px solid rgba(226,115,79,0.3); color: #e2734f; font-size: 11px; line-height: 14px; text-align: center;">×</span>
+            <span style="font-size: 12px; line-height: 1.5;" class="dim">Цена Скупца исчезает через шесть часов после снимка: ассортимент за это время сменился минимум раз, и старая цифра уже не про него.</span>
           </div>
-
-          <div style="font-size: 11.5px; color: #6f7889; text-align: center; line-height: 1.5;">Мод не дописывает ничего. Прочерк вместо цены выглядит как поломка, хотя предмет просто не встречался.</div>
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <span style="flex: 0 0 auto; width: 16px; height: 16px; border-radius: 4px; background: rgba(226,115,79,0.14); border: 1px solid rgba(226,115,79,0.3); color: #e2734f; font-size: 11px; line-height: 14px; text-align: center;">×</span>
+            <span style="font-size: 12px; line-height: 1.5;" class="dim">Наблюдения Маркета старше двенадцати часов в подсказку не идут вовсе.</span>
+          </div>
         </div>
-      </div>
 
-    </div>
+        <div class="rule" style="margin: 15px 0 12px;"></div>
 
-    <div class="pnl" style="padding: 15px 20px 16px; animation: hhFade 0.8s ease-out 0.9s both;">
-      <div style="display: flex; align-items: stretch; gap: 28px;">
-        <div style="flex: 1 1 0;">
-          <div class="u-lab">Когда строка исчезает</div>
-          <div style="font-size: 12px; color: #8b93a1; line-height: 1.55; margin-top: 8px;">Цена Скупца живёт 6 часов — дальше ассортимент сменился, и она уже не про этот предмет. Наблюдения Маркета живут 12 часов.</div>
-        </div>
-        <span style="width: 1px; background: rgba(255,255,255,0.06);"></span>
-        <div style="flex: 1 1 0;">
-          <div class="u-lab">Когда появляется возраст</div>
-          <div style="font-size: 12px; color: #8b93a1; line-height: 1.55; margin-top: 8px;">Скобка «(2 ч назад)» пишется только когда давность уже что-то значит. Свежая цена не засоряет подсказку лишним словом.</div>
-        </div>
-        <span style="width: 1px; background: rgba(255,255,255,0.06);"></span>
-        <div style="flex: 1 1 0;">
-          <div class="u-lab">Чего здесь нет</div>
-          <div style="font-size: 12px; color: #8b93a1; line-height: 1.55; margin-top: 8px;">Ни «выгодно», ни «продавай сюда». Скупец платит сразу, а лот на Маркете надо выставить и дождаться покупателя — это несопоставимые вещи.</div>
+        <div style="font-size: 11.5px; line-height: 1.55; color: #6f7889;">
+          Заблокированная через <span class="u-num" style="color: #8a94a3;">feature-control</span> подсказка не гаснет
+          и не показывает замок — её просто нет. Так требует протокол, и так честнее: функции, которой нельзя
+          пользоваться, на экране быть не должно.
         </div>
       </div>
     </div>
@@ -147,7 +182,7 @@
   </div>
 </div>
 </x-dc>
-<script data-dc-script data-props='{"accent":{"editor":"color","default":"#f2b45c","options":["#f2b45c","#46d3d9","#5fd18b","#a98cf0"]}}'>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#f2b45c","options":["#f2b45c","#46d3d9","#5fd18b","#c3adf6"]}}'>
 class Component extends DCLogic {
   renderVals() {
     return { accent: this.props.accent ?? '#f2b45c' };
