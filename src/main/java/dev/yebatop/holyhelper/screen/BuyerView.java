@@ -69,14 +69,18 @@ public final class BuyerView {
     /**
      * Верх крупного числа.
      * <p>
-     * Опущено намеренно: сверху остаётся просвет под подписью, и число перестаёт
-     * висеть у самой кромки. Оно и есть главное на карточке — прижатое к верху,
-     * оно читалось довеском к подписи, а не наоборот.
+     * Стоит само по себе и ни от чего не считается. Раньше от него вычислялось
+     * положение соседних строк, и это вышло боком: правя меру шрифта, я сдвигал
+     * не число, а всё вокруг него. Теперь двигать число можно, не трогая соседей,
+     * и наоборот.
      */
-    private static final int HERO_MAIN = 22;
+    private static final int HERO_MAIN = 27;
 
-    /** Базовая линия крупного числа — к ней приводится всё, что стоит рядом. */
-    private static final int HERO_BASE = HERO_MAIN + Fonts.BASELINE_DISPLAY;
+    /** Верх строки «из N» рядом с числом. */
+    private static final int HERO_ASIDE = 26;
+
+    /** Верх строки под ней. */
+    private static final int HERO_ASIDE_UNDER = 38;
 
     /** Верх первой строки обычного текста в карточках без крупного числа. */
     private static final int HERO_SIDE = 20;
@@ -209,21 +213,20 @@ public final class BuyerView {
         Paint.accent(ctx, x, y, HERO, Theme.GOLD, first);
         Fonts.label(ctx, font, "маркет видел дороже", x + 8, y + HERO_LABEL,
                 Motion.fade(Theme.TEXT_FAINT, first));
-        // Число крупно слева, пояснения столбиком справа. «из N» приводится к
-        // базовой линии числа, а не к его верху: выровненные по верхушкам, они
-        // разъезжались на треть высоты числа, и карточка выглядела съехавшей.
+        // Число крупно слева, пояснения столбиком справа. Положения задаются
+        // порознь: связав их, я дважды двигал не то, что собирался.
         int used = Fonts.draw(ctx, font, Integer.toString(countDearer(offers)), Fonts.DISPLAY,
                 x + 8, y + HERO_MAIN, Motion.fade(Theme.GOLD, first));
         int side = x + 8 + used + 7;
 
         Fonts.draw(ctx, font, "из " + offers.size(), Fonts.BODY,
-                side, y + HERO_BASE - Fonts.BASELINE_BODY, Motion.fade(Theme.TEXT_DIM, first));
+                side, y + HERO_ASIDE, Motion.fade(Theme.TEXT_DIM, first));
 
         // Сколько товаров мод про Маркет вообще не знает. Без этой строки «5 из 8»
         // читается увереннее, чем есть: часть восьми просто не проверена.
         int unknown = countUnknown(offers);
         Fonts.label(ctx, font, unknown == 0 ? "все проверены" : unknown + " без данных",
-                side, y + HERO_BASE - Fonts.BASELINE_BODY + 12,
+                side, y + HERO_ASIDE_UNDER,
                 Motion.fade(unknown == 0 ? Theme.GREEN : Theme.TEXT_FAINT, first));
 
         double second = Motion.reveal(elapsed, Card.REVEAL_STEP * 2, Card.REVEAL_LENGTH) * alpha;
