@@ -125,6 +125,43 @@ public final class Sprites {
                 sourceWidth, sourceHeight, SHADOW_SIZE, SHADOW_SIZE, color);
     }
 
+    private static final Identifier GLYPHS =
+            Identifier.of(HolyHelperClient.MOD_ID, "textures/gui/glyphs.png");
+
+    private static final int GLYPH = 64;
+    private static final int GLYPH_SHEET = GLYPH * 4;
+
+    /**
+     * Мелкие значки мода. Порядок совпадает с порядком клеток в картинке —
+     * менять его можно только вместе с {@code scripts/make-textures.py}.
+     */
+    public enum Glyph {
+        /** Особое предложение Скупца. */
+        SPARK,
+        /** Монетка. */
+        COIN,
+        /** Гем. */
+        GEM,
+        /** Жетон. */
+        TOKEN
+    }
+
+    /**
+     * Рисует мелкий значок.
+     * <p>
+     * Значки лежат белыми, а цвет накладывается здесь: одна картинка служит и
+     * золотой монетке, и сиреневому гему. Прозрачность появления входит в тот же
+     * цвет — отдельного довода под неё не нужно.
+     * <p>
+     * Мелкой сетки здесь не требуется: картинку клиент растягивает уже по
+     * пикселям монитора, и полутона на краях он считает сам.
+     */
+    public static void glyph(DrawContext ctx, Glyph glyph, int x, int y, int size, int color) {
+        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, GLYPHS, x, y,
+                glyph.ordinal() * (float) GLYPH, 0f, size, size,
+                GLYPH, GLYPH, GLYPH_SHEET, GLYPH, color);
+    }
+
     /**
      * Рисует фирменный знак так, чтобы он занял квадрат {@code size} — свечение
      * выходит за этот квадрат, как и положено свечению.

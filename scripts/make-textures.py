@@ -99,6 +99,53 @@ def gradient_image(size: int) -> Image.Image:
     return image
 
 
+# ── мелкие значки ───────────────────────────────────────────────────────
+# Раньше они складывались из прямоугольников пять на пять и выглядели ровно
+# так — пятью квадратами. На мелкой сетке под них есть уже вдесятеро больше
+# пикселей, и полутона наконец помещаются.
+#
+# Рисуются белым: цвет накладывает клиент при отрисовке, чтобы одна картинка
+# служила и золотой монетке, и сиреневому гему.
+GLYPH = 64
+GLYPHS = ("spark", "coin", "gem", "token")
+
+
+def glyph_sheet() -> Image.Image:
+    work = GLYPH * SUPERSAMPLE
+    sheet = Image.new("RGBA", (GLYPH * len(GLYPHS), GLYPH), (0, 0, 0, 0))
+
+    for index, name in enumerate(GLYPHS):
+        cell = Image.new("L", (work, work), 0)
+        draw = ImageDraw.Draw(cell)
+        k = SUPERSAMPLE
+
+        if name == "spark":
+            # Четырёхлучевая звезда: лучи сходятся к центру вогнутыми боками,
+            # иначе получается не искра, а плюс.
+            # Талия лучей широкая намеренно: при уменьшении тонкая фигура теряет
+            # не только форму, но и плотность — усреднение по прозрачности гасит
+            # её в бледное пятно.
+            draw.polygon([(32 * k, 3 * k), (41 * k, 23 * k), (61 * k, 32 * k), (41 * k, 41 * k),
+                          (32 * k, 61 * k), (23 * k, 41 * k), (3 * k, 32 * k), (23 * k, 23 * k)],
+                         fill=255)
+        elif name == "coin":
+            # Кольцо, а не диск: сплошной круг на мелком размере читается точкой.
+            draw.ellipse([5 * k, 5 * k, 59 * k, 59 * k], fill=255)
+            draw.ellipse([17 * k, 17 * k, 47 * k, 47 * k], fill=0)
+        elif name == "gem":
+            draw.polygon([(32 * k, 4 * k), (58 * k, 32 * k), (32 * k, 60 * k), (6 * k, 32 * k)],
+                         fill=255)
+        else:
+            draw.polygon([(16 * k, 10 * k), (48 * k, 10 * k), (61 * k, 32 * k),
+                          (48 * k, 54 * k), (16 * k, 54 * k), (3 * k, 32 * k)], fill=255)
+
+        mask = cell.resize((GLYPH, GLYPH), Image.LANCZOS)
+        white = Image.new("RGBA", (GLYPH, GLYPH), (255, 255, 255, 255))
+        sheet.paste(white, (index * GLYPH, 0), mask)
+
+    return sheet
+
+
 def render(size: int) -> Image.Image:
     work = size * SUPERSAMPLE
     art = size * ART_SHARE * SUPERSAMPLE
@@ -161,7 +208,8 @@ def render(size: int) -> Image.Image:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    pictures = {"mark": render(96), "mark_large": render(256), "shadow": shadow()}
+    pictures = {"mark": render(96), "mark_large": render(256),
+                "shadow": shadow(), "glyphs": glyph_sheet()}
     for name, image in pictures.items():
         path = OUT / f"{name}.png"
         image.save(path)

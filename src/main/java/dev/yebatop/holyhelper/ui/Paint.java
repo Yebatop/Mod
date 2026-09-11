@@ -18,6 +18,13 @@ import java.util.List;
  */
 public final class Paint {
 
+    /**
+     * Размер мелкого значка. Пять пикселей — столько же, сколько занимали старые,
+     * сложенные из прямоугольников: место в разметке не меняется, меняется только
+     * то, из чего значок сделан.
+     */
+    private static final int GLYPH = 5;
+
     /** Ширина бегущего блика в долях панели. */
     private static final double SHEEN_WIDTH = 0.34;
 
@@ -47,13 +54,44 @@ public final class Paint {
         if (w <= 0 || h <= 0) {
             return;
         }
-        int r = Math.max(0, Math.min(radius, Math.min(w, h) / 2));
+        int density = Surface.density();
+        Surface.enter(ctx, density);
+        rows(ctx, x * density, y * density, w * density, h * density, radius * density,
+                top, bottom);
+        Surface.leave(ctx);
+    }
+
+    /**
+     * Тело скруглённого прямоугольника, строка за строкой, уже в пикселях экрана.
+     * <p>
+     * У каждой строки свой отступ от края, посчитанный по окружности. Дробная
+     * часть отступа рисуется отдельным пикселем с уменьшенной прозрачностью —
+     * это и даёт мягкий угол вместо ступенек. Чем мельче сетка, тем больше
+     * ступеней помещается, и тем ближе угол к настоящей дуге.
+     * <p>
+     * Прямая середина заливается одним прямоугольником, а не строками: на мелкой
+     * сетке панель высотой в сотню логических пикселей дала бы четыреста заливок
+     * там, где хватает одной.
+     */
+    private static void rows(DrawContext ctx, int x, int y, int w, int h, int r,
+                             int top, int bottom) {
+        int limit = Math.max(0, Math.min(r, Math.min(w, h) / 2));
+        boolean flat = top == bottom;
+
+        int straightFrom = limit;
+        int straightTo = h - limit;
+        if (flat && straightTo > straightFrom) {
+            ctx.fill(x, y + straightFrom, x + w, y + straightTo, top);
+        }
 
         for (int row = 0; row < h; row++) {
-            int color = top == bottom
+            if (flat && row >= straightFrom && row < straightTo) {
+                continue;
+            }
+            int color = flat
                     ? top
                     : Motion.mix(top, bottom, h == 1 ? 0 : row / (double) (h - 1));
-            double inset = insetAt(row, h, r);
+            double inset = insetAt(row, h, limit);
             int whole = (int) Math.floor(inset);
             double frac = inset - whole;
 
@@ -109,15 +147,30 @@ public final class Paint {
         // вплотную, и в макете именно тень отделяет одно от другого.
         Sprites.shadow(ctx, x, y, w, h, alpha);
 
-        roundRect(ctx, x, y, w, h, radius, Motion.fade(Theme.BORDER_SOLID, alpha));
-        roundRect(ctx, x + 1, y + 1, w - 2, h - 2, Math.max(0, radius - 1),
+        int density = Surface.density();
+        Surface.enter(ctx, density);
+        int fx = x * density;
+        int fy = y * density;
+        int fw = w * density;
+        int fh = h * density;
+        int fr = radius * density;
+
+        int border = Motion.fade(Theme.BORDER_SOLID, alpha);
+        rows(ctx, fx, fy, fw, fh, fr, border, border);
+
+        // Рамка толщиной в один пиксель монитора, а не в один логический. Именно
+        // её жирность и делала панель похожей на ванильную менюшку: при масштабе
+        // интерфейса 2 «пиксель» рамки занимал два пикселя экрана.
+        rows(ctx, fx + 1, fy + 1, fw - 2, fh - 2, Math.max(0, fr - 1),
                 Motion.fade(Motion.lighten(body, Theme.LIT_SHARE), alpha),
                 Motion.fade(body, alpha));
 
         // Кромка идёт внутри тела и не доходит до углов: свет по грани, а не вторая
         // линия обводки.
-        int edgeInset = Math.max(2, radius);
-        ctx.fill(x + edgeInset, y + 1, x + w - edgeInset, y + 2, Motion.fade(Theme.EDGE, alpha));
+        int edgeInset = Math.max(2 * density, fr);
+        ctx.fill(fx + edgeInset, fy + 1, fx + fw - edgeInset, fy + 2,
+                Motion.fade(Theme.EDGE, alpha));
+        Surface.leave(ctx);
     }
 
     /**
@@ -125,7 +178,12 @@ public final class Paint {
      * золото у Скупца, бирюза у Маркета.
      */
     public static void accent(DrawContext ctx, int x, int y, int h, int color, double alpha) {
-        roundRect(ctx, x + 1, y + 2, 3, h - 4, 1, Motion.fade(color, alpha));
+        int density = Surface.density();
+        Surface.enter(ctx, density);
+        int painted = Motion.fade(color, alpha);
+        rows(ctx, x * density + 1, (y + 2) * density, 3 * density, (h - 4) * density,
+                density, painted, painted);
+        Surface.leave(ctx);
     }
 
     /**
@@ -140,19 +198,26 @@ public final class Paint {
         if (Double.isNaN(head) || w <= 0) {
             return;
         }
-        int span = Math.max(2, (int) Math.round(w * SHEEN_WIDTH));
-        int start = (int) Math.round(head * w);
-        int guard = Math.max(1, radius);
+        int density = Surface.density();
+        Surface.enter(ctx, density);
+        int fx = x * density;
+        int fy = y * density;
+        int fw = w * density;
+
+        int span = Math.max(2, (int) Math.round(fw * SHEEN_WIDTH));
+        int start = (int) Math.round(head * fw);
+        int guard = Math.max(density, radius * density);
 
         for (int i = 0; i < span; i++) {
             int px = start + i;
-            if (px < guard || px >= w - guard) {
+            if (px < guard || px >= fw - guard) {
                 continue;
             }
             double edge = 1 - Math.abs((i / (double) span) * 2 - 1);
-            ctx.fill(x + px, y + 1, x + px + 1, y + 2,
+            ctx.fill(fx + px, fy + 1, fx + px + 1, fy + 2,
                     Motion.fade(Theme.SHEEN, 0.55 * edge * alpha));
         }
+        Surface.leave(ctx);
     }
 
 
@@ -165,27 +230,36 @@ public final class Paint {
         if (w <= 0 || h <= 0) {
             return;
         }
-        int radius = h / 2;
-        roundRect(ctx, x, y, w, h, radius, Motion.fade(Theme.TRACK, alpha));
+        int density = Surface.density();
+        Surface.enter(ctx, density);
+        int fx = x * density;
+        int fy = y * density;
+        int fw = w * density;
+        int fh = h * density;
+        int radius = fh / 2;
 
-        int filled = (int) Math.round(w * Math.max(0, Math.min(1, value)));
-        if (filled <= 0) {
-            return;
-        }
-        // Цвет шагает отрезками по четыре пикселя: на глаз это тот же градиент,
-        // а клиенту вчетверо меньше четырёхугольников.
-        int step = 4;
-        for (int row = 0; row < h; row++) {
-            int inset = (int) Math.round(insetAt(row, h, radius));
-            int left = x + inset;
-            int right = Math.min(x + filled, x + w - inset);
-            for (int px = left; px < right; px += step) {
-                int chunk = Math.min(step, right - px);
-                double at = w == 1 ? 1 : (px - x) / (double) (w - 1);
-                ctx.fill(px, y + row, px + chunk, y + row + 1,
-                        Motion.fade(Motion.mix(from, to, at), alpha));
+        int track = Motion.fade(Theme.TRACK, alpha);
+        rows(ctx, fx, fy, fw, fh, radius, track, track);
+
+        int filled = (int) Math.round(fw * Math.max(0, Math.min(1, value)));
+        if (filled > 0) {
+            // Цвет шагает отрезками: на глаз это тот же градиент, а клиенту
+            // вчетверо меньше четырёхугольников. Шаг растёт вместе с сеткой,
+            // иначе на мелкой сетке отрезков стало бы вчетверо больше.
+            int step = 4 * density;
+            for (int row = 0; row < fh; row++) {
+                int inset = (int) Math.round(insetAt(row, fh, radius));
+                int left = fx + inset;
+                int right = Math.min(fx + filled, fx + fw - inset);
+                for (int px = left; px < right; px += step) {
+                    int chunk = Math.min(step, right - px);
+                    double at = fw == 1 ? 1 : (px - fx) / (double) (fw - 1);
+                    ctx.fill(px, fy + row, px + chunk, fy + row + 1,
+                            Motion.fade(Motion.mix(from, to, at), alpha));
+                }
             }
         }
+        Surface.leave(ctx);
     }
 
 
@@ -204,11 +278,18 @@ public final class Paint {
         double max = values.stream().mapToDouble(Double::doubleValue).max().orElse(1);
         double span = max - min;
 
-        int columns = (int) Math.round(w * Math.max(0, Math.min(1, reveal)));
+        int density = Surface.density();
+        Surface.enter(ctx, density);
+        int fx = x * density;
+        int fy = y * density;
+        int fw = w * density;
+        int fh = h * density;
+
+        int columns = (int) Math.round(fw * Math.max(0, Math.min(1, reveal)));
         double previous = Double.NaN;
 
         for (int i = 0; i < columns; i++) {
-            double at = i / (double) (w - 1) * (values.size() - 1);
+            double at = i / (double) (fw - 1) * (values.size() - 1);
             int index = (int) Math.floor(at);
             double frac = at - index;
             double a = values.get(Math.min(index, values.size() - 1));
@@ -219,11 +300,12 @@ public final class Paint {
             // прижатая ко дну прямая читается как «курс упал в ноль».
             double norm = span <= 0 ? 0.5 : (value - min) / span;
             // Дробную высоту не округляем: округление и делало из линии лесенку.
-            double py = y + h - 1 - norm * (h - 1);
+            double py = fy + fh - 1 - norm * (fh - 1);
 
-            column(ctx, x + i, Double.isNaN(previous) ? py : previous, py, color);
+            column(ctx, fx + i, Double.isNaN(previous) ? py : previous, py, color);
             previous = py;
         }
+        Surface.leave(ctx);
     }
 
     /**
@@ -258,40 +340,33 @@ public final class Paint {
 
     /** Разделитель между секциями панели. */
     public static void separator(DrawContext ctx, int x, int y, int w, double alpha) {
-        ctx.fill(x, y, x + w, y + 1, Motion.fade(Theme.BORDER, alpha));
+        int density = Surface.density();
+        Surface.enter(ctx, density);
+        // Волосяная линия: один пиксель монитора. В логических пикселях она была
+        // бы вдвое жирнее и читалась разделителем таблицы, а не тенью между
+        // секциями.
+        ctx.fill(x * density, y * density, (x + w) * density, y * density + 1,
+                Motion.fade(Theme.BORDER, alpha));
+        Surface.leave(ctx);
     }
 
     /** Метка особого товара: четырёхлучевая искра. В шрифтах такого знака нет. */
     public static void spark(DrawContext ctx, int x, int y, int color) {
-        ctx.fill(x + 2, y, x + 3, y + 5, color);
-        ctx.fill(x, y + 2, x + 5, y + 3, color);
-        ctx.fill(x + 1, y + 1, x + 2, y + 2, color);
-        ctx.fill(x + 3, y + 1, x + 4, y + 2, color);
-        ctx.fill(x + 1, y + 3, x + 2, y + 4, color);
-        ctx.fill(x + 3, y + 3, x + 4, y + 4, color);
+        Sprites.glyph(ctx, Sprites.Glyph.SPARK, x, y, GLYPH, color);
     }
 
     /** Монетка: кольцо, 5×5. */
     public static void coin(DrawContext ctx, int x, int y, int color) {
-        ctx.fill(x + 1, y, x + 4, y + 1, color);
-        ctx.fill(x + 1, y + 4, x + 4, y + 5, color);
-        ctx.fill(x, y + 1, x + 1, y + 4, color);
-        ctx.fill(x + 4, y + 1, x + 5, y + 4, color);
+        Sprites.glyph(ctx, Sprites.Glyph.COIN, x, y, GLYPH, color);
     }
 
     /** Гем: ромб, 5×5. */
     public static void gem(DrawContext ctx, int x, int y, int color) {
-        ctx.fill(x + 2, y, x + 3, y + 1, color);
-        ctx.fill(x + 1, y + 1, x + 4, y + 2, color);
-        ctx.fill(x, y + 2, x + 5, y + 3, color);
-        ctx.fill(x + 1, y + 3, x + 4, y + 4, color);
-        ctx.fill(x + 2, y + 4, x + 3, y + 5, color);
+        Sprites.glyph(ctx, Sprites.Glyph.GEM, x, y, GLYPH, color);
     }
 
     /** Жетон: шестигранник, 5×5. */
     public static void token(DrawContext ctx, int x, int y, int color) {
-        ctx.fill(x + 1, y, x + 4, y + 1, color);
-        ctx.fill(x, y + 1, x + 5, y + 4, color);
-        ctx.fill(x + 1, y + 4, x + 4, y + 5, color);
+        Sprites.glyph(ctx, Sprites.Glyph.TOKEN, x, y, GLYPH, color);
     }
 }
