@@ -2,6 +2,7 @@ package dev.yebatop.holyhelper.hud;
 
 import dev.yebatop.holyhelper.HolyHelperClient;
 import dev.yebatop.holyhelper.core.Numbers;
+import dev.yebatop.holyhelper.analytics.Liquidity;
 import dev.yebatop.holyhelper.core.ServerDetector;
 import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.scan.BuyerParser;
@@ -78,7 +79,8 @@ public final class ItemPriceTooltip {
         Text unit = unitLine(mod, stack, itemId);
         Text buyer = buyerLine(mod, itemId);
         Text market = marketLine(mod, itemId);
-        if (unit == null && buyer == null && market == null) {
+        Text moves = movesLine(mod, itemId);
+        if (unit == null && buyer == null && market == null && moves == null) {
             return;
         }
 
@@ -92,6 +94,44 @@ public final class ItemPriceTooltip {
         if (market != null) {
             lines.add(market);
         }
+        if (moves != null) {
+            lines.add(moves);
+        }
+    }
+
+    /**
+     * По какой цене лоты уходят, а по какой висят.
+     * <p>
+     * Единственная строка в подсказке, которая говорит не о запросе, а о спросе.
+     * Всё остальное здесь — сколько просят; это — доживают ли лоты такой цены до
+     * конца срока. Стоит она последней намеренно: это вывод, а не наблюдение, и
+     * читать его надо после того, из чего он сделан.
+     */
+    private static Text movesLine(HolyHelperClient mod, String itemId) {
+        Liquidity.Split split = Liquidity.split(mod.prices().samples(itemId, MARKET_MEMORY))
+                .orElse(null);
+        if (split == null || !split.notable()) {
+            // Лотов мало, цены одинаковы или разницы в возрасте нет — сказать
+            // нечего. Пустая строка «данных недостаточно» в подсказке, которую
+            // открывают сотни раз за вечер, обходится дороже, чем стоит.
+            return null;
+        }
+
+        String text;
+        Formatting color;
+        if (split.cheapMovesFaster()) {
+            text = "По " + split.cheaper().medianPrice() + " разбирают, по "
+                    + split.dearer().medianPrice() + " висят";
+            color = Formatting.AQUA;
+        } else {
+            // Обратный случай: дорогие лоты моложе. Это не про спрос — просто
+            // кто-то выставил их недавно. Говорим ровно это.
+            text = "Дорогие лоты свежие — про спрос это ничего не говорит";
+            color = Formatting.DARK_GRAY;
+        }
+        return Text.literal(text + " · " + split.cheaper().lots() + "+"
+                        + split.dearer().lots() + " лотов")
+                .setStyle(Fonts.NUM.withColor(color));
     }
 
     /**
