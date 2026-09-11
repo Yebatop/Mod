@@ -9,7 +9,6 @@ import dev.yebatop.holyhelper.ui.Card;
 import dev.yebatop.holyhelper.ui.Fonts;
 import dev.yebatop.holyhelper.ui.Motion;
 import dev.yebatop.holyhelper.ui.Paint;
-import dev.yebatop.holyhelper.ui.Surface;
 import dev.yebatop.holyhelper.ui.Theme;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -38,7 +37,7 @@ import java.util.Optional;
  * Экран ничего не нажимает и ничего не отправляет. Он показывает снимок, снятый
  * пока игрок сам смотрел в окно, и всегда подписывает, насколько тот свежий.
  */
-public final class BuyerView {
+public final class BuyerView implements Panel {
 
     /** За какое время наблюдения Маркета ещё что-то значат. */
     private static final Duration MARKET_MEMORY = Duration.ofHours(12);
@@ -105,53 +104,42 @@ public final class BuyerView {
     private int maxScroll;
 
     /** Начать сборку заново — при каждом открытии. */
+    @Override
     public void open() {
         openedAt = System.currentTimeMillis();
         scroll = 0;
     }
 
+    @Override
     public void scroll(double vertical) {
         scroll = Math.max(0, Math.min(maxScroll, scroll - (int) Math.signum(vertical)));
     }
 
-    /**
-     * Рисует карточку во всё отведённое место.
-     * <p>
-     * Зовут это оба хозяина экрана — отдельный экран и слой поверх окна торговли, —
-     * чтобы размер задавался в одном месте и они не разошлись.
-     * <p>
-     * Была попытка ужимать карточку до содержимого и ставить по центру: восемь
-     * товаров занимали верхнюю четверть, а ниже до самого низа шла пустая панель,
-     * и это выглядело незаполненным. Ужатая понравилась ещё меньше — вернул как
-     * было. Пустота под короткой таблицей остаётся, и решать её надо не размером
-     * рамы, а тем, что в этой раме стоит.
-     */
-    public void renderIn(DrawContext ctx, TextRenderer font, int screenWidth,
-                         int screenHeight, int margin) {
-        // Единицы мода вместо логических пикселей игры: размер экрана на мониторе
-        // перестаёт зависеть от того, какой масштаб интерфейса выбрал игрок.
-        Surface.open(ctx);
-        try {
-            int width = Surface.units(screenWidth);
-            int height = Surface.units(screenHeight);
-            render(ctx, font, margin, margin, width - margin * 2, height - margin * 2);
-        } finally {
-            Surface.close(ctx);
-        }
+    @Override
+    public String tab() {
+        return "скупец";
     }
 
-    public void render(DrawContext ctx, TextRenderer font, int x, int y, int width, int height) {
+    @Override
+    public String title() {
+        return "Скупец";
+    }
+
+    @Override
+    public String subtitle() {
         HolyHelperClient mod = HolyHelperClient.instance();
         int count = mod.buyer().tradeOffers().size();
-        String subtitle = Card.age(mod.buyer().tradeSeenAt()) + " · " + count + " позиций";
-
-        Card.draw(ctx, font, x, y, width, height, "Скупец", subtitle, Theme.GOLD,
-                System.currentTimeMillis() - openedAt,
-                this::body, this::header, this::footer);
+        return Card.age(mod.buyer().tradeSeenAt()) + " · " + count + " позиций";
     }
 
-    private void header(DrawContext ctx, TextRenderer font, int x, int y, int width, int height,
-                        double alpha) {
+    @Override
+    public int accent() {
+        return Theme.GOLD;
+    }
+
+    @Override
+    public void header(DrawContext ctx, TextRenderer font, int x, int y, int width, int height,
+                       double alpha) {
         RotationTimer timer = HolyHelperClient.instance().rotation();
         if (timer.singleClock()) {
             // Сроки у групп совпали — часы одни, но подпись называет обе.
@@ -184,8 +172,9 @@ public final class BuyerView {
         return x;
     }
 
-    private void body(DrawContext ctx, TextRenderer font, int x, int y, int width, int height,
-                      double alpha) {
+    @Override
+    public void body(DrawContext ctx, TextRenderer font, int x, int y, int width, int height,
+                     double alpha) {
         HolyHelperClient mod = HolyHelperClient.instance();
         List<BuyerParser.Offer> offers = mod.buyer().tradeOffers();
 
@@ -493,8 +482,9 @@ public final class BuyerView {
         return null;
     }
 
-    private void footer(DrawContext ctx, TextRenderer font, int x, int y, int width, int height,
-                        double alpha) {
+    @Override
+    public void footer(DrawContext ctx, TextRenderer font, int x, int y, int width, int height,
+                       double alpha) {
         // Правая часть рисуется первой: она обязательна, а легенда — нет. Зная,
         // где кончается место, можно не рисовать те подписи, которые в него уже
         // не влезут. Раньше легенда просто наезжала на подсказку.

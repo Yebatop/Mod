@@ -230,6 +230,24 @@ public final class PriceStore {
         return samples;
     }
 
+    /**
+     * Всё, что мод помнит, одним списком — от самых наблюдаемых предметов к
+     * редким.
+     * <p>
+     * Порядок именно такой: чем больше лотов мод видел, тем меньше его дно врёт.
+     * Первыми должны идти те цены, на которые можно опереться, а не те, что
+     * попались последними.
+     */
+    public List<Known> all(Duration maxAge) {
+        List<Known> result = new ArrayList<>();
+        for (String itemId : byItem.keySet()) {
+            known(itemId, maxAge).ifPresent(result::add);
+        }
+        result.sort(Comparator.comparingInt(Known::samples).reversed()
+                .thenComparing(Known::name));
+        return result;
+    }
+
     public int itemCount() {
         return byItem.size();
     }
