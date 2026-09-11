@@ -1,5 +1,6 @@
 package dev.yebatop.holyhelper.ui;
 
+import dev.yebatop.holyhelper.HolyHelperClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 
@@ -28,39 +29,80 @@ import net.minecraft.client.gui.DrawContext;
  */
 public final class Surface {
 
-    /**
-     * Мельче этого дробить незачем.
-     * <p>
-     * При масштабе 4 логический пиксель и так вчетверо крупнее экранного, и
-     * разница между четырьмя и восемью ступенями скругления глазу уже недоступна,
-     * а четырёхугольников клиенту приходится вчетверо больше.
-     */
+    /** Ниже этого интерфейс мода перестаёт читаться, каким бы ни был масштаб игры. */
+    private static final int MIN = 2;
+
+    /** Выше этого дробить незачем: разницу глаз уже не берёт, а работы вчетверо. */
     private static final int MAX = 4;
 
     private Surface() {
     }
 
-    /**
-     * Сколько пикселей монитора приходится на логический пиксель — столько же
-     * шагов получает кисть на каждую логическую единицу.
-     */
-    public static int density() {
+    /** Масштаб самой игры: сколько пикселей монитора в одном её логическом. */
+    private static int game() {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.getWindow() == null) {
-            return 1;
+            return 2;
         }
-        return Math.max(1, Math.min(MAX, client.getWindow().getScaleFactor()));
+        return Math.max(1, client.getWindow().getScaleFactor());
     }
 
-    /** Входит в мелкую сетку. Всё, что нарисовано дальше, считается в пикселях экрана. */
-    public static void enter(DrawContext ctx, int density) {
+    /**
+     * Сколько пикселей монитора приходится на одну единицу интерфейса мода.
+     * <p>
+     * Раньше мод рисовал прямо в логических пикселях игры, и при масштабе 1
+     * его единица становилась одним пикселем монитора: панель шириной сто
+     * тридцать два превращалась в полоску в палец шириной, а подпись кеглем
+     * семь — в грязь. Мод шёл за настройкой игры туда, где сам читаться
+     * перестаёт.
+     * <p>
+     * Теперь у него свой масштаб. По умолчанию он не опускается ниже двух —
+     * это тот размер, в котором мод и рисовался, — но растёт вслед за игрой,
+     * если игрок поставил крупнее. Значение из настроек сильнее: тому, кто
+     * хочет больше данных на экране, никто не мешает поставить единицу.
+     */
+    public static int scale() {
+        HolyHelperClient mod = HolyHelperClient.instance();
+        int chosen = mod == null ? 0 : mod.config().uiScale;
+        if (chosen > 0) {
+            return Math.max(1, Math.min(MAX, chosen));
+        }
+        return Math.max(MIN, Math.min(MAX, game()));
+    }
+
+    /** Во сколько раз сжать матрицу экрана, чтобы единица мода стала нужного размера. */
+    private static float factor() {
+        return scale() / (float) game();
+    }
+
+    /**
+     * Входит в координаты мода. Дальше всё считается в его единицах, и их размер
+     * на мониторе уже не зависит от настройки масштаба в игре.
+     */
+    public static void open(DrawContext ctx) {
+        float factor = factor();
         var matrices = ctx.getMatrices();
         matrices.pushMatrix();
-        matrices.scale(1f / density, 1f / density);
+        matrices.scale(factor, factor);
     }
 
-    /** Возвращается в обычные координаты. */
-    public static void leave(DrawContext ctx) {
+    /** Выходит обратно. */
+    public static void close(DrawContext ctx) {
         ctx.getMatrices().popMatrix();
+    }
+
+    /** Сколько единиц мода помещается в отрезок экрана заданной длины. */
+    public static int units(int screenPixels) {
+        return Math.max(0, Math.round(screenPixels / factor()));
+    }
+
+    /**
+     * На сколько частей кисти дробят одну единицу мода.
+     * <p>
+     * Ровно на столько, сколько в ней пикселей монитора: мельче рисовать некуда,
+     * крупнее — значит остаться со ступеньками.
+     */
+    public static int density() {
+        return scale();
     }
 }

@@ -7,6 +7,7 @@ import dev.yebatop.holyhelper.ui.Fonts;
 import dev.yebatop.holyhelper.ui.Motion;
 import dev.yebatop.holyhelper.ui.Paint;
 import dev.yebatop.holyhelper.ui.Sprites;
+import dev.yebatop.holyhelper.ui.Surface;
 import dev.yebatop.holyhelper.ui.Theme;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -97,11 +98,24 @@ public final class BootOverlay {
                 ? 1
                 : 1 - Motion.ease((elapsed - HOLD_MILLIS) / (double) FADE_MILLIS);
 
-        int width = ctx.getScaledWindowWidth();
-        int height = ctx.getScaledWindowHeight();
         TextRenderer font = client.textRenderer;
 
-        ctx.fill(0, 0, width, height, Motion.fade(0xD8060810, alpha));
+        // Подложка гасит весь экран и потому считается в его координатах.
+        ctx.fill(0, 0, ctx.getScaledWindowWidth(), ctx.getScaledWindowHeight(),
+                Motion.fade(0xD8060810, alpha));
+
+        Surface.open(ctx);
+        try {
+            paint(ctx, font, mod, Surface.units(ctx.getScaledWindowWidth()),
+                    Surface.units(ctx.getScaledWindowHeight()), elapsed, alpha);
+        } finally {
+            Surface.close(ctx);
+        }
+    }
+
+    /** Сам экран, уже в единицах мода. */
+    private static void paint(DrawContext ctx, TextRenderer font, HolyHelperClient mod,
+                              int width, int height, long elapsed, double alpha) {
 
         List<Row> rows = status(mod);
         int panelHeight = 20 + rows.size() * (LINE + 4) + 16;

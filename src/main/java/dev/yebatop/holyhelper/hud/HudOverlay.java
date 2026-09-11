@@ -11,6 +11,7 @@ import dev.yebatop.holyhelper.ui.Fonts;
 import dev.yebatop.holyhelper.ui.Motion;
 import dev.yebatop.holyhelper.ui.Paint;
 import dev.yebatop.holyhelper.ui.Sprites;
+import dev.yebatop.holyhelper.ui.Surface;
 import dev.yebatop.holyhelper.ui.Theme;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -139,23 +140,30 @@ public final class HudOverlay {
         int x = MARGIN;
         int y = MARGIN + Motion.rise(card, 10);
 
-        Paint.panel(ctx, x, y, WIDTH, height, RADIUS, Theme.PANEL, card);
-        Paint.sheen(ctx, x, y, WIDTH, RADIUS, now, SHEEN_PERIOD, card);
+        // Дальше всё в единицах мода: их размер на мониторе не зависит от того,
+        // какой масштаб интерфейса выставил игрок.
+        Surface.open(ctx);
+        try {
+            Paint.panel(ctx, x, y, WIDTH, height, RADIUS, Theme.PANEL, card);
+            Paint.sheen(ctx, x, y, WIDTH, RADIUS, now, SHEEN_PERIOD, card);
 
-        int inner = WIDTH - PAD * 2;
-        int cursor = y + PAD;
+            int inner = WIDTH - PAD * 2;
+            int cursor = y + PAD;
 
-        for (int i = 0; i < sections.size(); i++) {
-            Section section = sections.get(i);
-            double reveal = Motion.reveal(elapsed, REVEAL_STEP * (i + 1), REVEAL_LENGTH) * card;
-            if (reveal > 0) {
-                section.body().paint(ctx, client.textRenderer, x + PAD, cursor, inner, reveal);
+            for (int i = 0; i < sections.size(); i++) {
+                Section section = sections.get(i);
+                double reveal = Motion.reveal(elapsed, REVEAL_STEP * (i + 1), REVEAL_LENGTH) * card;
+                if (reveal > 0) {
+                    section.body().paint(ctx, client.textRenderer, x + PAD, cursor, inner, reveal);
+                }
+                cursor += section.height();
+                if (i < sections.size() - 1) {
+                    Paint.separator(ctx, x + PAD, cursor + GAP / 2, inner, card * 0.7);
+                    cursor += GAP;
+                }
             }
-            cursor += section.height();
-            if (i < sections.size() - 1) {
-                Paint.separator(ctx, x + PAD, cursor + GAP / 2, inner, card * 0.7);
-                cursor += GAP;
-            }
+        } finally {
+            Surface.close(ctx);
         }
     }
 

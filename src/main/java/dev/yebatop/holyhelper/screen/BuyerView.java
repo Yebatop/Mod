@@ -9,6 +9,7 @@ import dev.yebatop.holyhelper.ui.Card;
 import dev.yebatop.holyhelper.ui.Fonts;
 import dev.yebatop.holyhelper.ui.Motion;
 import dev.yebatop.holyhelper.ui.Paint;
+import dev.yebatop.holyhelper.ui.Surface;
 import dev.yebatop.holyhelper.ui.Theme;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -48,27 +49,34 @@ public final class BuyerView {
     private static final int ROW = 12;
 
     /**
-     * Высота карточек над таблицей.
+     * Высота карточек над таблицей и строки внутри них.
      * <p>
-     * Считана от строк, а не подобрана на глаз, и именно на этом я дважды
-     * ошибся. У вшитого шрифта клиента строка занимает семь пикселей над базовой,
-     * и отступы я расставлял по этой привычке. Гарнитуры мода выше: подпись — девять
-     * пикселей, текст — одиннадцать, крупное число Unbounded — почти двадцать.
-     * Тридцать шесть пикселей не вмещали подпись плюс такое число, и оно резалось
-     * кромкой.
+     * Раньше эти числа подбирались на глаз, и я промахивался трижды подряд.
+     * Теперь они считаны от подъёмов гарнитур, снятых с самих файлов шрифтов:
+     * подпись — семь пикселей до базовой линии, текст и числа — девять, крупное
+     * число Unbounded — пятнадцать.
      * <p>
-     * И ещё одно, замеренное уже по скриншоту: гарнитура рисует строку на пару
-     * пикселей выше той точки, которую ей задают. Четырёх пикселей отступа сверху
-     * не хватало, и подпись касалась кромки верхушками букв. Теперь отступ такой,
-     * что промах в пару пикселей в любую сторону ничего не задевает.
+     * Отсюда и разметка: подпись занимает строку сверху, крупное число ставится
+     * ниже, а мелкий текст рядом с ним сдвигается вниз на разницу подъёмов —
+     * иначе они выравниваются по верхушкам букв, и подпись оказывается выше
+     * базовой линии числа на треть его высоты. Именно это и выглядело съехавшим.
      */
-    private static final int HERO = 46;
+    private static final int HERO = 50;
 
-    /** Строки внутри карточки: подпись сверху, под ней крупное и мелкое. */
-    private static final int HERO_LABEL = 9;
-    private static final int HERO_MAIN = 20;
-    private static final int HERO_SIDE = 21;
-    private static final int HERO_UNDER = 31;
+    /** Верх подписи. */
+    private static final int HERO_LABEL = 7;
+
+    /** Верх крупного числа. */
+    private static final int HERO_MAIN = 18;
+
+    /** Базовая линия крупного числа — к ней приводится всё, что стоит рядом. */
+    private static final int HERO_BASE = HERO_MAIN + Fonts.ASCENT_DISPLAY;
+
+    /** Верх первой строки обычного текста в карточках без крупного числа. */
+    private static final int HERO_SIDE = 20;
+
+    /** Верх второй такой строки. */
+    private static final int HERO_UNDER = 32;
 
     private static final int ICON = 12;
 
@@ -110,7 +118,16 @@ public final class BuyerView {
      */
     public void renderIn(DrawContext ctx, TextRenderer font, int screenWidth,
                          int screenHeight, int margin) {
-        render(ctx, font, margin, margin, screenWidth - margin * 2, screenHeight - margin * 2);
+        // Единицы мода вместо логических пикселей игры: размер экрана на мониторе
+        // перестаёт зависеть от того, какой масштаб интерфейса выбрал игрок.
+        Surface.open(ctx);
+        try {
+            int width = Surface.units(screenWidth);
+            int height = Surface.units(screenHeight);
+            render(ctx, font, margin, margin, width - margin * 2, height - margin * 2);
+        } finally {
+            Surface.close(ctx);
+        }
     }
 
     public void render(DrawContext ctx, TextRenderer font, int x, int y, int width, int height) {
@@ -186,20 +203,22 @@ public final class BuyerView {
         Paint.accent(ctx, x, y, HERO, Theme.GOLD, first);
         Fonts.label(ctx, font, "маркет видел дороже", x + 8, y + HERO_LABEL,
                 Motion.fade(Theme.TEXT_FAINT, first));
-        // Число крупно слева, пояснения столбиком справа от него. Раньше они шли
-        // в три этажа и упирались в нижнюю кромку карточки.
+        // Число крупно слева, пояснения столбиком справа. «из N» приводится к
+        // базовой линии числа, а не к его верху: выровненные по верхушкам, они
+        // разъезжались на треть высоты числа, и карточка выглядела съехавшей.
         int used = Fonts.draw(ctx, font, Integer.toString(countDearer(offers)), Fonts.DISPLAY,
                 x + 8, y + HERO_MAIN, Motion.fade(Theme.GOLD, first));
         int side = x + 8 + used + 7;
 
-        Fonts.draw(ctx, font, "из " + offers.size(), Fonts.BODY, side, y + HERO_SIDE,
-                Motion.fade(Theme.TEXT_DIM, first));
+        Fonts.draw(ctx, font, "из " + offers.size(), Fonts.BODY,
+                side, y + HERO_BASE - Fonts.ASCENT_BODY, Motion.fade(Theme.TEXT_DIM, first));
 
         // Сколько товаров мод про Маркет вообще не знает. Без этой строки «5 из 8»
         // читается увереннее, чем есть: часть восьми просто не проверена.
         int unknown = countUnknown(offers);
         Fonts.label(ctx, font, unknown == 0 ? "все проверены" : unknown + " без данных",
-                side, y + HERO_UNDER, Motion.fade(unknown == 0 ? Theme.GREEN : Theme.TEXT_FAINT, first));
+                side, y + HERO_BASE - Fonts.ASCENT_BODY + 12,
+                Motion.fade(unknown == 0 ? Theme.GREEN : Theme.TEXT_FAINT, first));
 
         double second = Motion.reveal(elapsed, Card.REVEAL_STEP * 2, Card.REVEAL_LENGTH) * alpha;
         int mx = x + cell + Card.GAP;
@@ -272,8 +291,10 @@ public final class BuyerView {
         // таблицы уже нет.
         int sortedRight = x + ICON + 4 + nameWidth + mult + batch + unit;
         int sortedBottom = listTop + Math.min(visible, offers.size()) * ROW;
-        ctx.fill(sortedRight - unit - 3, y - 3, sortedRight + 3, sortedBottom,
-                Motion.fade(Theme.SORTED, alpha));
+        // Сверху вниз с затуханием: ровная заливка читается серым ящиком поверх
+        // таблицы, а гаснущая — подсветкой колонки.
+        Paint.roundRect(ctx, sortedRight - unit - 3, y - 3, unit + 6, sortedBottom - (y - 3), 0,
+                Motion.fade(Theme.SORTED, alpha), Motion.fade(Theme.SORTED_FADE, alpha));
 
         int cursor = x + ICON + 4;
         Fonts.label(ctx, font, "товар", cursor, y, Motion.fade(Theme.TEXT_FAINT, alpha));
@@ -292,7 +313,9 @@ public final class BuyerView {
         scroll = Math.min(scroll, maxScroll);
 
         long elapsed = System.currentTimeMillis() - openedAt;
-        ctx.enableScissor(x, listTop, x + width, listTop + listHeight);
+        // Обрезки не нужно: строк рисуется ровно столько, сколько помещается,
+        // и за край не выходит ни одна. А под матрицей мода обрезка ещё и
+        // считалась бы в чужих координатах.
         for (int i = 0; i < visible && i + scroll < offers.size(); i++) {
             BuyerParser.Offer offer = offers.get(i + scroll);
             double reveal = Motion.reveal(elapsed, Card.REVEAL_STEP * 4 + i * 24L,
@@ -302,7 +325,6 @@ public final class BuyerView {
                         i + scroll == 0, reveal);
             }
         }
-        ctx.disableScissor();
 
         if (maxScroll > 0) {
             int thumb = Math.max(8, listHeight * visible / offers.size());
@@ -464,23 +486,51 @@ public final class BuyerView {
 
     private void footer(DrawContext ctx, TextRenderer font, int x, int y, int width, int height,
                         double alpha) {
-        int cursor = x;
-        cursor += legend(ctx, font, cursor, y, Theme.GREEN, "на маркете дороже", alpha);
-        cursor += legend(ctx, font, cursor, y, Theme.WARN, "один лот — не рынок", alpha);
-        cursor += legend(ctx, font, cursor, y, Theme.PURPLE, "действует множитель", alpha);
-        // Искру в списке рисует row(), а объяснить её было негде: подвал
-        // перечислял три цвета и молчал про единственный значок на экране.
-        Paint.spark(ctx, cursor, y + 1, Motion.fade(Theme.GREEN, alpha));
-        Fonts.label(ctx, font, "особое предложение", cursor + 9, y,
-                Motion.fade(Theme.TEXT_FAINT, alpha));
-
-        // Клавиша прижата к правому краю, подпись — левее неё.
+        // Правая часть рисуется первой: она обязательна, а легенда — нет. Зная,
+        // где кончается место, можно не рисовать те подписи, которые в него уже
+        // не влезут. Раньше легенда просто наезжала на подсказку.
         String key = Keys.buyerKeyName();
         int keyWidth = Card.keyWidth(font, key);
         Card.key(ctx, font, key, x + width - keyWidth, y - 2, alpha);
+
         String hint = "колесо — прокрутка · закрыть";
-        Fonts.label(ctx, font, hint, x + width - keyWidth - 6 - Fonts.labelWidth(font, hint), y,
-                Motion.fade(Theme.TEXT_FAINT, alpha));
+        int hintLeft = x + width - keyWidth - 6 - Fonts.labelWidth(font, hint);
+        Fonts.label(ctx, font, hint, hintLeft, y, Motion.fade(Theme.TEXT_FAINT, alpha));
+
+        int limit = hintLeft - Card.GAP * 2;
+        int cursor = x;
+        cursor = legendFits(ctx, font, cursor, y, limit, Theme.GREEN, "на маркете дороже", alpha);
+        cursor = legendFits(ctx, font, cursor, y, limit, Theme.WARN, "один лот — не рынок", alpha);
+        cursor = legendFits(ctx, font, cursor, y, limit, Theme.PURPLE, "действует множитель", alpha);
+
+        // Искру в списке рисует row(), а объяснить её было негде: подвал
+        // перечислял три цвета и молчал про единственный значок на экране.
+        int sparkWidth = 9 + Fonts.labelWidth(font, "особое предложение");
+        if (cursor + sparkWidth <= limit) {
+            Paint.spark(ctx, cursor, y + 1, Motion.fade(Theme.GREEN, alpha));
+            Fonts.label(ctx, font, "особое предложение", cursor + 9, y,
+                    Motion.fade(Theme.TEXT_FAINT, alpha));
+        }
+    }
+
+    /**
+     * Пункт легенды, если он ещё помещается до заданной границы.
+     * <p>
+     * Подвал должен читаться на любой ширине, а легенда — то, чем можно
+     * пожертвовать: цвета в таблице говорят сами за себя, а подсказка про
+     * клавишу нет. Поэтому не влезающие пункты просто не рисуются, вместо того
+     * чтобы наезжать на соседа.
+     *
+     * @return новое положение курсора
+     */
+    private int legendFits(DrawContext ctx, TextRenderer font, int cursor, int y, int limit,
+                           int color, String text, double alpha) {
+        // Ширину меряем тем же способом, каким её считает сам legend, иначе
+        // проверка и рисование разойдутся при первой же правке отступов.
+        if (cursor + Fonts.labelWidth(font, text) + 18 > limit) {
+            return cursor;
+        }
+        return cursor + legend(ctx, font, cursor, y, color, text, alpha);
     }
 
     private int legend(DrawContext ctx, TextRenderer font, int x, int y, int color, String text,

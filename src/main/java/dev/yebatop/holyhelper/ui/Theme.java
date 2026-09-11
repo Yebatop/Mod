@@ -59,7 +59,10 @@ public final class Theme {
      * порознь её не заметишь, — но полосу во всю высоту таблицы глаз ловит
      * сразу, и заголовок читать не приходится.
      */
-    public static final int SORTED = 0x14F2B45C;
+    public static final int SORTED = 0x1AF2B45C;
+
+    /** Тот же оттенок у нижнего края: подсветка гаснет, а не обрывается. */
+    public static final int SORTED_FADE = 0x07F2B45C;
 
     public static final int TEXT = 0xFFE8EAED;
     public static final int TEXT_DIM = 0xFF8B93A1;

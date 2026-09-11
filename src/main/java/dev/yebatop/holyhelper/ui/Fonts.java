@@ -38,6 +38,29 @@ public final class Fonts {
     /** Насколько раздвигать буквы в подписях капсом, в пикселях. */
     private static final int TRACKING = 1;
 
+    /**
+     * Подъём гарнитуры: расстояние от верха строки до базовой линии.
+     * <p>
+     * Числа сняты с самих файлов шрифтов, а не подобраны: подъём из таблицы
+     * {@code hhea}, делённый на {@code unitsPerEm} и умноженный на кегль. Клиент
+     * ставит строку именно по подъёму, поэтому двум гарнитурам, чтобы встать на
+     * одну базовую линию, нужен сдвиг ровно в их разницу.
+     * <p>
+     * Без этого крупное число и подпись рядом с ним выравнивались по верхушкам, и
+     * подпись оказывалась выше базовой линии числа на треть его высоты. Именно это
+     * я трижды правил на глаз и трижды промахивался.
+     */
+    public static final int ASCENT_DISPLAY = 15;
+
+    /** @see #ASCENT_DISPLAY */
+    public static final int ASCENT_BODY = 9;
+
+    /** @see #ASCENT_DISPLAY */
+    public static final int ASCENT_LABEL = 7;
+
+    /** @see #ASCENT_DISPLAY */
+    public static final int ASCENT_NUM = 9;
+
     private Fonts() {
     }
 
@@ -65,7 +88,6 @@ public final class Fonts {
         return renderer.getWidth(prepared);
     }
 
-    /** То же, но строка прижата к правому краю отрезка. */
     /**
      * Дробное число, у которого целая часть светлая, а дробная приглушена:
      * <code>8<span style="opacity:.6">.44</span></code>.
@@ -93,6 +115,7 @@ public final class Fonts {
         split(ctx, renderer, value, right - width(renderer, value, NUM), y, color, fraction);
     }
 
+    /** То же, но строка прижата к правому краю отрезка. */
     public static void drawRight(DrawContext ctx, TextRenderer renderer, String value, Style font,
                                  int right, int y, int color) {
         Text prepared = text(value, font);

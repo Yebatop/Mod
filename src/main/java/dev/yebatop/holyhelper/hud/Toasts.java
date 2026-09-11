@@ -6,6 +6,7 @@ import dev.yebatop.holyhelper.liteapi.FeatureGate;
 import dev.yebatop.holyhelper.ui.Fonts;
 import dev.yebatop.holyhelper.ui.Motion;
 import dev.yebatop.holyhelper.ui.Paint;
+import dev.yebatop.holyhelper.ui.Surface;
 import dev.yebatop.holyhelper.ui.Theme;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -97,9 +98,20 @@ public final class Toasts {
         TOASTS.removeIf(toast -> now - toast.bornAt() > LIFE);
 
         List<Toast> visible = new ArrayList<>(TOASTS);
-        int right = ctx.getScaledWindowWidth() - MARGIN;
-        int bottom = ctx.getScaledWindowHeight() - MARGIN;
+        int right = Surface.units(ctx.getScaledWindowWidth()) - MARGIN;
+        int bottom = Surface.units(ctx.getScaledWindowHeight()) - MARGIN;
 
+        Surface.open(ctx);
+        try {
+            paint(ctx, client.textRenderer, visible, right, bottom, now);
+        } finally {
+            Surface.close(ctx);
+        }
+    }
+
+    /** Сами сообщения, уже в единицах мода. */
+    private static void paint(DrawContext ctx, TextRenderer font, List<Toast> visible,
+                              int right, int bottom, long now) {
         for (int i = visible.size() - 1; i >= 0; i--) {
             Toast toast = visible.get(i);
             long age = now - toast.bornAt();
@@ -117,7 +129,7 @@ public final class Toasts {
 
             int y = bottom - (visible.size() - i) * (HEIGHT + GAP);
             int x = right - WIDTH + Motion.rise(shown, WIDTH / 2);
-            draw(ctx, client.textRenderer, toast, x, y, shown);
+            draw(ctx, font, toast, x, y, shown);
         }
     }
 
