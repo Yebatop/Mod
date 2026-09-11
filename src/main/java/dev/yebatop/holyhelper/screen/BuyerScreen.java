@@ -21,7 +21,7 @@ public final class BuyerScreen extends Screen {
 
     private static final int MARGIN = 8;
 
-    private final Terminal terminal = new Terminal(List.of(new BuyerView(), new HistoryView()));
+    private final Terminal terminal = new Terminal(List.of(new BuyerView(), new RateView(), new HistoryView()));
 
     /**
      * Где был курсор в последнем кадре.

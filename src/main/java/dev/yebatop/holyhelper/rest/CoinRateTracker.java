@@ -129,6 +129,17 @@ public final class CoinRateTracker {
         return rates;
     }
 
+    /**
+     * Вся сохранённая история сделок.
+     * <p>
+     * Копией, а не самим списком: он меняется из потока опроса API, и отдавать
+     * наружу изменяемую ссылку значит однажды получить исключение посреди
+     * отрисовки графика.
+     */
+    public synchronized List<Trade> trades() {
+        return List.copyOf(history);
+    }
+
     public synchronized int size() {
         return history.size();
     }

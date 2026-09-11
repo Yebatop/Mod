@@ -23,7 +23,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 public final class BuyerOverlay {
 
     private static final Terminal TERMINAL =
-            new Terminal(java.util.List.of(new BuyerView(), new HistoryView()));
+            new Terminal(java.util.List.of(new BuyerView(), new RateView(), new HistoryView()));
 
     /** Где был курсор в последнем кадре — по нему и попадаем в вкладку. */
     private static int pointerX;
