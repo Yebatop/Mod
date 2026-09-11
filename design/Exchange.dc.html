@@ -1,0 +1,300 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@400..700&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
+    a { color: #f2b45c; } a:hover { color: #ffd79a; }
+    .u-disp { font-family: 'Unbounded', 'Onest', system-ui, sans-serif; letter-spacing: -0.03em; }
+    .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .u-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
+    .u-lab { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #626b7b; }
+    .u-slot { width: 26px; height: 26px; flex: 0 0 auto; background: #161b23; border: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+    .u-row { display: flex; align-items: center; gap: 13px; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,0.042); }
+    .grad { background: linear-gradient(135deg, #ffe2b6 0%, #f2b45c 46%, #c9862a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .facets { position: absolute; inset: 0; pointer-events: none; background-image: repeating-linear-gradient(114deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 148px), repeating-linear-gradient(-41deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 196px); }
+    .pnl { position: relative; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)); border: 1px solid rgba(255,255,255,0.072); box-shadow: 0 26px 62px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.075); overflow: hidden; }
+    .pnl::after { content: ""; position: absolute; top: 0; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent); animation: hhSheen 8s ease-in-out infinite; }
+    .shaft { position: absolute; left: 40%; top: -320px; width: 520px; height: 1600px; transform: rotate(18deg); background: linear-gradient(90deg, transparent, rgba(255,225,180,0.045), transparent); filter: blur(32px); animation: hhShaft 11s ease-in-out infinite; pointer-events: none; }
+    @keyframes hhSheen { 0% { left: -38%; } 44%, 100% { left: 138%; } }
+    @keyframes hhShaft { 0%, 100% { opacity: 0.24; } 50% { opacity: 0.46; } }
+    @keyframes hhRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes hhSlide { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+    @keyframes hhGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes hhDraw { to { stroke-dashoffset: 0; } }
+    @keyframes hhFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes hhBreathe { 0%, 100% { opacity: 0.22; } 50% { opacity: 0.44; } }
+    .u-row { animation: hhSlide 0.46s cubic-bezier(0.2,0.72,0.2,1) both; }
+    .u-row:nth-child(1) { animation-delay: 0.32s; }
+    .u-row:nth-child(2) { animation-delay: 0.36s; }
+    .u-row:nth-child(3) { animation-delay: 0.40s; }
+    .u-row:nth-child(4) { animation-delay: 0.44s; }
+    .u-row:nth-child(5) { animation-delay: 0.48s; }
+    .bar { transform-origin: left; animation: hhGrow 0.9s cubic-bezier(0.2,0.72,0.2,1) both; }
+  </style>
+</helmet>
+<div style="--accent: {{accent}}; position: relative; width: 1360px; height: 900px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1;">
+
+  <div style="position: absolute; inset: 0; background: radial-gradient(720px 420px at 50% -8%, rgba(242,180,92,0.13), transparent 62%), radial-gradient(620px 380px at 96% 70%, rgba(70,211,217,0.07), transparent 60%), linear-gradient(180deg, #0e1118 0%, #0a0c11 46%, #090b0f 100%);"></div>
+  <div class="facets"></div>
+  <div class="shaft"></div>
+  <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none;"><filter id="grainEx"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainEx)"/></svg>
+
+  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 24px 28px 20px; display: flex; flex-direction: column; gap: 14px;">
+
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 24px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) both;">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="position: relative; width: 46px; height: 46px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;">
+          <div style="position: absolute; inset: -7px; border-radius: 50%; background: var(--accent); filter: blur(17px); animation: hhBreathe 4.4s ease-in-out infinite;"></div>
+          <svg width="44" height="44" viewBox="0 0 88 88" fill="none" style="position: relative;">
+            <defs><linearGradient id="markEx" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe2b6"/><stop offset="52%" stop-color="{{accent}}"/><stop offset="100%" stop-color="#b9761f"/></linearGradient></defs>
+            <path d="M44 12 70 26v28L44 68 18 54V26L44 12Z" fill="rgba(242,180,92,0.07)" stroke="url(#markEx)" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M18 26 44 40l26-14M44 40v28" stroke="url(#markEx)" stroke-width="2" opacity="0.4"/>
+            <polyline points="27,52 38,44 49,49 62,32" stroke="#46d3d9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" style="animation: hhDraw 0.8s cubic-bezier(0.3,0,0.2,1) 0.5s forwards;"/>
+          </svg>
+        </div>
+        <div>
+          <div class="u-disp" style="font-size: 25px; font-weight: 700; line-height: 1.05;">Биржа</div>
+          <div style="display: flex; align-items: center; gap: 9px; margin-top: 5px;">
+            <span style="font-size: 12px; color: #6f7889;">монетки ↔ жетоны</span>
+            <span style="width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.2);"></span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #5fd18b;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #5fd18b; box-shadow: 0 0 10px rgba(95,209,139,0.8); animation: hhBreathe 2.6s ease-in-out infinite;"></span>
+              заявки сняты минуту назад
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pnl" style="display: flex; align-items: center; gap: 22px; padding: 12px 20px; border-radius: 10px;">
+        <div>
+          <div class="u-lab">Опрос API</div>
+          <div class="u-num" style="font-size: 13px; color: #dfe4ea; margin-top: 4px;">раз в 5 минут</div>
+        </div>
+        <span style="width: 1px; height: 30px; background: rgba(255,255,255,0.08);"></span>
+        <div>
+          <div class="u-lab">Накоплено сделок</div>
+          <div class="u-num" style="font-size: 13px; color: var(--accent); margin-top: 4px;">1 507</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; align-items: stretch;">
+
+      <div class="pnl" style="flex-grow: 1; padding: 18px 22px 20px; background: linear-gradient(150deg, rgba(242,180,92,0.15), rgba(255,255,255,0.012) 74%); border: 1px solid rgba(242,180,92,0.2); animation: hhRise 0.62s cubic-bezier(0.2,0.72,0.2,1) 0.1s both;">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;">
+          <div>
+            <div class="u-lab" style="color: rgba(242,180,92,0.82);">Последняя сделка</div>
+            <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 7px;">
+              <span class="u-disp grad" style="font-size: 52px; font-weight: 800; line-height: 1;">11 252</span>
+              <span style="font-size: 13px; color: #8b93a1;">монеток за жетон</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 14px; margin-top: 11px;">
+              <span style="font-size: 12.5px; color: #7b8496;">медиана за сутки <span class="u-num" style="color: #cdd3dc;">10 840</span></span>
+              <span class="u-num" style="font-size: 12.5px; padding: 3px 9px; border-radius: 4px; background: rgba(95,209,139,0.14); border: 1px solid rgba(95,209,139,0.3); color: #5fd18b;">+3,8%</span>
+              <span style="font-size: 12px; color: #59616f;">2 минуты назад</span>
+            </div>
+          </div>
+
+          <svg width="360" height="104" viewBox="0 0 360 104" fill="none" style="flex: 0 0 auto;">
+            <defs>
+              <linearGradient id="rateFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(242,180,92,0.24)"/><stop offset="100%" stop-color="rgba(242,180,92,0)"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="58" x2="360" y2="58" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="3 5"/>
+            <path d="M0 66 40 71 80 54 120 61 160 48 200 69 240 52 280 44 320 51 360 30" stroke="{{accent}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="420" stroke-dashoffset="420" style="animation: hhDraw 1.7s cubic-bezier(0.3,0,0.2,1) 0.5s forwards;"/>
+            <path d="M0 66 40 71 80 54 120 61 160 48 200 69 240 52 280 44 320 51 360 30 360 104 0 104Z" fill="url(#rateFill)" opacity="0" style="animation: hhFade 0.9s ease-out 1.7s forwards;"/>
+            <circle cx="360" cy="30" r="4" fill="{{accent}}" opacity="0" style="animation: hhFade 0.5s ease-out 2.1s forwards;"/>
+            <text x="0" y="98" fill="#4d5563" font-family="'JetBrains Mono', monospace" font-size="9.5">сутки сделок · медиана пунктиром</text>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="flex-grow: 1; display: flex; gap: 12px; min-height: 0;">
+
+      <div class="pnl" style="flex-grow: 1; display: flex; flex-direction: column; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.2s both;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 13px 16px 11px; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.018);">
+          <span class="u-lab">Открытые заявки — это не сделки</span>
+          <span style="font-size: 11.5px; color: #59616f;">длина полосы — курс относительно верхней заявки</span>
+        </div>
+
+        <div style="flex-grow: 1;">
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #ffe08a, #c9962c);"></div></div>
+            <div style="flex-grow: 1;">
+              <div style="display: flex; align-items: baseline; gap: 10px;">
+                <span class="u-num" style="font-size: 16px; font-weight: 500; color: #f2b45c;">11 252</span>
+                <span style="font-size: 12px; color: #6f7889;">h1dosq</span>
+              </div>
+              <div style="position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-top: 7px; overflow: hidden;">
+                <div class="bar" style="height: 100%; width: 100%; background: linear-gradient(90deg, rgba(242,180,92,0.3), rgba(242,180,92,0.75)); animation-delay: 0.5s;"></div>
+              </div>
+            </div>
+            <div style="width: 132px; text-align: right;">
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">5 626 000</div>
+              <div class="u-lab" style="margin-top: 3px;">доступно</div>
+            </div>
+            <div style="width: 108px; text-align: right;">
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">500</div>
+              <div class="u-lab" style="margin-top: 3px;">ожидается</div>
+            </div>
+          </div>
+
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #ffe08a, #c9962c);"></div></div>
+            <div style="flex-grow: 1;">
+              <div style="display: flex; align-items: baseline; gap: 10px;">
+                <span class="u-num" style="font-size: 16px; font-weight: 500; color: #f2b45c;">10 900</span>
+                <span style="font-size: 12px; color: #6f7889;">Tyler_D</span>
+              </div>
+              <div style="position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-top: 7px; overflow: hidden;">
+                <div class="bar" style="height: 100%; width: 97%; background: linear-gradient(90deg, rgba(242,180,92,0.28), rgba(242,180,92,0.66)); animation-delay: 0.56s;"></div>
+              </div>
+            </div>
+            <div style="width: 132px; text-align: right;">
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">2 180 000</div>
+              <div class="u-lab" style="margin-top: 3px;">доступно</div>
+            </div>
+            <div style="width: 108px; text-align: right;">
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">200</div>
+              <div class="u-lab" style="margin-top: 3px;">ожидается</div>
+            </div>
+          </div>
+
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #ffe08a, #c9962c);"></div></div>
+            <div style="flex-grow: 1;">
+              <div style="display: flex; align-items: baseline; gap: 10px;">
+                <span class="u-num" style="font-size: 16px; font-weight: 500; color: #f2b45c;">9 480</span>
+                <span style="font-size: 12px; color: #6f7889;">Nefrit_</span>
+              </div>
+              <div style="position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-top: 7px; overflow: hidden;">
+                <div class="bar" style="height: 100%; width: 84%; background: linear-gradient(90deg, rgba(242,180,92,0.24), rgba(242,180,92,0.55)); animation-delay: 0.62s;"></div>
+              </div>
+            </div>
+            <div style="width: 132px; text-align: right;">
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">948 000</div>
+              <div class="u-lab" style="margin-top: 3px;">доступно</div>
+            </div>
+            <div style="width: 108px; text-align: right;">
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">100</div>
+              <div class="u-lab" style="margin-top: 3px;">ожидается</div>
+            </div>
+          </div>
+
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #ffe08a, #c9962c);"></div></div>
+            <div style="flex-grow: 1;">
+              <div style="display: flex; align-items: baseline; gap: 10px;">
+                <span class="u-num" style="font-size: 16px; font-weight: 500; color: #f2b45c;">8 323</span>
+                <span style="font-size: 12px; color: #6f7889;">MrCube</span>
+              </div>
+              <div style="position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-top: 7px; overflow: hidden;">
+                <div class="bar" style="height: 100%; width: 74%; background: linear-gradient(90deg, rgba(242,180,92,0.22), rgba(242,180,92,0.48)); animation-delay: 0.68s;"></div>
+              </div>
+            </div>
+            <div style="width: 132px; text-align: right;">
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">416 150</div>
+              <div class="u-lab" style="margin-top: 3px;">доступно</div>
+            </div>
+            <div style="width: 108px; text-align: right;">
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">50</div>
+              <div class="u-lab" style="margin-top: 3px;">ожидается</div>
+            </div>
+          </div>
+
+          <div class="u-row" style="border-bottom: none;">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #ffe08a, #c9962c);"></div></div>
+            <div style="flex-grow: 1;">
+              <div style="display: flex; align-items: baseline; gap: 10px;">
+                <span class="u-num" style="font-size: 16px; font-weight: 500; color: #f2b45c;">6 000</span>
+                <span style="font-size: 12px; color: #6f7889;">Okokoy</span>
+              </div>
+              <div style="position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-top: 7px; overflow: hidden;">
+                <div class="bar" style="height: 100%; width: 53%; background: linear-gradient(90deg, rgba(242,180,92,0.2), rgba(242,180,92,0.4)); animation-delay: 0.74s;"></div>
+              </div>
+            </div>
+            <div style="width: 132px; text-align: right;">
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">6 000 000</div>
+              <div class="u-lab" style="margin-top: 3px;">доступно</div>
+            </div>
+            <div style="width: 108px; text-align: right;">
+              <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">1 000</div>
+              <div class="u-lab" style="margin-top: 3px;">ожидается</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.015); font-size: 11.5px; color: #6f7889; line-height: 1.5;">
+          Заявку создаёт тот, кто отдаёт монетки. Поэтому «выгодный край» зависит от того, что вы собираетесь делать, — границы стакана покрашены нейтрально, и мод здесь ничего не советует.
+        </div>
+      </div>
+
+      <div style="flex: 0 0 auto; width: 400px; display: flex; flex-direction: column; gap: 12px;">
+
+        <div class="pnl" style="padding: 0; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.3s both;">
+          <div style="padding: 13px 18px 11px; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.018);">
+            <span class="u-lab">Создание лота</span>
+          </div>
+          <div style="padding: 15px 18px 17px;">
+            <div style="display: flex; align-items: baseline; justify-content: space-between; padding: 7px 0;">
+              <span style="font-size: 13px; color: #a8b0bd;">Вы получите</span>
+              <span class="u-num" style="font-size: 14px; color: #f3f6fa;">5 жетонов</span>
+            </div>
+            <div style="height: 1px; background: rgba(255,255,255,0.05);"></div>
+            <div style="display: flex; align-items: baseline; justify-content: space-between; padding: 7px 0;">
+              <span style="font-size: 13px; color: #a8b0bd;">Вы отдадите</span>
+              <span class="u-num" style="font-size: 14px; color: #f3f6fa;">56 255 монеток</span>
+            </div>
+            <div style="height: 1px; background: rgba(255,255,255,0.05);"></div>
+            <div style="display: flex; align-items: baseline; justify-content: space-between; padding: 7px 0;">
+              <span style="font-size: 13px; color: #a8b0bd;">Курс</span>
+              <span class="u-num" style="font-size: 14px; color: #f2b45c;">11 251</span>
+            </div>
+
+            <div style="margin-top: 14px; padding: 12px 14px; border-radius: 8px; background: linear-gradient(150deg, rgba(0,0,0,0.55), rgba(0,0,0,0.34)); border: 1px solid rgba(169,140,240,0.3); box-shadow: 0 14px 34px rgba(0,0,0,0.45);">
+              <div class="u-px" style="font-size: 14px; color: #f2b45c;">HolyHelper</div>
+              <div class="u-num" style="font-size: 12px; color: #dfe4ea; margin-top: 6px;">Ваш курс 11 251 · медиана суток 10 840</div>
+              <div class="u-num" style="font-size: 12px; color: #5fd18b; margin-top: 4px;">+3,8% — выше рынка: заберут быстрее, но переплата</div>
+            </div>
+            <div style="font-size: 11px; color: #59616f; margin-top: 9px; line-height: 1.5;">Подсказка рисуется поверх окна Биржи, пока оно открыто. Ни одного клика по слотам мод не делает.</div>
+          </div>
+        </div>
+
+        <div class="pnl" style="flex-grow: 1; padding: 15px 18px 17px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.38s both;">
+          <div class="u-lab" style="color: rgba(95,209,139,0.8);">Сходимость чисел</div>
+          <div style="margin-top: 11px; display: flex; flex-direction: column; gap: 9px;">
+            <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">5 626 000 ÷ 11 252 <span style="color: #5fd18b;">= 500</span></div>
+            <div class="u-num" style="font-size: 12.5px; color: #cdd3dc;">56 255 ÷ 5 <span style="color: #5fd18b;">= 11 251</span></div>
+          </div>
+          <div style="font-size: 11.5px; color: #6f7889; line-height: 1.55; margin-top: 11px;">Числа в окне связаны жёстко. Если после разбора равенство не сходится, значит сервер сменил формат — запись выбрасывается и уходит в лог, а не притворяется данными.</div>
+          <div style="display: flex; align-items: center; gap: 9px; margin-top: 13px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #5fd18b; box-shadow: 0 0 11px rgba(95,209,139,0.8);"></span>
+            <span style="font-size: 12px; color: #8b93a1;">все пять заявок сошлись</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#f2b45c","options":["#f2b45c","#46d3d9","#5fd18b","#a98cf0"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#f2b45c' };
+  }
+}
+</script>
+</body>
+</html>

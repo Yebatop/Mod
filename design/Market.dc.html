@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@400..700&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
+    a { color: #46d3d9; } a:hover { color: #9deef2; }
+    .u-disp { font-family: 'Unbounded', 'Onest', system-ui, sans-serif; letter-spacing: -0.03em; }
+    .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .u-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
+    .u-lab { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #626b7b; }
+    .u-slot { width: 26px; height: 26px; flex: 0 0 auto; background: #161b23; border: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+    .u-row { display: flex; align-items: center; gap: 12px; padding: 9px 16px; border-bottom: 1px solid rgba(255,255,255,0.042); }
+    .chip { font-size: 11.5px; padding: 5px 11px; border-radius: 5px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.06); color: #7b8496; white-space: nowrap; }
+    .chip-on { background: linear-gradient(180deg, rgba(70,211,217,0.2), rgba(70,211,217,0.07)); border-color: rgba(70,211,217,0.4); color: #bff0f2; box-shadow: 0 0 22px rgba(70,211,217,0.14); }
+    .grad-t { background: linear-gradient(135deg, #c2f6f8 0%, #46d3d9 48%, #1f9198 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .facets { position: absolute; inset: 0; pointer-events: none; background-image: repeating-linear-gradient(114deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 148px), repeating-linear-gradient(-41deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 196px); }
+    .pnl { position: relative; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.042), rgba(255,255,255,0.010)); border: 1px solid rgba(255,255,255,0.072); box-shadow: 0 26px 62px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.075); overflow: hidden; }
+    .pnl::after { content: ""; position: absolute; top: 0; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(160,240,244,0.55), transparent); animation: hhSheen 8s ease-in-out infinite; }
+    .shaft { position: absolute; right: -180px; top: -320px; width: 520px; height: 1600px; transform: rotate(-20deg); background: linear-gradient(90deg, transparent, rgba(160,240,244,0.05), transparent); filter: blur(30px); animation: hhShaft 12s ease-in-out infinite; pointer-events: none; }
+    @keyframes hhSheen { 0% { left: -38%; } 44%, 100% { left: 138%; } }
+    @keyframes hhShaft { 0%, 100% { opacity: 0.24; } 50% { opacity: 0.46; } }
+    @keyframes hhRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes hhSlide { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+    @keyframes hhPop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+    @keyframes hhDraw { to { stroke-dashoffset: 0; } }
+    @keyframes hhFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes hhBreathe { 0%, 100% { opacity: 0.22; } 50% { opacity: 0.44; } }
+    .u-row { animation: hhSlide 0.46s cubic-bezier(0.2,0.72,0.2,1) both; }
+    .u-row:nth-child(1) { animation-delay: 0.30s; }
+    .u-row:nth-child(2) { animation-delay: 0.33s; }
+    .u-row:nth-child(3) { animation-delay: 0.36s; }
+    .u-row:nth-child(4) { animation-delay: 0.39s; }
+    .u-row:nth-child(5) { animation-delay: 0.42s; }
+    .u-row:nth-child(6) { animation-delay: 0.45s; }
+    .u-row:nth-child(7) { animation-delay: 0.48s; }
+    .u-row:nth-child(8) { animation-delay: 0.51s; }
+    .u-row:nth-child(9) { animation-delay: 0.54s; }
+    .u-row:nth-child(10) { animation-delay: 0.57s; }
+    .u-row:nth-child(11) { animation-delay: 0.60s; }
+    .u-row:nth-child(12) { animation-delay: 0.63s; }
+    .chip { animation: hhFade 0.5s ease-out both; }
+    .obs { animation: hhPop 0.42s cubic-bezier(0.2,0.72,0.2,1) both; }
+  </style>
+</helmet>
+<div style="--accent: {{accent}}; position: relative; width: 1360px; height: 940px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1;">
+
+  <div style="position: absolute; inset: 0; background: radial-gradient(760px 420px at 88% -6%, rgba(70,211,217,0.13), transparent 62%), radial-gradient(620px 380px at 8% 6%, rgba(242,180,92,0.06), transparent 60%), linear-gradient(180deg, #0d1117 0%, #0a0c11 46%, #090b0f 100%);"></div>
+  <div class="facets"></div>
+  <div class="shaft"></div>
+  <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none;"><filter id="grainMk"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainMk)"/></svg>
+
+  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 24px 28px 18px; display: flex; flex-direction: column; gap: 14px;">
+
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 24px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) both;">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="position: relative; width: 46px; height: 46px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;">
+          <div style="position: absolute; inset: -7px; border-radius: 50%; background: var(--accent); filter: blur(17px); animation: hhBreathe 4.6s ease-in-out infinite;"></div>
+          <svg width="44" height="44" viewBox="0 0 88 88" fill="none" style="position: relative;">
+            <defs><linearGradient id="markMk" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c2f6f8"/><stop offset="52%" stop-color="{{accent}}"/><stop offset="100%" stop-color="#1f9198"/></linearGradient></defs>
+            <path d="M44 12 70 26v28L44 68 18 54V26L44 12Z" fill="rgba(70,211,217,0.07)" stroke="url(#markMk)" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M18 26 44 40l26-14M44 40v28" stroke="url(#markMk)" stroke-width="2" opacity="0.4"/>
+            <polyline points="27,52 38,44 49,49 62,32" stroke="#f2b45c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" style="animation: hhDraw 0.8s cubic-bezier(0.3,0,0.2,1) 0.5s forwards;"/>
+          </svg>
+        </div>
+        <div>
+          <div class="u-disp" style="font-size: 25px; font-weight: 700; line-height: 1.05;">Маркет</div>
+          <div style="display: flex; align-items: center; gap: 9px; margin-top: 5px;">
+            <span class="u-num" style="font-size: 12px; color: #6f7889;">страница 4 из 31</span>
+            <span style="width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.2);"></span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #5fd18b;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #5fd18b; box-shadow: 0 0 10px rgba(95,209,139,0.8); animation: hhBreathe 2.6s ease-in-out infinite;"></span>
+              снято 40 секунд назад
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pnl" style="display: flex; align-items: center; gap: 20px; padding: 11px 18px; border-radius: 10px;">
+        <div>
+          <div class="u-lab">Срез</div>
+          <div style="font-size: 13px; color: #dfe4ea; margin-top: 4px;">Блоки · сначала дешёвые</div>
+        </div>
+        <span style="width: 1px; height: 30px; background: rgba(255,255,255,0.08);"></span>
+        <div>
+          <div class="u-lab">Записано за заход</div>
+          <div class="u-num" style="font-size: 13px; color: var(--accent); margin-top: 4px;">12 наблюдений</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 7px; animation: hhFade 0.6s ease-out 0.12s both;">
+      <span class="chip" style="animation-delay: 0.14s;">Все подряд</span>
+      <span class="chip" style="animation-delay: 0.16s;">Инструменты</span>
+      <span class="chip" style="animation-delay: 0.18s;">Оружие</span>
+      <span class="chip chip-on" style="animation-delay: 0.20s;">Блоки</span>
+      <span class="chip" style="animation-delay: 0.22s;">Декоративные блоки</span>
+      <span class="chip" style="animation-delay: 0.24s;">Механизмы</span>
+      <span class="chip" style="animation-delay: 0.26s;">Алхимия</span>
+      <span class="chip" style="animation-delay: 0.28s;">Еда</span>
+      <span class="chip" style="animation-delay: 0.30s;">Зелья</span>
+      <span class="chip" style="animation-delay: 0.32s;">Зачарование</span>
+      <span class="chip" style="animation-delay: 0.34s;">Броня</span>
+      <span class="chip" style="animation-delay: 0.36s;">Уникальные предметы</span>
+      <span class="chip" style="animation-delay: 0.38s;">Драгоценности</span>
+      <span class="chip" style="animation-delay: 0.40s;">Растительность</span>
+      <span class="chip" style="animation-delay: 0.42s;">Разное</span>
+      <span class="chip" style="animation-delay: 0.44s;">Лут с мобов</span>
+    </div>
+
+    <div style="flex-grow: 1; display: flex; gap: 12px; min-height: 0;">
+
+      <div class="pnl" style="flex-grow: 1; display: flex; flex-direction: column; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.2s both;">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 11px 16px 10px; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.018);">
+          <span class="u-lab" style="width: 26px;"></span>
+          <span class="u-lab" style="flex-grow: 1;">Лот</span>
+          <span class="u-lab" style="width: 62px; text-align: right;">Кол-во</span>
+          <span class="u-lab" style="width: 96px; text-align: right;">Цена лота</span>
+          <span class="u-lab" style="width: 92px; text-align: right; color: rgba(70,211,217,0.75);">За 1 ед.</span>
+          <span class="u-lab" style="width: 118px; text-align: right;">Продавец</span>
+          <span class="u-lab" style="width: 104px; text-align: right;">Осталось</span>
+        </div>
+
+        <div style="flex-grow: 1;">
+          <div class="u-row" style="background: linear-gradient(90deg, rgba(70,211,217,0.09), transparent 62%);">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #3c3550, #16121f);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Обсидиан <span style="font-size: 11.5px; color: #59616f;">Obsidian</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×64</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">2 880</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">45</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">MrCube</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">21 ч 33 мин</span>
+          </div>
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #b9c0cc, #78808d);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Глиняный блок <span style="font-size: 11.5px; color: #59616f;">Clay</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×64</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">6 656</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">104</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">Nefrit_</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">6 ч 12 мин</span>
+          </div>
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #f4f0e6, #b9b0a0);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Кварцевый блок <span style="font-size: 11.5px; color: #59616f;">Block of Quartz</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×64</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">8 320</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">130</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">Tyler_D</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">3 ч 19 мин</span>
+          </div>
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #e08b5e, #a9552c);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Медный блок <span style="font-size: 11.5px; color: #59616f;">Block of Copper</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×64</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">18 176</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">284</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">h1dosq</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">23 ч 20 мин</span>
+          </div>
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #e08b5e, #a9552c);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Медный блок <span style="font-size: 11.5px; color: #59616f;">Block of Copper</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×32</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">9 312</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">291</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">Okokoy</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">19 ч 04 мин</span>
+          </div>
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #4a4f57, #17191d);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Угольный блок <span style="font-size: 11.5px; color: #59616f;">Block of Coal</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×48</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">21 600</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">450</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">h1dosq</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">14 ч 02 мин</span>
+          </div>
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #6f8cff, #26418f);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Лазуритовый блок <span style="font-size: 11.5px; color: #59616f;">Block of Lapis Lazuli</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×12</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">7 428</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">619</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">Okokoy</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">9 ч 55 мин</span>
+          </div>
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #ff6f6f, #a52222);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Блок красной пыли <span style="font-size: 11.5px; color: #59616f;">Block of Redstone</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×64</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">45 568</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">712</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">MrCube</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">17 ч 26 мин</span>
+          </div>
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #dfe3e8, #93999f);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Железный блок <span style="font-size: 11.5px; color: #59616f;">Block of Iron</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×16</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">20 640</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">1 290</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">polyayak</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">11 ч 48 мин</span>
+          </div>
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #7ff0a8, #23a05c);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Изумрудный блок <span style="font-size: 11.5px; color: #59616f;">Block of Emerald</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×8</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">14 328</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">1 791</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">Nefrit_</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">1 ч 07 мин</span>
+          </div>
+          <div class="u-row">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #ffe08a, #c9962c);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Золотой блок <span style="font-size: 11.5px; color: #59616f;">Block of Gold</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×6</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">12 906</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">2 151</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">Tyler_D</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">8 ч 30 мин</span>
+          </div>          <div class="u-row" style="border-bottom: none;">
+            <div class="u-slot"><div style="width: 13px; height: 13px; background: linear-gradient(135deg, #9be8ea, #4fbfc4);"></div></div>
+            <span style="flex-grow: 1; font-size: 13.5px; color: #f3f6fa;">Алмазный блок <span style="font-size: 11.5px; color: #59616f;">Block of Diamond</span></span>
+            <span class="u-num" style="width: 62px; text-align: right; font-size: 12.5px; color: #8b93a1;">×4</span>
+            <span class="u-num" style="width: 96px; text-align: right; font-size: 13px; color: #a8b0bd;">21 960</span>
+            <span class="u-num" style="width: 92px; text-align: right; font-size: 14px; font-weight: 500; color: #46d3d9;">5 490</span>
+            <span style="width: 118px; text-align: right; font-size: 12px; color: #6f7889;">polyayak</span>
+            <span class="u-num" style="width: 104px; text-align: right; font-size: 12px; color: #6f7889;">22 ч 41 мин</span>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 11px 16px; border-top: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.015);">
+          <div style="display: flex; align-items: center; gap: 7px;">
+            <span style="width: 22px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1);"></span>
+            <span style="width: 22px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1);"></span>
+            <span style="width: 22px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1);"></span>
+            <span style="width: 34px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, rgba(70,211,217,0.4), #46d3d9); box-shadow: 0 0 14px rgba(70,211,217,0.5);"></span>
+            <span style="width: 22px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1);"></span>
+            <span style="width: 22px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1);"></span>
+            <span class="u-num" style="font-size: 11.5px; color: #59616f; margin-left: 8px;">4 / 31</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="display: flex; align-items: center; gap: 7px;"><span class="u-px" style="font-size: 13px; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); color: #dfe4ea;">ЛКМ</span><span style="font-size: 11.5px; color: #59616f;">купить лот целиком</span></span>
+            <span style="display: flex; align-items: center; gap: 7px;"><span class="u-px" style="font-size: 13px; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); color: #dfe4ea;">ПКМ</span><span style="font-size: 11.5px; color: #59616f;">поштучно</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex: 0 0 auto; width: 356px; display: flex; flex-direction: column; gap: 12px;">
+
+        <div class="pnl" style="padding: 15px 18px 17px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.28s both;">
+          <div class="u-lab">Что мод запомнил</div>
+          <div style="display: flex; align-items: center; gap: 11px; margin-top: 11px;">
+            <div class="u-slot" style="width: 30px; height: 30px;"><div style="width: 15px; height: 15px; background: linear-gradient(135deg, #e08b5e, #a9552c);"></div></div>
+            <div style="flex-grow: 1;">
+              <div style="font-size: 13.5px; color: #f3f6fa;">Медный блок</div>
+              <div class="u-num" style="font-size: 11px; color: #59616f; margin-top: 2px;">minecraft:copper_block</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 9px; margin-top: 13px;">
+            <span class="u-disp grad-t" style="font-size: 32px; font-weight: 800; line-height: 1;">от 284</span>
+            <span style="font-size: 12px; color: #7b8496;">за штуку</span>
+          </div>
+          <div style="font-size: 11.5px; color: #6f7889; margin-top: 6px;">самое дешёвое из увиденного · видел 4 раза · последний раз только что</div>
+
+          <div style="position: relative; height: 54px; margin-top: 14px;">
+            <div style="position: absolute; left: 0; right: 0; bottom: 16px; height: 1px; background: rgba(255,255,255,0.07);"></div>
+            <div class="obs" style="position: absolute; left: 2%; bottom: 12px; width: 9px; height: 9px; border-radius: 50%; background: #46d3d9; box-shadow: 0 0 12px rgba(70,211,217,0.7); animation-delay: 0.7s;"></div>
+            <div class="obs" style="position: absolute; left: 20%; bottom: 12px; width: 9px; height: 9px; border-radius: 50%; background: rgba(70,211,217,0.62); animation-delay: 0.78s;"></div>
+            <div class="obs" style="position: absolute; left: 34%; bottom: 12px; width: 9px; height: 9px; border-radius: 50%; background: rgba(70,211,217,0.62); animation-delay: 0.86s;"></div>
+            <div class="obs" style="position: absolute; left: 71%; bottom: 12px; width: 9px; height: 9px; border-radius: 50%; background: rgba(70,211,217,0.45); animation-delay: 0.94s;"></div>
+            <span class="u-num" style="position: absolute; left: 0; bottom: 0; font-size: 10.5px; color: #4d5563;">284</span>
+            <span class="u-num" style="position: absolute; right: 0; bottom: 0; font-size: 10.5px; color: #4d5563;">340</span>
+            <span class="u-lab" style="position: absolute; left: 0; top: 0; color: #4d5563;">4 наблюдения</span>
+          </div>
+        </div>
+
+        <div class="pnl" style="padding: 15px 18px 17px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.36s both;">
+          <div class="u-lab" style="color: rgba(226,192,90,0.8);">Почему не медиана</div>
+          <div style="font-size: 12px; color: #8b93a1; line-height: 1.55; margin-top: 9px;">Страницы Маркета отсортированы игроком. Под «сначала дешёвые» первая страница — дно рынка, под «сначала дорогие» — потолок. Средняя по такой выборке будет уверенной и неправильной, поэтому мод показывает только дно увиденного и число наблюдений.</div>
+        </div>
+
+        <div class="pnl" style="flex-grow: 1; padding: 15px 18px 17px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.44s both;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between;">
+            <span class="u-lab">Объём рынка</span>
+            <span class="u-num" style="font-size: 12px; color: #8b93a1;">страниц за неделю</span>
+          </div>
+          <svg width="316" height="82" viewBox="0 0 316 82" fill="none" style="margin-top: 10px; display: block;">
+            <defs>
+              <linearGradient id="volFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(70,211,217,0.26)"/><stop offset="100%" stop-color="rgba(70,211,217,0)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 62 44 55 88 58 132 44 176 47 220 33 264 30 316 22" stroke="#46d3d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="340" stroke-dashoffset="340" style="animation: hhDraw 1.5s cubic-bezier(0.3,0,0.2,1) 0.6s forwards;"/>
+            <path d="M0 62 44 55 88 58 132 44 176 47 220 33 264 30 316 22 316 82 0 82Z" fill="url(#volFill)" opacity="0" style="animation: hhFade 0.9s ease-out 1.5s forwards;"/>
+            <circle cx="316" cy="22" r="3.5" fill="#46d3d9" opacity="0" style="animation: hhFade 0.5s ease-out 1.9s forwards;"/>
+          </svg>
+          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 4px;">
+            <span class="u-num" style="font-size: 11px; color: #4d5563;">18</span>
+            <span class="u-num" style="font-size: 13px; color: #46d3d9;">31</span>
+          </div>
+          <div style="font-size: 11.5px; color: #6f7889; line-height: 1.5; margin-top: 8px;">Число страниц в заголовке — это объём выставленного игроками. Мод пишет его при каждом заходе и не кэширует.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#46d3d9","options":["#46d3d9","#f2b45c","#5fd18b","#a98cf0"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#46d3d9' };
+  }
+}
+</script>
+</body>
+</html>

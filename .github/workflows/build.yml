@@ -1,0 +1,114 @@
+name: Сборка мода
+
+# Только push. Триггер pull_request здесь был лишним: он давал второй прогон того
+# же коммита, оба лезли выгружать артефакт с одним именем, и GitHub отвечал на
+# финализацию одного из них «403 Forbidden: Error from intermediary». Проверки
+# push-прогона и так привязываются к открытому PR, так что ничего не теряем.
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+# Пока идёт сборка, свежий пуш отменяет предыдущую: держать очередь из устаревших
+# прогонов смысла нет, интересен всегда только верхний коммит.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Сборка публикует jar релизом, поэтому ей нужна запись в содержимое репозитория.
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Версия yarn известна только maven.fabricmc.net, поэтому подставляем её
+      # на раннере: у него нет ограничений сети, из-за которых её не узнать локально.
+      - name: Подставить версии Fabric
+        run: ./scripts/fetch-fabric-versions.sh
+
+      - name: Тесты
+        run: ./gradlew test --no-daemon
+
+      - name: Сборка
+        run: ./gradlew build --no-daemon
+
+      - name: Отчёт о версиях
+        if: always()
+        run: |
+          {
+            echo "### Версии, с которыми собиралось"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            grep -E '^(minecraft_version|yarn_mappings|loader_version|fabric_api_version)=' \
+              gradle.properties | sed 's/^/| /; s/=/ | /; s/$/ |/'
+            # Версия Loom живёт только в build.gradle.kts: в блоке plugins {}
+            # её нельзя вычислить, поэтому она задана литералом.
+            grep -o 'id("fabric-loom") version "[^"]*"' build.gradle.kts \
+              | sed 's/.*version "\(.*\)"/| loom_version | \1 |/' || true
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Только сам мод. Рядом Gradle кладёт holyhelper-<версия>-sources.jar — он
+      # ничего не делает, но в архиве выглядит ровно так же, и положить в mods
+      # можно не тот. На телефоне, где файлы таскают вручную, это стоило игроку
+      # запуска: лоадер молча пропустил sources и показал список без мода.
+      - name: Выложить jar
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: holyhelper
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
+          if-no-files-found: error
+
+      # Артефакт Actions отдаётся только zip-архивом, а браузеры такие архивы
+      # всё чаще блокируют наглухо («Dangerous download blocked»): снять
+      # блокировку можно лишь со страницы загрузок, из окна скачивания — нельзя.
+      # Релиз отдаёт сам jar по прямой и всегда одинаковой ссылке, без архива
+      # и без ручного снятия блокировки.
+      #
+      # Условия по ветке нет намеренно: в релизе всегда лежит последняя удачная
+      # сборка, с какой бы ветки она ни пришла. Тег остаётся на месте, меняется
+      # только файл и описание, поэтому ссылку достаточно сохранить один раз.
+      - name: Обновить jar в релизе
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # sed вместо head: head закрывает канал, ls получает SIGPIPE, и шаг
+          # падает на ровном месте — на этом уже спотыкался скрипт версий.
+          jar=$(ls build/libs/*.jar | grep -v -- '-sources.jar' | sed -n 1p)
+          # Имя без номера версии: иначе ссылка менялась бы при каждом её поднятии.
+          cp "$jar" holyhelper.jar
+          notes="Последняя удачная сборка ветки \`$GITHUB_REF_NAME\`, коммит $GITHUB_SHA."
+          if gh release view dev >/dev/null 2>&1; then
+            gh release upload dev holyhelper.jar --clobber
+            gh release edit dev --notes "$notes"
+          else
+            gh release create dev holyhelper.jar \
+              --prerelease \
+              --title "Свежая сборка" \
+              --notes "$notes"
+          fi
+
+      - name: Выложить отчёты тестов
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/reports/tests/
+          if-no-files-found: ignore

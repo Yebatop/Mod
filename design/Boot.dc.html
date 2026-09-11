@@ -10,155 +10,170 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Pixelify+Sans:wght@400..700&display=swap">
   <style>
     body { margin: 0; font-family: 'Onest', 'Segoe UI', system-ui, sans-serif; }
-    a { color: #f2b45c; } a:hover { color: #ffd79a; }
-    .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
-    .u-px { font-family: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif; }
     .u-disp { font-family: 'Unbounded', 'Onest', system-ui, sans-serif; letter-spacing: -0.03em; }
-    .u-lab { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #5b6474; }
-    .grad { background: linear-gradient(135deg, #ffe2b6 0%, #f2b45c 46%, #c9862a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .u-num { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .u-lab { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #626b7b; }
     .facets { position: absolute; inset: 0; pointer-events: none; background-image: repeating-linear-gradient(114deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 148px), repeating-linear-gradient(-41deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 196px); }
-    .pnl { position: relative; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.048), rgba(255,255,255,0.012)); border: 1px solid rgba(255,255,255,0.075); box-shadow: 0 30px 78px rgba(0,0,0,0.66), inset 0 1px 0 rgba(255,255,255,0.09); overflow: hidden; }
-    .pnl::after { content: ""; position: absolute; top: 0; left: -38%; width: 38%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.62), transparent); animation: hhSheen 7.5s ease-in-out infinite; }
-    .row { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.05); animation: hhRise 0.62s cubic-bezier(0.2, 0.72, 0.2, 1) both; }
-    .ember { position: absolute; width: 4px; height: 4px; background: #f2b45c; box-shadow: 0 0 9px rgba(242,180,92,0.9); animation: hhEmber 9s ease-in-out infinite; }
-    @keyframes hhSheen { 0% { left: -38%; } 44%, 100% { left: 138%; } }
-    @keyframes hhRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-    @keyframes hhFade { from { opacity: 0; } to { opacity: 1; } }
+    .dim { color: #8a94a3; }
+    .faint { color: #59616f; }
+    .card { position: relative; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.038), rgba(255,255,255,0.009)); border: 1px solid rgba(255,255,255,0.065); padding: 15px 18px 17px; }
+    .rule { height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02) 74%, transparent); }
+    .brow { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 7px 0; border-top: 1px solid rgba(255,255,255,0.05); animation: hhRise 0.42s cubic-bezier(0.2,0.72,0.2,1) both; }
+    .brow:first-of-type { border-top: none; }
+    @keyframes hhRise { from { opacity: 0; transform: translateY(11px); } to { opacity: 1; transform: none; } }
     @keyframes hhGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
     @keyframes hhDraw { to { stroke-dashoffset: 0; } }
-    @keyframes hhHalo { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.44; transform: scale(1.09); } }
-    @keyframes hhEmber { 0% { transform: translateY(0) scale(1); opacity: 0; } 14% { opacity: 0.6; } 100% { transform: translateY(-230px) scale(0.45); opacity: 0; } }
-    @keyframes hhSweep { 0% { transform: translateX(-100%); } 55%, 100% { transform: translateX(330%); } }
-    @keyframes hhShaft { 0%, 100% { opacity: 0.30; } 50% { opacity: 0.52; } }
+    @keyframes hhBreathe { 0%, 100% { opacity: 0.18; } 50% { opacity: 0.42; } }
+    /* весь экран живёт четыре с половиной секунды и гаснет сам */
+    @keyframes hhBoot { 0% { opacity: 0; } 6% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+    .boot { animation: hhBoot 5.4s cubic-bezier(0.2,0.72,0.2,1) infinite both; }
   </style>
 </helmet>
-<div style="position: relative; width: 1440px; height: 810px; box-sizing: border-box; overflow: hidden; background: #05060a; color: #e9ecf1; --accent: {{accent}};">
+<div style="--accent: {{accent}}; position: relative; width: 1440px; height: 860px; box-sizing: border-box; overflow: hidden; background: #0a0c11; color: #e9ecf1;">
 
-  <div style="position: absolute; inset: 0; background: radial-gradient(880px 560px at 46% 40%, rgba(242,180,92,0.15), transparent 66%), radial-gradient(680px 460px at 90% 92%, rgba(70,211,217,0.08), transparent 62%), linear-gradient(180deg, #0b0d13 0%, #05060a 64%);"></div>
+  <div style="position: absolute; inset: 0; background: radial-gradient(820px 460px at 30% -6%, rgba(242,180,92,0.13), transparent 62%), radial-gradient(700px 420px at 92% 8%, rgba(70,211,217,0.08), transparent 60%), linear-gradient(180deg, #0e1118 0%, #0a0c11 48%, #090b0f 100%);"></div>
   <div class="facets"></div>
+  <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none;"><filter id="grainBoot"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#grainBoot)"/></svg>
 
-  <div style="position: absolute; left: -180px; top: -320px; width: 560px; height: 1500px; transform: rotate(24deg); background: linear-gradient(90deg, transparent, rgba(255,225,180,0.055), transparent); filter: blur(26px); animation: hhShaft 9s ease-in-out infinite;"></div>
+  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 26px 30px 22px; display: flex; flex-direction: column; gap: 18px;">
 
-  <svg width="760" height="760" viewBox="0 0 100 100" fill="none" style="position: absolute; right: -150px; top: 40px; opacity: 0.055;">
-    <path d="M50 8 88 30v44L50 96 12 74V30L50 8Z" stroke="#f2b45c" stroke-width="1.1" stroke-linejoin="round"/>
-    <path d="M12 30 50 52l38-22M50 52v44" stroke="#f2b45c" stroke-width="0.8"/>
-  </svg>
-
-  <div class="ember" style="left: 250px; top: 610px; animation-delay: 0s;"></div>
-  <div class="ember" style="left: 1146px; top: 660px; animation-delay: 1.9s;"></div>
-  <div class="ember" style="left: 388px; top: 700px; animation-delay: 3.4s;"></div>
-  <div class="ember" style="left: 1042px; top: 580px; animation-delay: 5.2s; background: #46d3d9; box-shadow: 0 0 9px rgba(70,211,217,0.9);"></div>
-  <div class="ember" style="left: 178px; top: 690px; animation-delay: 6.6s;"></div>
-  <div class="ember" style="left: 1268px; top: 640px; animation-delay: 7.8s;"></div>
-
-  <div style="position: absolute; inset: 0; background: radial-gradient(126% 96% at 48% 44%, transparent 38%, rgba(0,0,0,0.66) 100%);"></div>
-
-  <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 660px;">
-
-    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 38px;">
-      <div style="position: relative; width: 124px; height: 124px; display: flex; align-items: center; justify-content: center;">
-        <div style="position: absolute; inset: -22px; border-radius: 50%; background: var(--accent); filter: blur(34px); animation: hhHalo 3.8s ease-in-out infinite;"></div>
-        <svg width="116" height="116" viewBox="0 0 88 88" fill="none" style="position: relative;">
-          <defs>
-            <linearGradient id="bootGold" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#ffe2b6"/><stop offset="52%" stop-color="{{accent}}"/><stop offset="100%" stop-color="#b9761f"/>
-            </linearGradient>
-          </defs>
-          <path d="M44 12 70 26v28L44 68 18 54V26L44 12Z" fill="rgba(242,180,92,0.07)" stroke="url(#bootGold)" stroke-width="2.4" stroke-linejoin="round" stroke-dasharray="260" stroke-dashoffset="260" style="animation: hhDraw 1.2s cubic-bezier(0.4,0,0.2,1) 0.15s forwards;"/>
-          <path d="M18 26 44 40l26-14M44 40v28" stroke="url(#bootGold)" stroke-width="1.7" stroke-linejoin="round" opacity="0.4" stroke-dasharray="120" stroke-dashoffset="120" style="animation: hhDraw 0.95s ease-out 0.75s forwards;"/>
-          <polyline points="27,52 38,44 49,49 62,32" stroke="#46d3d9" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" style="animation: hhDraw 0.85s cubic-bezier(0.3,0,0.2,1) 1.1s forwards;"/>
-          <circle cx="62" cy="32" r="4.6" fill="#46d3d9" opacity="0" style="animation: hhFade 0.45s ease-out 1.8s forwards;"/>
-          <circle cx="62" cy="32" r="10" fill="#46d3d9" opacity="0" style="animation: hhFade 0.7s ease-out 1.85s forwards; opacity: 0;"/>
-        </svg>
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) both;">
+      <div>
+        <div class="u-disp" style="font-size: 24px; font-weight: 700;">Запуск мода</div>
+        <div style="font-size: 12px; color: #6f7889; margin-top: 5px;">Показывается один раз при заходе на сервер и гаснет сам</div>
       </div>
-
-      <div class="u-disp grad" style="animation: hhRise 0.75s cubic-bezier(0.2,0.72,0.2,1) 0.95s both; margin-top: 20px; font-size: 54px; font-weight: 900; line-height: 1;">HolyHelper</div>
-      <div style="animation: hhRise 0.7s cubic-bezier(0.2,0.72,0.2,1) 1.08s both; margin-top: 14px; display: flex; align-items: center; gap: 13px;">
-        <span style="width: 34px; height: 1px; background: linear-gradient(90deg, transparent, rgba(242,180,92,0.55));"></span>
-        <span class="u-lab" style="color: #7b8496;">экономический помощник Прайм Анархии</span>
-        <span style="width: 34px; height: 1px; background: linear-gradient(90deg, rgba(242,180,92,0.55), transparent);"></span>
+      <div style="max-width: 560px; font-size: 12px; line-height: 1.6; color: #79828f; text-align: right;">
+        Это не заставка ради заставки. За четыре секунды мод отвечает на вопрос,
+        который иначе выясняется командой: что он вообще про этот заход знает.
       </div>
     </div>
 
-    <div class="pnl" style="animation: hhRise 0.8s cubic-bezier(0.2,0.72,0.2,1) 1.18s both; padding: 8px 30px 22px;">
+    <div style="display: grid; grid-template-columns: 1fr 396px; gap: 20px; flex: 1; min-height: 0;">
 
-      <div class="row" style="animation-delay: 1.34s;">
-        <svg width="21" height="21" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="8.6" stroke="rgba(95,209,139,0.34)" stroke-width="1.5"/>
-          <path d="M6.2 10.3 8.7 12.8 13.9 7.4" stroke="#5fd18b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="16" stroke-dashoffset="16" style="animation: hhDraw 0.36s ease-out 1.54s forwards;"/>
-        </svg>
-        <span style="flex-grow: 1; font-size: 14px; color: #cdd3dc;">Сервер</span>
-        <span class="u-num" style="font-size: 13.5px; color: #eef1f5;">Прайм Анархия #12</span>
+      <!-- ── сам экран запуска ─────────────────────────────── -->
+      <div style="position: relative; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); background: #06070b;">
+        <!-- намёк на игру под слоем -->
+        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, #16202b 0%, #0f1620 42%, #0a0f16 100%);"></div>
+        <div style="position: absolute; left: 8%; right: 8%; bottom: 12%; height: 34%; background: linear-gradient(180deg, rgba(60,86,54,0.5), rgba(40,60,36,0.2)); filter: blur(22px);"></div>
+        <div style="position: absolute; inset: 0; background: rgba(10,12,17,0.9);"></div>
+
+        <div class="boot" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;">
+          <div style="position: relative; width: 96px; height: 96px; display: flex; align-items: center; justify-content: center;">
+            <div style="position: absolute; inset: -16px; border-radius: 50%; background: var(--accent); filter: blur(34px); animation: hhBreathe 4.4s ease-in-out infinite;"></div>
+            <svg width="88" height="88" viewBox="0 0 88 88" fill="none" style="position: relative;">
+              <defs><linearGradient id="markBoot" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe2b6"/><stop offset="52%" stop-color="{{accent}}"/><stop offset="100%" stop-color="#b9761f"/></linearGradient></defs>
+              <path d="M44 12 70 26v28L44 68 18 54V26L44 12Z" fill="rgba(242,180,92,0.07)" stroke="url(#markBoot)" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M18 26 44 40l26-14M44 40v28" stroke="url(#markBoot)" stroke-width="2" opacity="0.4"/>
+              <polyline points="27,52 38,44 49,49 62,32" stroke="#46d3d9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" style="animation: hhDraw 0.9s cubic-bezier(0.3,0,0.2,1) 0.35s forwards;"/>
+            </svg>
+          </div>
+
+          <div class="u-disp" style="font-size: 34px; font-weight: 800; margin-top: 14px;">HolyHelper</div>
+          <div class="u-lab" style="margin-top: 9px; font-size: 9.5px;">экономический помощник Прайм Анархии</div>
+
+          <div style="width: 400px; margin-top: 30px;">
+            <div class="brow" style="animation-delay: 0.5s;">
+              <span class="u-lab" style="font-size: 9.5px;">Сервер</span>
+              <span style="font-size: 13px; color: #5fd18b;">Прайм&nbsp;#1</span>
+            </div>
+            <div class="brow" style="animation-delay: 0.62s;">
+              <span class="u-lab" style="font-size: 9.5px;">LiteAPI</span>
+              <span class="faint" style="font-size: 13px;">канала нет</span>
+            </div>
+            <div class="brow" style="animation-delay: 0.74s;">
+              <span class="u-lab" style="font-size: 9.5px;">База цен</span>
+              <span class="u-num" style="font-size: 13px; color: #5fd18b;">2 046 набл.</span>
+            </div>
+            <div class="brow" style="animation-delay: 0.86s;">
+              <span class="u-lab" style="font-size: 9.5px;">Скупец</span>
+              <span class="u-num" style="font-size: 13px; color: {{accent}};">1 ч 16 мин</span>
+            </div>
+          </div>
+
+          <div style="width: 400px; height: 2px; border-radius: 1px; background: rgba(255,255,255,0.07); margin-top: 26px; overflow: hidden;">
+            <div style="height: 100%; background: linear-gradient(90deg, {{accent}}, #46d3d9); transform-origin: left; animation: hhGrow 1.5s cubic-bezier(0.2,0.72,0.2,1) 0.4s both;"></div>
+          </div>
+        </div>
       </div>
 
-      <div class="row" style="animation-delay: 1.54s;">
-        <svg width="21" height="21" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="8.6" stroke="rgba(95,209,139,0.34)" stroke-width="1.5"/>
-          <path d="M6.2 10.3 8.7 12.8 13.9 7.4" stroke="#5fd18b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="16" stroke-dashoffset="16" style="animation: hhDraw 0.36s ease-out 1.74s forwards;"/>
-        </svg>
-        <span style="flex-grow: 1; font-size: 14px; color: #cdd3dc;">LiteAPI · feature-control</span>
-        <span class="u-num" style="font-size: 13.5px; color: #5fd18b;">блокировок нет</span>
-      </div>
+      <!-- ── пояснения ─────────────────────────────────────── -->
+      <div style="display: flex; flex-direction: column; gap: 16px; min-height: 0;">
 
-      <div class="row" style="animation-delay: 1.74s;">
-        <svg width="21" height="21" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="8.6" stroke="rgba(95,209,139,0.34)" stroke-width="1.5"/>
-          <path d="M6.2 10.3 8.7 12.8 13.9 7.4" stroke="#5fd18b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="16" stroke-dashoffset="16" style="animation: hhDraw 0.36s ease-out 1.94s forwards;"/>
-        </svg>
-        <span style="flex-grow: 1; font-size: 14px; color: #cdd3dc;">База цен</span>
-        <span class="u-num" style="font-size: 13.5px; color: #eef1f5;">14 268 записей · 412 предметов</span>
-      </div>
+        <div class="card" style="animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.1s both;">
+          <div class="u-lab">Четыре строки, четыре ответа</div>
+          <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; gap: 11px;">
+              <span class="u-lab" style="flex: 0 0 auto; width: 62px; font-size: 9px; padding-top: 2px;">Сервер</span>
+              <span style="font-size: 12px; line-height: 1.5;" class="dim">Номер режима взят из нижней строки сайдбара, а не угадан по адресу. Вне HolyWorld экран не показывается вовсе.</span>
+            </div>
+            <div style="display: flex; gap: 11px;">
+              <span class="u-lab" style="flex: 0 0 auto; width: 62px; font-size: 9px; padding-top: 2px;">LiteAPI</span>
+              <span style="font-size: 12px; line-height: 1.5;" class="dim">На Прайме сервер канал не объявляет, и мод ничего не отправляет. «Канала нет» — это не поломка, это факт.</span>
+            </div>
+            <div style="display: flex; gap: 11px;">
+              <span class="u-lab" style="flex: 0 0 auto; width: 62px; font-size: 9px; padding-top: 2px;">База цен</span>
+              <span style="font-size: 12px; line-height: 1.5;" class="dim">Сколько наблюдений Маркета мод помнит с прошлых заходов. Пустая база — сразу видно, что подсказки пока молчат не просто так.</span>
+            </div>
+            <div style="display: flex; gap: 11px;">
+              <span class="u-lab" style="flex: 0 0 auto; width: 62px; font-size: 9px; padding-top: 2px;">Скупец</span>
+              <span style="font-size: 12px; line-height: 1.5;" class="dim">Остаток до ротации, если часы уже заведены. Часы переживают выход из игры: мод хранит момент обновления, а не остаток.</span>
+            </div>
+          </div>
+        </div>
 
-      <div class="row" style="animation-delay: 1.94s; border-bottom: none;">
-        <svg width="21" height="21" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="8.6" stroke="rgba(242,180,92,0.32)" stroke-width="1.5"/>
-          <path d="M10 5.8V10l2.9 1.8" stroke="{{accent}}" stroke-width="2" stroke-linecap="round" stroke-dasharray="12" stroke-dashoffset="12" style="animation: hhDraw 0.36s ease-out 2.14s forwards;"/>
-        </svg>
-        <span style="flex-grow: 1; font-size: 14px; color: #cdd3dc;">Скупец · обычные торги</span>
-        <span class="u-num" style="font-size: 13.5px; color: var(--accent);">обновятся через 2:14:07</span>
-      </div>
+        <div class="card" style="animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.16s both;">
+          <div class="u-lab">Правила экрана</div>
+          <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 9px;">
+            <div style="display: flex; align-items: baseline; gap: 11px;">
+              <span class="u-num" style="flex: 0 0 auto; width: 54px; font-size: 11px; color: {{accent}};">3.6 с</span>
+              <span style="font-size: 12px; line-height: 1.5;" class="dim">держится на экране</span>
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 11px;">
+              <span class="u-num" style="flex: 0 0 auto; width: 54px; font-size: 11px; color: {{accent}};">0.9 с</span>
+              <span style="font-size: 12px; line-height: 1.5;" class="dim">гаснет, не дожидаясь ничего</span>
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 11px;">
+              <span class="u-num" style="flex: 0 0 auto; width: 54px; font-size: 11px; color: #5fd18b;">0</span>
+              <span style="font-size: 12px; line-height: 1.5;" class="dim">нажатий перехватывает. Идти, бить, писать в чат можно прямо сквозь него — иначе это был бы модальный экран, а модальный экран на заходе никому не нужен</span>
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 11px;">
+              <span class="u-num" style="flex: 0 0 auto; width: 54px; font-size: 11px; color: #e2734f;">off</span>
+              <span style="font-size: 12px; line-height: 1.5;" class="dim">выключается в настройках одной строкой</span>
+            </div>
+          </div>
+        </div>
 
-      <div style="position: relative; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.07); overflow: hidden; margin-top: 20px;">
-        <div style="height: 100%; transform-origin: left; background: linear-gradient(90deg, rgba(242,180,92,0.32), var(--accent) 66%, #46d3d9); animation: hhGrow 2.2s cubic-bezier(0.3, 0.6, 0.2, 1) 1.28s both;"></div>
-        <div style="position: absolute; inset: 0; width: 26%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent); animation: hhSweep 2.7s ease-in-out 1.45s infinite;"></div>
-      </div>
+        <div class="card" style="flex: 1; min-height: 0; animation: hhRise 0.6s cubic-bezier(0.2,0.72,0.2,1) 0.22s both;">
+          <div class="u-lab">Когда строка становится тревожной</div>
+          <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.05);">
+              <span class="u-lab" style="font-size: 9px;">LiteAPI</span>
+              <span style="font-size: 12.5px; color: #e2c14a;">молчит</span>
+            </div>
+            <div style="font-size: 11.5px; line-height: 1.55; color: #6f7889; margin-top: -2px;">
+              Канал объявлен, но ответа нет. Это единственная жёлтая строка на экране, и означает она ровно одно:
+              спросить получилось, услышать — нет. Все функции при этом считаются разрешёнными.
+            </div>
 
+            <div class="rule" style="margin: 10px 0 4px;"></div>
+
+            <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 6px 0;">
+              <span class="u-lab" style="font-size: 9px;">База цен</span>
+              <span class="faint" style="font-size: 12.5px;">пуста</span>
+            </div>
+            <div style="font-size: 11.5px; line-height: 1.55; color: #6f7889; margin-top: -2px;">
+              Серым, а не красным: пустая база — обычное состояние первого запуска, а не сбой.
+              Красный в моде значит «сломалось», и тратить его на нормальное положение дел нельзя.
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div style="animation: hhRise 0.7s cubic-bezier(0.2,0.72,0.2,1) 2.2s both; display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 26px;">
-      <span style="display: flex; align-items: center; gap: 10px;">
-        <span class="u-px" style="font-size: 16px; padding: 5px 11px; border-radius: 5px; background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03)); border: 1px solid rgba(255,255,255,0.10); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); color: #dfe4ea;">G</span>
-        <span style="font-size: 13px; color: #6f7889;">планировщик</span>
-      </span>
-      <span style="width: 1px; height: 17px; background: rgba(255,255,255,0.09);"></span>
-      <span style="display: flex; align-items: center; gap: 10px;">
-        <span class="u-px" style="font-size: 16px; padding: 5px 11px; border-radius: 5px; background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03)); border: 1px solid rgba(255,255,255,0.10); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); color: #dfe4ea;">H</span>
-        <span style="font-size: 13px; color: #6f7889;">цены</span>
-      </span>
-      <span style="width: 1px; height: 17px; background: rgba(255,255,255,0.09);"></span>
-      <span style="display: flex; align-items: center; gap: 10px;">
-        <span class="u-px" style="font-size: 16px; padding: 5px 11px; border-radius: 5px; background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03)); border: 1px solid rgba(255,255,255,0.10); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); color: #dfe4ea;">N</span>
-        <span style="font-size: 13px; color: #6f7889;">заметки</span>
-      </span>
-    </div>
-
   </div>
-
-  <div style="animation: hhFade 0.9s ease-out 2.4s both; position: absolute; left: 38px; bottom: 32px; display: flex; align-items: center; gap: 13px;">
-    <span class="u-lab">версия</span>
-    <span class="u-num" style="font-size: 12px; color: #8b93a1;">0.1.0</span>
-    <span style="width: 1px; height: 13px; background: rgba(255,255,255,0.09);"></span>
-    <span style="font-size: 12px; color: #5b6474;">только читает и считает · ничего не кликает за вас</span>
-  </div>
-
-  <div style="animation: hhFade 0.9s ease-out 2.4s both; position: absolute; right: 38px; bottom: 32px; display: flex; align-items: center; gap: 10px;">
-    <span style="width: 7px; height: 7px; border-radius: 50%; background: #5fd18b; box-shadow: 0 0 12px rgba(95,209,139,0.9);"></span>
-    <span style="font-size: 12px; color: #8b93a1;">готов к работе</span>
-  </div>
-
 </div>
 </x-dc>
-<script data-dc-script data-props='{"accent":{"editor":"color","default":"#f2b45c","options":["#f2b45c","#46d3d9","#5fd18b","#a98cf0"]}}'>
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#f2b45c","options":["#f2b45c","#46d3d9","#5fd18b","#c3adf6"]}}'>
 class Component extends DCLogic {
   renderVals() {
     return { accent: this.props.accent ?? '#f2b45c' };

@@ -1,0 +1,23 @@
+Шрифты в assets/holyhelper/font взяты с Google Fonts и распространяются по SIL Open Font
+License 1.1. Лицензия разрешает вкладывать их в программу и распространять
+вместе с ней, в том числе в составе мода.
+
+  display.ttf — Unbounded, Nikita Sapozhkov / Kyrill Tkachev
+                https://fonts.google.com/specimen/Unbounded
+
+  body.ttf     — Onest Regular, Andrey Sharonov (Rosetta)
+  label.ttf    — Onest SemiBold, Andrey Sharonov (Rosetta)
+                https://fonts.google.com/specimen/Onest
+
+  num.ttf      — JetBrains Mono Medium, JetBrains
+                https://fonts.google.com/specimen/JetBrains+Mono
+
+Файлы урезаны до нужного моду набора символов (латиница, кириллица, цифры и
+знаки препинания) утилитой pyftsubset из fontTools. Урезание лицензией
+разрешено; исходные файлы не изменялись иначе.
+
+Текст лицензии: https://openfontlicense.org
+
+Файл лежит вне assets/ намеренно: клиент считает всё внутри assets путями
+ресурсов, а в них запрещены заглавные буквы, и LICENSE.txt там давал ошибку
+в логе при каждом запуске.
