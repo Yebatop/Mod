@@ -1,5 +1,7 @@
 package dev.yebatop.holyhelper.store;
 
+import dev.yebatop.holyhelper.analytics.Liquidity;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -59,10 +61,28 @@ public final class PriceStore {
      * Старые записи продавца не содержат: у них он пустой, и они по-прежнему
      * читаются — база копилась неделями, выбрасывать её из-за нового поля нельзя.
      */
-    public record Observation(long unitPrice, long seenAtMillis, String seller) {
+    public record Observation(long unitPrice, long seenAtMillis, String seller, long remainingMillis) {
+
+        /** Старые записи остатка не содержали — у них он нулевой. */
+        public Observation(long unitPrice, long seenAtMillis, String seller) {
+            this(unitPrice, seenAtMillis, seller, 0);
+        }
 
         public Instant seenAt() {
             return Instant.ofEpochMilli(seenAtMillis);
+        }
+
+        /**
+         * Сколько лоту оставалось висеть, когда его увидели.
+         * <p>
+         * По этому числу и виден возраст лота: сервер печатает остаток сам, а
+         * значит доживающий лот отличим от свежего по одному снимку, без всякой
+         * слежки за тем, купили его или нет.
+         *
+         * @return пусто, если запись сделана до того, как мод начал это запоминать
+         */
+        public Optional<Duration> remaining() {
+            return remainingMillis > 0 ? Optional.of(Duration.ofMillis(remainingMillis)) : Optional.empty();
         }
 
         /** Тот же ли это лот: тот же продавец и та же цена за штуку. */
@@ -98,10 +118,23 @@ public final class PriceStore {
      * объявление в десять «наблюдений», и мод показывал цену одного человека так,
      * будто её подтвердил рынок.
      */
+    /**
+     * Лот, у которого сервер не написал, сколько ему осталось висеть.
+     * <p>
+     * Такое бывает: строка времени есть не у каждого объявления. Цена от этого
+     * не становится хуже, а вот в разбор ликвидности такая запись не пойдёт —
+     * возраст по ней неизвестен.
+     */
     public void record(String itemId, String name, long unitPrice, String seller, Instant seenAt) {
+        record(itemId, name, unitPrice, seller, seenAt, null);
+    }
+
+    public void record(String itemId, String name, long unitPrice, String seller, Instant seenAt,
+                       Duration remaining) {
         if (itemId == null || itemId.isBlank() || unitPrice <= 0) {
             return;
         }
+        long remainingMillis = remaining == null || remaining.isNegative() ? 0 : remaining.toMillis();
         List<Observation> observations = byItem.computeIfAbsent(itemId, key -> new ArrayList<>());
         long millis = seenAt.toEpochMilli();
 
@@ -111,14 +144,18 @@ public final class PriceStore {
                 // Лот ещё висит — освежаем срок, чтобы он не выпал из окна памяти
                 // раньше времени, но новым наблюдением не считаем.
                 if (millis > existing.seenAtMillis()) {
-                    observations.set(i, new Observation(unitPrice, millis, existing.seller()));
+                    // Остаток берём свежий: он у того же лота с каждым разом
+                    // меньше, и именно этим показывает, что лот не купили.
+                    observations.set(i, new Observation(unitPrice, millis, existing.seller(),
+                            remainingMillis > 0 ? remainingMillis : existing.remainingMillis()));
                     dirty = true;
                 }
                 return;
             }
         }
 
-        observations.add(new Observation(unitPrice, millis, seller == null ? "" : seller));
+        observations.add(new Observation(unitPrice, millis, seller == null ? "" : seller,
+                remainingMillis));
         names.put(itemId, name);
         prune(observations);
         dirty = true;
@@ -169,6 +206,30 @@ public final class PriceStore {
                 cheapest.unitPrice(), latest, fresh.size()));
     }
 
+    /**
+     * Наблюдения по предмету в виде, годном для разбора ликвидности.
+     * <p>
+     * Записи без остатка отбрасываются: они сделаны до того, как мод начал его
+     * запоминать, и возраст лота по ним неизвестен. Считать их свежими или
+     * старыми одинаково неверно, а домысливать тут нечего.
+     */
+    public List<Liquidity.Sample> samples(String itemId, Duration maxAge) {
+        List<Observation> observations = byItem.get(itemId);
+        if (observations == null) {
+            return List.of();
+        }
+        Instant since = Instant.now().minus(maxAge);
+        List<Liquidity.Sample> samples = new ArrayList<>();
+        for (Observation observation : observations) {
+            if (observation.seenAt().isBefore(since)) {
+                continue;
+            }
+            observation.remaining().ifPresent(remaining ->
+                    samples.add(new Liquidity.Sample(observation.unitPrice(), remaining)));
+        }
+        return samples;
+    }
+
     public int itemCount() {
         return byItem.size();
     }
@@ -196,6 +257,8 @@ public final class PriceStore {
             }
             newest.merge(observation.unitPrice(), observation,
                     (a, b) -> a.seenAtMillis() >= b.seenAtMillis() ? a : b);
+            // Остаток при схлопывании не теряется: берётся запись целиком, а не
+            // только её цена.
         }
         if (newest.size() + withSeller.size() == observations.size()) {
             return;

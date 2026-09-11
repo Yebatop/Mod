@@ -90,7 +90,8 @@ public final class MarketScanner {
                 dumpOnce(lot, fresh);
                 continue;
             }
-            prices.record(lot.itemId(), lot.name(), lot.unitPrice(), lot.seller(), fresh.seenAt());
+            prices.record(lot.itemId(), lot.name(), lot.unitPrice(), lot.seller(), fresh.seenAt(),
+                    lot.expiresIn());
         }
         return fresh;
     }

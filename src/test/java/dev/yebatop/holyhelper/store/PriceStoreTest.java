@@ -2,6 +2,8 @@ package dev.yebatop.holyhelper.store;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import dev.yebatop.holyhelper.analytics.Liquidity;
+import java.util.List;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
@@ -234,5 +236,43 @@ class PriceStoreTest {
         PriceStore reloaded = store();
         reloaded.load();
         assertEquals(3, reloaded.known("minecraft:coal", Duration.ofHours(12)).orElseThrow().samples());
+    }
+
+    @Test
+    @DisplayName("Остаток лота запоминается и доходит до разбора ликвидности")
+    void keepsRemaining() {
+        PriceStore store = new PriceStore(dir.resolve("prices.json"));
+        Instant now = Instant.now();
+
+        store.record("minecraft:coal", "Уголь", 100, "alfa", now, Duration.ofHours(23));
+        store.record("minecraft:coal", "Уголь", 400, "beta", now, Duration.ofHours(2));
+        // Лот без строки времени: цена годится, возраст — нет.
+        store.record("minecraft:coal", "Уголь", 250, "gamma", now);
+
+        List<Liquidity.Sample> samples = store.samples("minecraft:coal", Duration.ofHours(12));
+
+        assertEquals(2, samples.size(), "запись без остатка в разбор идти не должна");
+        assertTrue(samples.stream().anyMatch(s -> s.unitPrice() == 100
+                && s.remaining().equals(Duration.ofHours(23))));
+        assertTrue(samples.stream().anyMatch(s -> s.unitPrice() == 400
+                && s.remaining().equals(Duration.ofHours(2))));
+    }
+
+    @Test
+    @DisplayName("У того же лота остаток обновляется на свежий")
+    void refreshesRemaining() {
+        PriceStore store = new PriceStore(dir.resolve("prices.json"));
+        Instant first = Instant.now().minusSeconds(3600);
+
+        store.record("minecraft:coal", "Уголь", 100, "alfa", first, Duration.ofHours(20));
+        // Тот же лот час спустя: он не продан, и остаток у него меньше. Это и есть
+        // свидетельство того, что по такой цене не берут.
+        store.record("minecraft:coal", "Уголь", 100, "alfa", first.plusSeconds(3600),
+                Duration.ofHours(19));
+
+        List<Liquidity.Sample> samples = store.samples("minecraft:coal", Duration.ofHours(12));
+
+        assertEquals(1, samples.size(), "лот один, а не два");
+        assertEquals(Duration.ofHours(19), samples.get(0).remaining());
     }
 }
