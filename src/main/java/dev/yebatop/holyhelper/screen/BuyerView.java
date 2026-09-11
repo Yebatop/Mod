@@ -61,7 +61,7 @@ public final class BuyerView {
      * иначе они выравниваются по верхушкам букв, и подпись оказывается выше
      * базовой линии числа на треть его высоты. Именно это и выглядело съехавшим.
      */
-    private static final int HERO = 50;
+    private static final int HERO = 52;
 
     /** Верх подписи. */
     private static final int HERO_LABEL = 7;
