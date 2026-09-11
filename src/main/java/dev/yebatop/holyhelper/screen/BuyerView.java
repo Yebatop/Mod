@@ -66,11 +66,17 @@ public final class BuyerView {
     /** Верх подписи. */
     private static final int HERO_LABEL = 7;
 
-    /** Верх крупного числа. */
-    private static final int HERO_MAIN = 18;
+    /**
+     * Верх крупного числа.
+     * <p>
+     * Опущено намеренно: сверху остаётся просвет под подписью, и число перестаёт
+     * висеть у самой кромки. Оно и есть главное на карточке — прижатое к верху,
+     * оно читалось довеском к подписи, а не наоборот.
+     */
+    private static final int HERO_MAIN = 22;
 
     /** Базовая линия крупного числа — к ней приводится всё, что стоит рядом. */
-    private static final int HERO_BASE = HERO_MAIN + Fonts.ASCENT_DISPLAY;
+    private static final int HERO_BASE = HERO_MAIN + Fonts.BASELINE_DISPLAY;
 
     /** Верх первой строки обычного текста в карточках без крупного числа. */
     private static final int HERO_SIDE = 20;
@@ -211,13 +217,13 @@ public final class BuyerView {
         int side = x + 8 + used + 7;
 
         Fonts.draw(ctx, font, "из " + offers.size(), Fonts.BODY,
-                side, y + HERO_BASE - Fonts.ASCENT_BODY, Motion.fade(Theme.TEXT_DIM, first));
+                side, y + HERO_BASE - Fonts.BASELINE_BODY, Motion.fade(Theme.TEXT_DIM, first));
 
         // Сколько товаров мод про Маркет вообще не знает. Без этой строки «5 из 8»
         // читается увереннее, чем есть: часть восьми просто не проверена.
         int unknown = countUnknown(offers);
         Fonts.label(ctx, font, unknown == 0 ? "все проверены" : unknown + " без данных",
-                side, y + HERO_BASE - Fonts.ASCENT_BODY + 12,
+                side, y + HERO_BASE - Fonts.BASELINE_BODY + 12,
                 Motion.fade(unknown == 0 ? Theme.GREEN : Theme.TEXT_FAINT, first));
 
         double second = Motion.reveal(elapsed, Card.REVEAL_STEP * 2, Card.REVEAL_LENGTH) * alpha;
